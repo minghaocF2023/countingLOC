@@ -1,4 +1,6 @@
-# ESN
+# Emergency Social Network
+> Author: Group SB5
+
 
 ## File Structure
 ```
