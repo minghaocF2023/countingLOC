@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/cmusv-fse/18652-fse-f23-group-project-sb-5#readme",
   "devDependencies": {
+    "eslint": "^8.49.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.28.1",
     "nodemon": "^3.0.1"
   },
   "dependencies": {
