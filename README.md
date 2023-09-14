@@ -17,6 +17,8 @@
   - Socket.io: Provides event-based real-time communication between clients and server, for functions like dynamic status update.
 ### Database
   - MongoDB: A NoSQL database which is a great fit for Node.js, and it provides flexibility to change the database design.
+### Development Tools
+  - Nodemon: Automatically restarting the node application when file changes are detected.
 ## File Structure
 ```
 ├── src                     
