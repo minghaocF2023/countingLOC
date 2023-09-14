@@ -14,9 +14,9 @@
   - Node.js: A powerful JavaScript-based runtime environment for building server-side application.
   - Express.js: A framework works on Node.js which makes easier to develop application's functionalities like routings and middlewares.
   - Passport.js: A middleware dependency for user authentication and authorization.
-  - Socket.io: Provide event-based real-time communication between clients and server, for functions like dynamic status update.
+  - Socket.io: Provides event-based real-time communication between clients and server, for functions like dynamic status update.
 ### Database
-  - MongoDB: A NoSQL database which is a great fit to Node.js, and it provides flexibility to change the database design.
+  - MongoDB: A NoSQL database which is a great fit for Node.js, and it provides flexibility to change the database design.
 ## File Structure
 ```
 ├── src                     
