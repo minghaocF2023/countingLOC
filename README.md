@@ -5,7 +5,10 @@
 
 # Emergency Social Network
 > Author: Group SB5
-
+## Technologies
+- Frontend: EJS, CSS, JavaScript
+- Backend: Node.js, Express.js, Passport.js
+- Database: MongoDB
 ## File Structure
 ```
 ├── src                     
