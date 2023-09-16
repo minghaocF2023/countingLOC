@@ -39,7 +39,7 @@ const userController = {
   registerUser: async (req, res) => {
     const data = {
       username: req.body.username,
-      password: req.body.pwd,
+      password: req.body.password,
       salt: '',
     };
 

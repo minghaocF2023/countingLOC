@@ -8,7 +8,7 @@ if (registerButton) {
       alert('Please enter username and password');
       return;
     }
-    fetch('/register', {
+    fetch('/api/users/register', {
       method: 'POST',
       body: JSON.stringify({
         username: inputUsername,
