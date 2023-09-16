@@ -1,7 +1,6 @@
-const mongoose = require('../services/db');
-const crypto = require("crypto");
+const crypto = require('crypto');
 const User = require('../models/userModel');
-const BANNED_USERNAME = require('../utils/banned_username');
+const BANNED_USERNAME = require('../utils/banned_username.json');
 
 const userController = {
   /**
@@ -10,9 +9,9 @@ const userController = {
   validateUser: async (req, res) => {
     // duplicate username check
     const duplicateValidation = await User.findOne({
-      username: req.body.username
+      username: req.body.username,
     });
-    
+
     if (duplicateValidation !== null) {
       res.status(409);
       res.json({ message: 'Duplicated User' });
@@ -30,7 +29,7 @@ const userController = {
       res.json({ message: 'Invalid Password' });
       return;
     }
-    
+
     res.json({ message: 'OK' });
   },
 
@@ -41,38 +40,34 @@ const userController = {
     const data = {
       username: req.body.username,
       password: req.body.pwd,
-      salt: ""
+      salt: '',
     };
-    
+
     // password encrypt
     const salt = crypto.randomBytes(16);
 
-    crypto.pbkdf2(data.password, salt, 310000, 32, 'sha256', async (err, hashedPassword)=>{
-      if(err){console.error(err);}
-      data.password = hashedPassword.toString("base64");
-      data.salt = salt.toString("base64");
+    crypto.pbkdf2(data.password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
+      if (err) { console.error(err); }
+      data.password = hashedPassword.toString('base64');
+      data.salt = salt.toString('base64');
 
       const newUser = new User({
         username: data.username,
         password: data.password,
-        salt: data.salt
+        salt: data.salt,
       });
-      
+
       // save to database
-      await newUser.save().then(()=>{
+      await newUser.save().then(() => {
         res.status(200);
-        res.json({message: "Registration success"});
-      }).catch((err)=>{
-        console.error(err);
+        res.json({ message: 'Registration success' });
+      }).catch((e) => {
+        console.error(e);
         res.status(500);
-        res.json({message: "Database error"});
-      })
-      
+        res.json({ message: 'Database error' });
+      });
     });
   },
 };
 
 module.exports = userController;
-
-
-

@@ -10,5 +10,4 @@ mongoose.connect(uri, {
   useUnifiedTopology: true,
 });
 
-module.exports = mongoose
-
+module.exports = mongoose;
