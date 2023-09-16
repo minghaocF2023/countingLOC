@@ -5,6 +5,9 @@ module.exports = {
     es2021: true,
     node: true,
   },
+  "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+
+
   extends: 'airbnb-base',
   overrides: [
     {

@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 
-const registerRouter = require('./src/routes/registerRouter');
+const userRouter = require('./src/routes/userRouter');
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(express.static('src/public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
-app.use(registerRouter);
+app.use(userRouter);
 
 app.listen(3000, () => {
   // eslint-disable-next-line no-console

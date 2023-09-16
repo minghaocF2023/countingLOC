@@ -1,37 +1,14 @@
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
 
-const uri = 'mongodb+srv://fse-dev:fse-sb5-123@emergencysocialnetworkd.sycllnj.mongodb.net/';
-const client = new MongoClient(uri);
-const dbName = 'esndb';
+const DB_USERNAME = 'fse-dev';
+const DB_PASSWORD = 'fse-sb5-123';
+const DB_NAME = 'esndb';
+const uri = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@emergencysocialnetworkd.sycllnj.mongodb.net/${DB_NAME}`;
 
-let db;
+mongoose.connect(uri, {
+  useNewURLParser: true,
+  useUnifiedTopology: true,
+});
 
-async function connectDB() {
-  if (db) return db;
+module.exports = mongoose
 
-  try {
-    await client.connect();
-    db = client.db(dbName);
-    return db;
-  } catch (err) {
-    console.error('Failed to connect to MongoDB', err);
-  }
-
-  return null;
-}
-
-async function getDB() {
-  if (db) return db;
-  return connectDB();
-}
-
-async function closeDB() {
-  if (client.isConnected()) {
-    await client.close();
-  }
-}
-
-module.exports = {
-  getDB,
-  closeDB,
-};
