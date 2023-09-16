@@ -24,7 +24,7 @@ const userController = {
       return;
     }
     // validate password
-    if (req.body.pwd.length < 4) {
+    if (req.body.password.length < 4) {
       res.status(401);
       res.json({ message: 'Invalid Password' });
       return;
