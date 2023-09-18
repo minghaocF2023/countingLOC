@@ -16,7 +16,8 @@ const addToDataBaseAfterValidation = (inputUsername, inputPassword) => {
     .then((data) => {
       console.log(data.message);
       if (data.message === 'Registration success') {
-        alert('Registration success!');
+        alert('Registration success! Welcome to ESN System![REMINDER of Sharing Status: OK, Help, Emergency, and Undifined.]');
+        window.location.href = '/';
       } else {
         alert('Registration failed! Please try again.');
       }
@@ -57,9 +58,19 @@ if (registerButton) {
           alert('Invalid Password! Please change another one.');
           document.getElementById('password').value = '';
         }
+        // if (data.message === 'OK') {
+        //   alert('Are you sure you want to join communinty?');
+        //   addToDataBaseAfterValidation(inputUsername, inputPassword);
+        // }
         if (data.message === 'OK') {
-          addToDataBaseAfterValidation(inputUsername, inputPassword);
-        }
+          if (confirm('Are you sure you want to join the community?')) {
+              addToDataBaseAfterValidation(inputUsername, inputPassword);
+          } else {
+              // User pressed Cancel
+              console.log('Registration was canceled by the user.');
+          }
+      }
+      
       });
   });
 }
