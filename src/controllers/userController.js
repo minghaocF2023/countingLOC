@@ -24,7 +24,7 @@ const userController = {
     const duplicateValidation = await User.findOne({
       username: req.body.username,
     });
-
+  
     if (duplicateValidation !== null) {
       const hashedPassword = await encryptPassword(req.body.password, Buffer.from(duplicateValidation.salt, 'base64'));
       if (hashedPassword === duplicateValidation.password) {
