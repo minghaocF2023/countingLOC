@@ -2,6 +2,12 @@ const crypto = require('crypto');
 const User = require('../models/userModel');
 const BANNED_USERNAME = require('../utils/banned_username.json');
 
+/**
+ * Encrypt password with salt
+ * @param {string} password plaintext password
+ * @param {string} salt base64 encoded salt
+ * @returns base64 encoded hashed password
+ */
 const encryptPassword = (password, salt) => new Promise((resolve, reject) => {
   crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
     if (err) { reject(err); }
@@ -12,7 +18,7 @@ const encryptPassword = (password, salt) => new Promise((resolve, reject) => {
 const userController = {
   /**
   * Validate new user's username and password
-*/
+  */
   validateUser: async (req, res) => {
     // duplicate username check
     const duplicateValidation = await User.findOne({
