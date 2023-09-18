@@ -2,10 +2,17 @@ const crypto = require('crypto');
 const User = require('../models/userModel');
 const BANNED_USERNAME = require('../utils/banned_username.json');
 
+const encryptPassword = (password, salt) => new Promise((resolve, reject) => {
+  crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
+    if (err) { reject(err); }
+    resolve(hashedPassword.toString('base64'));
+  });
+});
+
 const userController = {
   /**
-   * Validate new user's username and password
-   */
+  * Validate new user's username and password
+*/
   validateUser: async (req, res) => {
     // duplicate username check
     const duplicateValidation = await User.findOne({
@@ -13,6 +20,12 @@ const userController = {
     });
 
     if (duplicateValidation !== null) {
+      const hashedPassword = await encryptPassword(req.body.password, Buffer.from(duplicateValidation.salt, 'base64'));
+      if (hashedPassword === duplicateValidation.password) {
+        res.status(200);
+        res.json({ message: 'login' });
+        return;
+      }
       res.status(409);
       res.json({ message: 'Duplicated User' });
       return;
@@ -32,7 +45,6 @@ const userController = {
 
     res.json({ message: 'OK' });
   },
-
   /**
    * Store new user username and password into database
    */
@@ -45,27 +57,24 @@ const userController = {
 
     // password encrypt
     const salt = crypto.randomBytes(16);
+    const hashedPassword = await encryptPassword(req.body.password, salt);
+    data.password = hashedPassword;
+    data.salt = salt.toString('base64');
 
-    crypto.pbkdf2(data.password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
-      if (err) { console.error(err); }
-      data.password = hashedPassword.toString('base64');
-      data.salt = salt.toString('base64');
+    const newUser = new User({
+      username: data.username,
+      password: data.password,
+      salt: data.salt,
+    });
 
-      const newUser = new User({
-        username: data.username,
-        password: data.password,
-        salt: data.salt,
-      });
-
-      // save to database
-      await newUser.save().then(() => {
-        res.status(200);
-        res.json({ message: 'Registration success' });
-      }).catch((e) => {
-        console.error(e);
-        res.status(500);
-        res.json({ message: 'Database error' });
-      });
+    // save to database
+    await newUser.save().then(() => {
+      res.status(200);
+      res.json({ message: 'Registration success' });
+    }).catch((e) => {
+      console.error(e);
+      res.status(500);
+      res.json({ message: 'Database error' });
     });
   },
 };
