@@ -19,10 +19,13 @@
   },
   "homepage": "https://github.com/cmusv-fse/18652-fse-f23-group-project-sb-5#readme",
   "devDependencies": {
+    "body-parser": "^1.20.2",
     "eslint": "^8.49.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.28.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
