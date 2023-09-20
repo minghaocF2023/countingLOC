@@ -32,7 +32,7 @@ if (registerButton) {
       alert('Please enter username and password');
       return;
     }
-    fetch('/api/users/validateUser', {
+    fetch('/api/users/validate', {
       method: 'POST',
       body: JSON.stringify({
         username: inputUsername,

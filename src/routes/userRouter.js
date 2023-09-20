@@ -30,7 +30,7 @@ router.get('/register', (req, res) => {
 
 /**
   * @swagger
-  * /api/users/validateUser:
+  * /api/users/validate:
   *   post:
   *     description: validate user
   *     tags: [Users]
@@ -47,7 +47,7 @@ router.get('/register', (req, res) => {
   *           type: object
   *           $ref: '#/components/schemas/User'
 */
-router.post('/api/users/validateUser', UserController.validateUser);
+router.post('/api/users/validate', UserController.validate);
 
 /**
   * @swagger

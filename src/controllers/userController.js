@@ -21,7 +21,7 @@ class UserController {
   /**
   * Validate new user's username and password
   */
-  static async validateUser(req, res) {
+  static async validate(req, res) {
     // duplicate username check
     const duplicateValidation = await User.findOne({
       username: req.body.username,
