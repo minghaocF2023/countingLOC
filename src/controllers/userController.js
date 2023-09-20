@@ -2,31 +2,33 @@ const crypto = require('crypto');
 const User = require('../models/userModel');
 const BANNED_USERNAME = require('../utils/banned_username.json');
 
-/**
- * Encrypt password with salt
- * @param {string} password plaintext password
- * @param {string} salt base64 encoded salt
- * @returns base64 encoded hashed password
- */
-const encryptPassword = (password, salt) => new Promise((resolve, reject) => {
-  crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
-    if (err) { reject(err); }
-    resolve(hashedPassword.toString('base64'));
-  });
-});
+class UserController {
+  /**
+   * Encrypt password with salt
+   * @param {string} password plaintext password
+   * @param {string} salt base64 encoded salt
+   * @returns base64 encoded hashed password
+   */
+  static encryptPassword(password, salt) {
+    return new Promise((resolve, reject) => {
+      crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
+        if (err) { reject(err); }
+        resolve(hashedPassword.toString('base64'));
+      });
+    });
+  }
 
-const userController = {
   /**
   * Validate new user's username and password
   */
-  validateUser: async (req, res) => {
+  static async validate(req, res) {
     // duplicate username check
     const duplicateValidation = await User.findOne({
       username: req.body.username,
     });
 
     if (duplicateValidation !== null) {
-      const hashedPassword = await encryptPassword(req.body.password, Buffer.from(duplicateValidation.salt, 'base64'));
+      const hashedPassword = await UserController.encryptPassword(req.body.password, Buffer.from(duplicateValidation.salt, 'base64'));
       if (hashedPassword === duplicateValidation.password) {
         res.status(200);
         res.json({ message: 'login' });
@@ -50,11 +52,12 @@ const userController = {
     }
 
     res.json({ message: 'OK' });
-  },
+  }
+
   /**
    * Store new user username and password into database
    */
-  registerUser: async (req, res) => {
+  static async registerUser(req, res) {
     const data = {
       username: req.body.username,
       password: req.body.password,
@@ -63,7 +66,7 @@ const userController = {
 
     // password encrypt
     const salt = crypto.randomBytes(16);
-    const hashedPassword = await encryptPassword(req.body.password, salt);
+    const hashedPassword = await UserController.encryptPassword(req.body.password, salt);
     data.password = hashedPassword;
     data.salt = salt.toString('base64');
 
@@ -82,7 +85,7 @@ const userController = {
       res.status(500);
       res.json({ message: 'Database error' });
     });
-  },
-};
+  }
+}
 
-module.exports = userController;
+module.exports = UserController;

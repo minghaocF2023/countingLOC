@@ -33,7 +33,7 @@ if (registerButton) {
       alert('Please enter username and password');
       return;
     }
-    fetch('/api/users/validateUser', {
+    fetch('/api/users/validate', {
       method: 'POST',
       body: JSON.stringify({
         username: inputUsername,
@@ -65,13 +65,12 @@ if (registerButton) {
         // }
         if (data.message === 'OK') {
           if (confirm('Are you sure you want to join the community?')) {
-              addToDataBaseAfterValidation(inputUsername, inputPassword);
+            addToDataBaseAfterValidation(inputUsername, inputPassword);
           } else {
-              // User pressed Cancel
-              console.log('Registration was canceled by the user.');
+            // User pressed Cancel
+            console.log('Registration was canceled by the user.');
           }
-      }
-      
+        }
       });
   });
 }
