@@ -10,11 +10,14 @@
   - EJS: A template system for generating web page dynamic data provided by Node.js.
   - CSS: For styling the frontend pages.
   - JavaScript: For implementation of interactive behaviors in web pages.
+  - Bootstrap: A well-known UI component dependency.
+  - JQuery: A great tool to simplify JavaScript code.
 ### Backend
   - Node.js: A powerful JavaScript-based runtime environment for building server-side application.
   - Express.js: A framework works on Node.js which makes easier to develop application's functionalities like routings and middlewares.
   - Passport.js: A middleware dependency for user authentication and authorization.
   - Socket.io: Provides event-based real-time communication between clients and server, for functions like dynamic status update.
+  - Swagger UI: For backend API documentation. 
 ### Database
   - MongoDB: A NoSQL database which is a great fit for Node.js, and it provides flexibility to change the database design.
 ### Development Tools
