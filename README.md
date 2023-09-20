@@ -13,8 +13,10 @@
 ```
 ├── src                     
 │   ├── controllers      # Responsible for handling incoming requests and returning responses.
+│   ├── models           # Models for objects.
 │   ├── public           # Contains static files.
 │   │   ├── js           # js
+│   │   ├── images       # images
 │   │   ├── css          # css
 │   ├── routes           # Contains router files used to route requests to controllers.
 │   ├── services         # Files with actual business logic used to access the database. 
