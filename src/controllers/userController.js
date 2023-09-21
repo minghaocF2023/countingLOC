@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const User = require('../models/userModel');
-const BANNED_USERNAME = require('../utils/banned_username.json');
+const BANNED_USERNAMES = require('../utils/banned_username.json');
 
 class UserController {
   /**
@@ -22,13 +22,16 @@ class UserController {
   * Validate new user's username and password
   */
   static async validate(req, res) {
+    const username = req.body.username.toLowerCase();
+    const { password } = req.body;
+    const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
     // duplicate username check
     const duplicateValidation = await User.findOne({
-      username: req.body.username,
+      username,
     });
 
     if (duplicateValidation !== null) {
-      const hashedPassword = await UserController.encryptPassword(req.body.password, Buffer.from(duplicateValidation.salt, 'base64'));
+      const hashedPassword = await UserController.encryptPassword(password, Buffer.from(duplicateValidation.salt, 'base64'));
       if (hashedPassword === duplicateValidation.password) {
         res.status(200);
         res.json({ message: 'login' });
@@ -39,7 +42,10 @@ class UserController {
       return;
     }
     // validate username
-    if ((req.body.username.length < 3) || BANNED_USERNAME.includes(req.body.username)) {
+    if (
+      (username.length < 3) || BANNED_USERNAMES.includes(username)
+      || (username.match(USERNAME_RULE) === null)
+    ) {
       res.status(401);
       res.json({ message: 'Invalid Username' });
       return;
@@ -59,22 +65,18 @@ class UserController {
    */
   static async registerUser(req, res) {
     const data = {
-      username: req.body.username,
+      username: req.body.username.toLowerCase(),
       password: req.body.password,
       salt: '',
     };
 
     // password encrypt
     const salt = crypto.randomBytes(16);
-    const hashedPassword = await UserController.encryptPassword(req.body.password, salt);
+    const hashedPassword = await UserController.encryptPassword(data.password, salt);
     data.password = hashedPassword;
     data.salt = salt.toString('base64');
 
-    const newUser = new User({
-      username: data.username,
-      password: data.password,
-      salt: data.salt,
-    });
+    const newUser = new User(data);
 
     // save to database
     await newUser.save().then(() => {
