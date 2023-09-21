@@ -6,14 +6,27 @@
 # Emergency Social Network
 > Author: Group SB5
 ## Technologies
-- Frontend: EJS, CSS, JavaScript
-- Backend: Node.js, Express.js, Passport.js
-- Database: MongoDB
+### Frontend 
+  - EJS: A template system for generating web page dynamic data provided by Node.js.
+  - CSS: For styling the frontend pages.
+  - JavaScript: For implementation of interactive behaviors in web pages.
+  - Bootstrap: A well-known UI component dependency.
+  - JQuery: A great tool to simplify JavaScript code.
+### Backend
+  - Node.js: A powerful JavaScript-based runtime environment for building server-side application.
+  - Express.js: A framework works on Node.js which makes easier to develop application's functionalities like routings and middlewares.
+  - Passport.js: A middleware dependency for user authentication and authorization.
+  - Socket.io: Provides event-based real-time communication between clients and server, for functions like dynamic status update.
+  - Swagger UI: For backend API documentation. 
+### Database
+  - MongoDB: A NoSQL database which is a great fit for Node.js, and it provides flexibility to change the database design.
+### Development Tools
+  - Nodemon: Automatically restarting the node application when file changes are detected.
 ## File Structure
 ```
 ├── src                     
 │   ├── controllers      # Responsible for handling incoming requests and returning responses.
-│   ├── models           # Models for objects.
+│   ├── models           # Models of objects.
 │   ├── public           # Contains static files.
 │   │   ├── js           # js
 │   │   ├── images       # images
