@@ -24,13 +24,11 @@ const UserController = require('../controllers/userController');
 
 const router = express.Router();
 
-router.get('/register', (req, res) => {
-  res.render('register');
-});
-
-router.get('/acknowledge', (req, res) => {
-  res.render('acknowledge');
-});
+router.get('/', UserController.getAllUsers);
+router.get('/:username', UserController.getUserByUsername);
+router.post('/', UserController.createUser);
+router.put('/:username/online', UserController.loginUser);
+router.put('/:username/offline', UserController.logoutUser);
 
 /**
   * @swagger
@@ -51,7 +49,7 @@ router.get('/acknowledge', (req, res) => {
   *           type: object
   *           $ref: '#/components/schemas/User'
 */
-router.post('/api/users/validate', UserController.validate);
+router.post('/validate', UserController.validate);
 
 /**
   * @swagger
@@ -72,6 +70,6 @@ router.post('/api/users/validate', UserController.validate);
   *           type: object
   *           $ref: '#/components/schemas/User'
 */
-router.post('/api/users/register', UserController.registerUser);
+router.post('/register', UserController.createUser);
 
 module.exports = router;

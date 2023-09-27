@@ -23,7 +23,7 @@ const options = {
     openapi: '3.1.0',
     info: {
       title: 'ESN Backend API',
-      version: '0.0.1',
+      version: '1.1.0',
       description:
         'This is a CRUD API application for FSE Emergency Social Network.',
       license: {
@@ -34,14 +34,15 @@ const options = {
     servers: [
       {
         url: 'http://localhost:3000',
+        description: 'Development server',
       },
     ],
   },
   apis: ['./src/routes/*.js'],
 };
 
-app.use(indexRouter);
-app.use(userRouter);
+app.use('/', indexRouter);
+app.use('/api/users/', userRouter);
 const specs = swaggerJsdoc(options);
 app.use(
   '/docs',

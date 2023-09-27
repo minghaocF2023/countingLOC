@@ -18,6 +18,30 @@ class UserController {
     });
   }
 
+  static async getAllUsers(req, res) {
+    const users = await User.find().select({ username: 1 });
+    res.json({ message: 'OK', users, banned_users: BANNED_USERNAMES });
+  }
+
+  static async getUserByUsername(req, res) {
+    const { username } = req.params;
+    const user = await User.findOne({ username }).select({ username: 1 });
+    res.json({ message: 'OK', user });
+    // TODO: error states
+  }
+
+  static async loginUser(req, res) {
+    const username = req.params.username.toLowerCase();
+    res.json({ message: 'Login success', user: username });
+    // TODO
+  }
+
+  static async logoutUser(req, res) {
+    const username = req.params.username.toLowerCase();
+    res.json({ message: 'Logout success', user: username });
+    // TODO
+  }
+
   /**
   * Validate new user's username and password
   */
@@ -63,7 +87,7 @@ class UserController {
   /**
    * Store new user username and password into database
    */
-  static async registerUser(req, res) {
+  static async createUser(req, res) {
     const data = {
       username: req.body.username.toLowerCase(),
       password: req.body.password,
