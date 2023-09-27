@@ -88,6 +88,7 @@ class UserController {
    * Store new user username and password into database
    */
   static async createUser(req, res) {
+    // TODO: validate username and password
     const data = {
       username: req.body.username.toLowerCase(),
       password: req.body.password,
