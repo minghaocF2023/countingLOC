@@ -7,6 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 
 const indexRouter = require('./src/routes/indexRouter');
 const userRouter = require('./src/routes/userRouter');
+const messageRouter = require('./src/routes/messageRouter');
 
 const app = express();
 
@@ -43,6 +44,8 @@ const options = {
 
 app.use('/', indexRouter);
 app.use('/api/users/', userRouter);
+app.use('/api/messages/', messageRouter);
+
 const specs = swaggerJsdoc(options);
 app.use(
   '/docs',
