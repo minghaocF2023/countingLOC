@@ -12,7 +12,7 @@ module.exports = {
         node: true,
       },
       files: [
-        '.eslintrc.{js,cjs}',
+        '.eslintrc.{js,mjs}',
       ],
       parserOptions: {
         sourceType: 'script',
@@ -25,5 +25,12 @@ module.exports = {
   rules: {
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'import/extensions': [
+      'error',
+      {
+        js: 'ignorePackages',
+        json: 'ignorePackages',
+      },
+    ],
   },
 };

@@ -1,14 +1,17 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable import/extensions */
 /* eslint-disable no-console */
-const express = require('express');
-const path = require('path');
-// const bodyParser = require('body-parser');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+import express from 'express';
+import path, { dirname } from 'path';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { fileURLToPath } from 'url';
+import indexRouter from './src/routes/indexRouter.js';
+import userRouter from './src/routes/userRouter.js';
+import messageRouter from './src/routes/messageRouter.js';
 
-const indexRouter = require('./src/routes/indexRouter');
-const userRouter = require('./src/routes/userRouter');
-const messageRouter = require('./src/routes/messageRouter');
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const app = express();
 
 app.use(express.json());
@@ -46,7 +49,7 @@ app.use('/', indexRouter);
 app.use('/api/users/', userRouter);
 app.use('/api/messages/', messageRouter);
 
-const specs = swaggerJsdoc(options);
+const specs = swaggerJSDoc(options);
 app.use(
   '/docs',
   swaggerUi.serve,
