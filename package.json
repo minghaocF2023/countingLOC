@@ -3,6 +3,7 @@
   "version": "1.1.0",
   "description": "ESN Application",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon app.js",
     "eslint": "eslint .",
@@ -20,7 +21,7 @@
   "homepage": "https://github.com/cmusv-fse/18652-fse-f23-group-project-sb-5#readme",
   "devDependencies": {
     "body-parser": "^1.20.2",
-    "eslint": "^8.49.0",
+    "eslint": "^8.50.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.28.1",
     "nodemon": "^3.0.1",

@@ -12,4 +12,4 @@ class MessageController {
   }
 }
 
-module.exports = MessageController;
+export default MessageController;

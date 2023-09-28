@@ -35,8 +35,8 @@
  *               example: 1970-01-01 00:00:00
  */
 
-const express = require('express');
-const MessageController = require('../controllers/messageController');
+import express from 'express';
+import MessageController from '../controllers/messageController.js';
 
 const router = express.Router();
 
@@ -120,4 +120,4 @@ router.get('/public', MessageController.getAllPublicMessages);
  */
 router.post('/public', MessageController.createPublicMessage);
 
-module.exports = router;
+export default router;

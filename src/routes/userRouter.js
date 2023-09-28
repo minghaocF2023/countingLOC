@@ -53,8 +53,8 @@
  *     example: testUser
  */
 
-const express = require('express');
-const UserController = require('../controllers/userController');
+import express from 'express';
+import UserController from '../controllers/userController.js';
 
 const router = express.Router();
 
@@ -312,4 +312,4 @@ router.post('/validate', UserController.validate);
 */
 router.post('/register', UserController.createUser);
 
-module.exports = router;
+export default router;
