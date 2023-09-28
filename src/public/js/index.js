@@ -62,7 +62,7 @@ if (registerButton) {
         //   addToDataBaseAfterValidation(inputUsername, inputPassword);
         // }
         if (data.message === 'OK') {
-          if (confirm('Are you sure you want to join the community?')) {
+          if (window.confirm('Are you sure you want to join the community?')) {
             addToDataBaseAfterValidation(inputUsername, inputPassword);
           } else {
             // User pressed Cancel
