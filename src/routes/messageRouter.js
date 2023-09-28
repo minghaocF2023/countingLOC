@@ -1,5 +1,5 @@
-const express = require('express');
-const MessageController = require('../controllers/messageController');
+import express from 'express';
+import MessageController from '../controllers/messageController.js';
 
 const router = express.Router();
 
@@ -33,4 +33,4 @@ router.get('/public/:username', MessageController.getPublicMessageByUsername);
  */
 router.post('/public', MessageController.createPublicMessage);
 
-module.exports = router;
+export default router;

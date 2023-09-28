@@ -1,6 +1,13 @@
-const crypto = require('crypto');
-const User = require('../models/userModel');
-const BANNED_USERNAMES = require('../utils/banned_username.json');
+/* eslint-disable no-underscore-dangle */
+import crypto from 'crypto';
+import * as fs from 'fs';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import User from '../models/userModel.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
 
 class UserController {
   /**
@@ -115,4 +122,4 @@ class UserController {
   }
 }
 
-module.exports = UserController;
+export default UserController;

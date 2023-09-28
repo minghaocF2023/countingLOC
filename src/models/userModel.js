@@ -1,4 +1,4 @@
-const mongoose = require('../services/db');
+import mongoose from '../services/db.js';
 // user class
 const UserSchema = new mongoose.Schema({
   username: {
@@ -17,6 +17,6 @@ const UserSchema = new mongoose.Schema({
   // TODO: status, isAdmin: false
 });
 
-const UserModel = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
 
-module.exports = UserModel;
+export default User;

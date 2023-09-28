@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const DB_USERNAME = 'fse-dev';
 const DB_PASSWORD = 'fse-sb5-123';
@@ -10,4 +10,4 @@ mongoose.connect(uri, {
   useUnifiedTopology: true,
 });
 
-module.exports = mongoose;
+export default mongoose;

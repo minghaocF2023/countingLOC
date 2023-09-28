@@ -17,8 +17,6 @@ const addToDataBaseAfterValidation = (inputUsername, inputPassword) => {
       console.log(data.message);
       if (data.message === 'Registration success') {
         window.location.href = '/acknowledge';
-        // alert('Registration success! Welcome to ESN System! \n[REMINDER of Sharing Status: OK, Help, Emergency, and Undifined.]');
-        // window.location.href = '/';
       } else {
         alert('Registration failed! Please try again.');
       }
