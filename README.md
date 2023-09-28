@@ -37,3 +37,5 @@
 ├── app.js               # main entry point
 └── package.json           
 ```
+## API Documentation
+Our [RESTful API](http://localhost:3000/docs) is documented using Swagger.io, offering an interactive interface for exploring the API and testing its capabilities.

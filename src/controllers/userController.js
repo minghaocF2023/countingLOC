@@ -26,13 +26,13 @@ class UserController {
   }
 
   static async getAllUsers(req, res) {
-    const users = await User.find().select({ username: 1 });
+    const users = (await User.find({})).map((user) => user.username);
     res.json({ message: 'OK', users, banned_users: BANNED_USERNAMES });
   }
 
   static async getUserByUsername(req, res) {
     const { username } = req.params;
-    const user = await User.findOne({ username }).select({ username: 1 });
+    const user = (await User.findOne({ username })).username;
     res.json({ message: 'OK', user });
     // TODO: error states
   }
