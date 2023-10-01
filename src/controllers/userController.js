@@ -1,13 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import crypto from 'crypto';
-import * as fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import User from '../models/userModel.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
 
 class UserController {
   /**
@@ -41,7 +34,7 @@ class UserController {
     await User.findOne({ username }).then((user) => {
       if (user === null) {
         res.status(404);
-        res.json({ message: BANNED_USERNAMES.includes(username) ? 'Banned username' : 'User not found' });
+        res.json({ message: User.isBannedUsername(username) ? 'Banned username' : 'User not found' });
       } else {
         res.status(200);
         res.json({ message: 'OK', user: user.username });
@@ -53,17 +46,18 @@ class UserController {
     });
   }
 
-  static async loginUser(req, res) {
-    const username = req.params.username.toLowerCase();
-    res.json({ message: 'Login success', user: username });
-    // TODO
-  }
+  // static async loginUser(req, res) {
+  //   const username = req.params.username.toLowerCase();
+  //   res.json({ message: 'Login success', user: username });
+  //   // TODO: Create token and response
+  //   // TODO: socket.io status change
+  // }
 
-  static async logoutUser(req, res) {
-    const username = req.params.username.toLowerCase();
-    res.json({ message: 'Logout success', user: username });
-    // TODO
-  }
+  // static async logoutUser(req, res) {
+  //   const username = req.params.username.toLowerCase();
+  //   res.json({ message: 'Logout success', user: username });
+  //   // TODO
+  // }
 
   /**
    * @deprecated
@@ -123,6 +117,12 @@ class UserController {
       password: req.body.password,
       salt: '',
     };
+    // validate username and password
+    if (!User.isValidUsername(data.username) || !User.isValidPassword(data.password)) {
+      res.status(400);
+      res.json({ message: 'Invalid request' });
+      return;
+    }
     // duplicate username check
     await User.findOne({ username: data.username }).then((user) => {
       if (user !== null) {

@@ -46,8 +46,8 @@ const options = {
 };
 
 app.use('/', indexRouter);
-app.use('/api/users/', userRouter);
-app.use('/api/messages/', messageRouter);
+app.use('/users/', userRouter);
+app.use('/messages/', messageRouter);
 
 const specs = swaggerJSDoc(options);
 app.use(

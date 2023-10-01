@@ -42,7 +42,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/messages/public:
+ * /messages/public:
  *   get:
  *     tags: [Messages]
  *     summary: Get all public messages
@@ -66,7 +66,7 @@ router.get('/public', MessageController.getAllPublicMessages);
 
 // /**
 //  * @swagger
-//  * /api/messages/public/{username}:
+//  * /messages/public/{username}:
 //  *   get:
 //  *     tags: [Messages]
 //  *     summary: Get all public messages sent by a user
@@ -76,7 +76,7 @@ router.get('/public', MessageController.getAllPublicMessages);
 
 /**
  * @swagger
- * /api/messages/public:
+ * /messages/public:
  *   post:
  *     tags: [Messages]
  *     summary: Post a new public message

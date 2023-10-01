@@ -58,12 +58,13 @@
 
 import express from 'express';
 import UserController from '../controllers/userController.js';
+import LoginController from '../controllers/loginController.js';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /api/users:
+ * /users:
  *   get:
  *     tags: [Users]
  *     summary: Get all users
@@ -93,7 +94,7 @@ router.get('/', UserController.getAllUsers);
 
 /**
  * @swagger
- * /api/users/{username}:
+ * /users/{username}:
  *   get:
  *     tags: [Users]
  *     summary: Get user by username
@@ -130,7 +131,7 @@ router.get('/:username', UserController.getUserByUsername);
 
 /**
  * @swagger
- * /api/users:
+ * /users:
  *   post:
  *     tags: [Users]
  *     summary: Create a new user
@@ -174,7 +175,7 @@ router.post('/', UserController.createUser);
 
 /**
  * @swagger
- * /api/users/{username}/online:
+ * /users/{username}/online:
  *   put:
  *     tags: [Users]
  *     summary: login
@@ -221,11 +222,11 @@ router.post('/', UserController.createUser);
  *             example:
  *               message: Incorrect username/password
  */
-router.put('/:username/online', UserController.loginUser);
+router.put('/:username/online', LoginController.loginUser);
 
 /**
  * @swagger
- * /api/users/{username}/offline:
+ * /users/{username}/offline:
  *   put:
  *     tags: [Users]
  *     summary: logout
@@ -269,11 +270,11 @@ router.put('/:username/online', UserController.loginUser);
  *             example:
  *               message: User not logged in
  */
-router.put('/:username/offline', UserController.logoutUser);
+router.put('/:username/offline', LoginController.logoutUser);
 
 /**
   * @swagger
-  * /api/users/validate:
+  * /users/validate:
   *   post:
   *     summary: validate new user information
   *     description: validate the username and password input from a new user
@@ -295,7 +296,7 @@ router.post('/validate', UserController.validate);
 
 /**
   * @swagger
-  * /api/users/register:
+  * /users/register:
   *   post:
   *     summary: register a new user
   *     description: Store new user's username and password into database
