@@ -7,9 +7,12 @@
  *       description: User's username
  *       example: testUser
  *     UserPassword:
- *        type: string
- *        description: User's password
- *        example: testPassword
+ *       type: string
+ *       description: User's password
+ *       example: testPassword
+ *     UserToken:
+ *       type: string
+ *       description: User's JWT token
  *     UsernameList:
  *       type: array
  *       description: List of usernames
@@ -199,8 +202,8 @@ router.post('/', UserController.createUser);
  *                - $ref: '#/components/schemas/Response'
  *                - type: object
  *                  properties:
- *                    user:
- *                      $ref: '#/components/schemas/Username'
+ *                    token:
+ *                      $ref: '#/components/schemas/UserToken'
  *       400:
  *         description: Invalid request
  *         content:
