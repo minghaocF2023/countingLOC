@@ -26,15 +26,31 @@ class UserController {
   }
 
   static async getAllUsers(req, res) {
-    const users = (await User.find({})).map((user) => user.username);
-    res.json({ message: 'OK', users, banned_users: BANNED_USERNAMES });
+    await User.find({}).then((users) => {
+      res.status(200);
+      res.json({ message: 'OK', users: users.map((user) => user.username), banned_users: BANNED_USERNAMES });
+    }).catch((e) => {
+      console.error(e);
+      res.status(500);
+      res.json({ message: 'Server error' });
+    });
   }
 
   static async getUserByUsername(req, res) {
-    const { username } = req.params;
-    const user = (await User.findOne({ username })).username;
-    res.json({ message: 'OK', user });
-    // TODO: error states
+    const username = req.params.username.toLowerCase();
+    await User.findOne({ username }).then((user) => {
+      if (user === null) {
+        res.status(404);
+        res.json({ message: BANNED_USERNAMES.includes(username) ? 'Banned username' : 'User not found' });
+      } else {
+        res.status(200);
+        res.json({ message: 'OK', user: user.username });
+      }
+    }).catch((e) => {
+      console.error(e);
+      res.status(500);
+      res.json({ message: 'Server error' });
+    });
   }
 
   static async loginUser(req, res) {
@@ -50,8 +66,9 @@ class UserController {
   }
 
   /**
-  * Validate new user's username and password
-  */
+   * @deprecated
+   * Validate new user's username and password
+   */
   static async validate(req, res) {
     const username = req.body.username.toLowerCase();
     const { password } = req.body;
@@ -95,13 +112,28 @@ class UserController {
    * Store new user username and password into database
    */
   static async createUser(req, res) {
-    // TODO: validate username and password
+    // validate request body
+    if (req.body.username === undefined || req.body.password === undefined) {
+      res.status(400);
+      res.json({ message: 'Invalid request' });
+      return;
+    }
     const data = {
       username: req.body.username.toLowerCase(),
       password: req.body.password,
       salt: '',
     };
-
+    // duplicate username check
+    await User.findOne({ username: data.username }).then((user) => {
+      if (user !== null) {
+        res.status(405);
+        res.json({ message: 'Duplicated username' });
+      }
+    }).catch((e) => {
+      console.error(e);
+      res.status(500);
+      res.json({ message: 'Server error' });
+    });
     // password encrypt
     const salt = crypto.randomBytes(16);
     const hashedPassword = await UserController.encryptPassword(data.password, salt);
@@ -112,8 +144,8 @@ class UserController {
 
     // save to database
     await newUser.save().then(() => {
-      res.status(200);
-      res.json({ message: 'Registration success' });
+      res.status(201);
+      res.json({ message: 'OK', token: 'placeholder' });
     }).catch((e) => {
       console.error(e);
       res.status(500);

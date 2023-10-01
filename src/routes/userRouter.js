@@ -151,8 +151,8 @@ router.get('/:username', UserController.getUserByUsername);
  *                - $ref: '#/components/schemas/Response'
  *                - type: object
  *                  properties:
- *                    user:
- *                      $ref: '#/components/schemas/Username'
+ *                    token:
+ *                      $ref: '#/components/schemas/UserToken'
  *       400:
  *         description: Invalid request
  *         content:
