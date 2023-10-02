@@ -1,26 +1,82 @@
 import crypto from 'crypto';
-import * as fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import User from '../models/userModel.js';
+import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
+const httpServer = createServer();
+const io = new Server(httpServer);
+
+const TOKEN_SECRET = "Some secret key";
+
+//socket io?
+io.on('connection', (socket) => {
+  console.log('A socket connected:', socket.id);
+
+  socket.on('userOnline', async (username) => {
+    socket.username = username;
+    console.log('userOnline:', username);
+    const user = await User.findOne({username: data.username});
+    await user.setOnline();
+    socket.broadcast('userOnline', username);
+  });
+
+  socket.on('disconnect', async () => {
+    console.log(`A user disconnected: ${socket.username} (${socket.id})`);
+    socket.broadcast('userOffline', username); 
+    const user = await User.findOne({username: data.username});
+    await user.setOffline();
+  });
+});
 
 class LoginController{
 
     static async loginUser(req, res) {
-        const username = req.params.username.toLowerCase();
-        res.json({ message: 'Login success', user: username });
+        // console.log("teat login");
+        if (!req.params.username || !req.body.password) {
+            res.status(400);
+            res.json({ message: 'Invalid request'});
+            return;
+        }
+        const data = {
+          username: req.params.username.toLowerCase(),
+          password: req.body.password,
+        };
+
+        if (!(await User.validate(...data))) {
+            res.status(404);
+            res.json({ message: 'Incorrect username/password'});
+            return;
+        }
+                
         // TODO: Create token and response
-        // TODO: socket.io status change
+        dotenv.config();
+        const token = jwt.sign(user.username, TOKEN_SECRET, {expiresIn: '3600s'});
+        
+        res.status(200);
+        res.json({ message: 'Login success', token });
       }
     
       static async logoutUser(req, res) {
+        if (!req.params.username) {
+            res.status(400);
+            res.json({ message: 'Invalid request'});
+            return;
+        }
         const username = req.params.username.toLowerCase();
-        res.json({ message: 'Logout success', user: username });
-        // TODO
+        const user = await User.findOne({ username });
+
+        if(!user){
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        if (!user.isOnline) {
+            res.status(405).json({ message: 'User not logged in' });
+            return;
+        }
+
+        await user.setOffline();
+        res.status(200).json({ message: 'OK', user: username });
       }
 
 }

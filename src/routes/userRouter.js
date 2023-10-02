@@ -222,6 +222,7 @@ router.post('/', UserController.createUser);
  *             example:
  *               message: Incorrect username/password
  */
+router.put('/login', LoginController.loginUser);
 router.put('/:username/online', LoginController.loginUser);
 
 /**
@@ -315,5 +316,6 @@ router.post('/validate', UserController.validate);
   *           $ref: '#/components/schemas/NewUser'
 */
 router.post('/register', UserController.createUser);
+
 
 export default router;

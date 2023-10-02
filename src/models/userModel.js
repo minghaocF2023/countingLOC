@@ -31,6 +31,34 @@ const __dirname = dirname(__filename);
 const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
 
 class User extends UserModel {
+
+  constructor(userModel) {
+    super(userModel);
+  }
+
+  static async find(...query) {
+    return (await super.find(...query)).map(user => new User(user));
+  }
+
+  static async findOne(...query) {
+    return new User(await super.findOne(...query));
+  }
+
+  /**
+   * Encrypt password with salt
+   * @param {string} password plaintext password
+   * @param {string} salt base64 encoded salt
+   * @returns base64 encoded hashed password
+   */
+  static encryptPassword(password, salt) {
+    return new Promise((resolve, reject) => {
+      crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
+        if (err) { reject(err); }
+        resolve(hashedPassword.toString('base64'));
+      });
+    });
+  }
+  
   static isBannedUsername(username) {
     return BANNED_USERNAMES.includes(username);
   }
@@ -51,6 +79,44 @@ class User extends UserModel {
 
   static async isValidPassword(password) {
     return password.length >= 4;
+  }
+
+  /**
+   * Check user credentials for login
+   * @param {string} username in lowercase
+   * @param {string} password plaintext password
+   */
+  static async validate(username, password) {
+    const user = await this.findOne({ username });
+    if (!user) {
+      return false;
+    }
+    const hashedPassword = await this.encryptPassword(password, user.salt);
+    return hashedPassword === user.password;
+  }
+
+  /**
+   * Set user online status
+   */
+  async setOnline(){
+    this.isOnline = true; 
+    await this.save();
+  }
+
+  /**
+   * Set user offline status
+   */
+  async setOffline(){
+    this.isOnline = false; 
+    await this.save();
+  }
+
+  static async retrieveOnlineUsers() {
+    return await this.find({ isOnline: true });
+  }
+
+  static async retrieveOfflineUsers() {
+    return await this.find({ isOnline: false });
   }
 }
 

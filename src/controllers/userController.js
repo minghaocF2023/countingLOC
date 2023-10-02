@@ -3,20 +3,6 @@ import crypto from 'crypto';
 import User from '../models/userModel.js';
 
 class UserController {
-  /**
-   * Encrypt password with salt
-   * @param {string} password plaintext password
-   * @param {string} salt base64 encoded salt
-   * @returns base64 encoded hashed password
-   */
-  static encryptPassword(password, salt) {
-    return new Promise((resolve, reject) => {
-      crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
-        if (err) { reject(err); }
-        resolve(hashedPassword.toString('base64'));
-      });
-    });
-  }
 
   static async getAllUsers(req, res) {
     await User.find({}).then((users) => {
@@ -73,10 +59,11 @@ class UserController {
     });
 
     if (duplicateValidation !== null) {
-      const hashedPassword = await UserController.encryptPassword(password, Buffer.from(duplicateValidation.salt, 'base64'));
+      const hashedPassword = await User.encryptPassword(password, Buffer.from(duplicateValidation.salt, 'base64'));
       if (hashedPassword === duplicateValidation.password) {
         res.status(200);
         res.json({ message: 'login' });
+        //TODO
         return;
       }
       res.status(409);
@@ -136,7 +123,7 @@ class UserController {
     });
     // password encrypt
     const salt = crypto.randomBytes(16);
-    const hashedPassword = await UserController.encryptPassword(data.password, salt);
+    const hashedPassword = await User.encryptPassword(data.password, salt);
     data.password = hashedPassword;
     data.salt = salt.toString('base64');
 
