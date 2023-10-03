@@ -36,7 +36,7 @@
  */
 
 import express from 'express';
-import MessageController from '../controllers/messageController.js';
+import PublicChatController from '../controllers/publicChatController.js';
 
 const router = express.Router();
 
@@ -62,7 +62,7 @@ const router = express.Router();
  *                       items:
  *                        $ref: '#/components/schemas/Message'
  */
-router.get('/public', MessageController.getAllPublicMessages);
+router.get('/public', PublicChatController.getLatestMessages);
 
 // /**
 //  * @swagger
@@ -118,6 +118,6 @@ router.get('/public', MessageController.getAllPublicMessages);
  *             example:
  *               message: User not found
  */
-router.post('/public', MessageController.createPublicMessage);
+router.post('/public', PublicChatController.postNew);
 
 export default router;

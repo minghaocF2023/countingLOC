@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import * as fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -31,17 +32,14 @@ const __dirname = dirname(__filename);
 const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
 
 class User extends UserModel {
-  constructor(userModel) {
-    super(userModel);
-  }
+  // static async find(...query) {
+  //   return (await super.find(...query)).map((user) => new User(user));
+  // }
 
-  static async find(...query) {
-    return (await super.find(...query)).map((user) => new User(user));
-  }
+  // static async findOne(...query) {
 
-  static async findOne(...query) {
-    return new User(await super.findOne(...query));
-  }
+  //   return new User(await super.findOne(...query));
+  // }
 
   /**
    * Encrypt password with salt
@@ -63,7 +61,7 @@ class User extends UserModel {
   }
 
   static async isUsernameTaken(username) {
-    return await this.exists({ username });
+    return this.exists({ username });
   }
 
   static async isValidUsername(username) {
@@ -87,12 +85,10 @@ class User extends UserModel {
    */
   static async validate(username, password) {
     const user = await this.findOne({ username });
-    console.log(` =======${user}}}`);
     if (!user) {
       return false;
     }
-    console.log(`Here~~~~~${user.username}`);
-    const hashedPassword = await this.encryptPassword(password, Buffer.from(user.salt));
+    const hashedPassword = await this.encryptPassword(password, Buffer.from(user.salt, 'base64'));
     return hashedPassword === user.password;
   }
 
@@ -113,11 +109,11 @@ class User extends UserModel {
   }
 
   static async retrieveOnlineUsers() {
-    return await this.find({ isOnline: true });
+    return this.find({ isOnline: true });
   }
 
   static async retrieveOfflineUsers() {
-    return await this.find({ isOnline: false });
+    return this.find({ isOnline: false });
   }
 }
 

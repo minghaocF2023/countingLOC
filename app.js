@@ -6,6 +6,7 @@ import path, { dirname } from 'path';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { fileURLToPath } from 'url';
+import { createServer } from 'http';
 import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
@@ -56,7 +57,8 @@ app.use(
   swaggerUi.setup(specs, { explorer: true }),
 );
 
-app.listen(3000, () => {
-  // eslint-disable-next-line no-console
-  console.log('Server started on port 3000');
-});
+const server = createServer(app);
+
+server.listen(3000, () => console.log(`Listening on port ${3000}`));
+
+export default server;

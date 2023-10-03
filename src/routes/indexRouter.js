@@ -20,6 +20,6 @@ router.get('/chat/public', (req, res) => {
 
 router.get('/esndirectory', (req, res) => {
   res.render('esndirectory');
-})
+});
 
 export default router;

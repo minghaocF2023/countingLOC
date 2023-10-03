@@ -317,5 +317,4 @@ router.post('/validate', UserController.validate);
 */
 router.post('/register', UserController.createUser);
 
-
 export default router;

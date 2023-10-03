@@ -3,7 +3,6 @@ import crypto from 'crypto';
 import User from '../models/userModel.js';
 
 class UserController {
-
   static async getAllUsers(req, res) {
     await User.find({}).then((users) => {
       res.status(200);
@@ -63,7 +62,7 @@ class UserController {
       if (hashedPassword === duplicateValidation.password) {
         res.status(200);
         res.json({ message: 'login' });
-        //TODO
+        // TODO
         return;
       }
       res.status(409);
