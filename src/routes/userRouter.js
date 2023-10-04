@@ -13,6 +13,21 @@
  *     UserToken:
  *       type: string
  *       description: User's JWT token
+ *     UserOnlineStatus:
+ *       type: boolean
+ *       example: false
+ *     User:
+ *       type: object
+ *       description: User entries for frontend
+ *       properties:
+ *         username:
+ *           $ref: '#/components/schemas/Username'
+ *         isOnline:
+ *           $ref: '#/components/schemas/UserOnlineStatus'
+ *     UserList:
+ *       type: array
+ *       items:
+ *         $ref: '#/components/schemas/User'
  *     UsernameList:
  *       type: array
  *       description: List of usernames
@@ -80,14 +95,17 @@ const router = express.Router();
  *                 - type: object
  *                   properties:
  *                     users:
- *                       $ref: '#/components/schemas/UsernameList'
+ *                       $ref: '#/components/schemas/UserList'
  *                       description: List of registered usernames
  *                     banned_users:
  *                       $ref: '#/components/schemas/UsernameList'
  *                       description: List of banned usernames
  *             example:
  *               message: OK
- *               users: [testUser1, testUser2]
+ *               users: [
+ *                 {username: testUser1, isOnline: true},
+ *                 {username: testUser2, isOnline: false}
+ *               ]
  *               banned_users: [bannedUser1, bannedUser2]
  */
 router.get('/', UserController.getAllUsers);
@@ -112,7 +130,7 @@ router.get('/', UserController.getAllUsers);
  *                 - type: object
  *                   properties:
  *                     user:
- *                       $ref: '#/components/schemas/Username'
+ *                       $ref: '#/components/schemas/User'
  *       404:
  *         description: Not a registered user
  *         content:
@@ -222,7 +240,6 @@ router.post('/', UserController.createUser);
  *             example:
  *               message: Incorrect username/password
  */
-router.put('/login', LoginController.loginUser);
 router.put('/:username/online', LoginController.loginUser);
 
 /**

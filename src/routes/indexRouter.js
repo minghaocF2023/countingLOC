@@ -14,12 +14,11 @@ router.get('/acknowledge', (req, res) => {
   res.render('acknowledge');
 });
 
-router.get('/chat/public', (req, res) => {
-  res.render('chat/public');
-});
-
 router.get('/esndirectory', (req, res) => {
   res.render('esndirectory');
 });
 
+router.get('/chatwall', (req, res) => {
+  res.render('chatwall');
+});
 export default router;

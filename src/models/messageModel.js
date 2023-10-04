@@ -9,7 +9,7 @@ const MessageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  timeStamp: {
+  timestamp: {
     type: Date,
     required: true,
     default: Date.now,
@@ -27,24 +27,24 @@ class PublicMessage extends MessageModel {
   //   super(text, senderName, timestamp, status);
   // }
 
-  static getText() {
+  getText() {
     return this.text;
   }
 
-  static getSenderName() {
+  getSenderName() {
     return this.senderName;
   }
 
-  static getTimestamp() {
+  getTimestamp() {
     return this.timestamp;
   }
 
-  static getStatus() {
+  getStatus() {
     return this.status;
   }
 
   static async getAllMessages() {
-    return this.find({ });
+    return this.find({});
   }
 }
 

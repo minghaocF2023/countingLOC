@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema({
   },
   isOnline: {
     type: Boolean,
+    default: false,
   },
   // TODO: status, isAdmin: false
 });
@@ -32,14 +33,13 @@ const __dirname = dirname(__filename);
 const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
 
 class User extends UserModel {
-  // static async find(...query) {
-  //   return (await super.find(...query)).map((user) => new User(user));
-  // }
+  static async get(...query) {
+    return this.find(...query).exec().then((users) => users.map((user) => new User(user)));
+  }
 
-  // static async findOne(...query) {
-
-  //   return new User(await super.findOne(...query));
-  // }
+  static async getOne(...query) {
+    return this.findOne(...query).exec().then((user) => new User(user));
+  }
 
   /**
    * Encrypt password with salt
@@ -47,7 +47,7 @@ class User extends UserModel {
    * @param {Buffer} salt base64 encoded salt
    * @returns base64 encoded hashed password
    */
-  static encryptPassword(password, salt) {
+  static async encryptPassword(password, salt) {
     return new Promise((resolve, reject) => {
       crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
         if (err) { reject(err); }
@@ -60,10 +60,21 @@ class User extends UserModel {
     return BANNED_USERNAMES.includes(username);
   }
 
+  /**
+   * Check if username is taken
+   * @param {string} username in lowercase
+   * @returns {boolean} true if username is taken
+   */
   static async isUsernameTaken(username) {
     return this.exists({ username });
   }
 
+  /**
+   * Create new user
+   * @param {string} username in lowercase
+   * @param {string} password plaintext password
+   * @returns {User} new user
+   */
   static async isValidUsername(username) {
     const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
     return (
@@ -74,7 +85,7 @@ class User extends UserModel {
     );
   }
 
-  static async isValidPassword(password) {
+  static isValidPassword(password) {
     return password.length >= 4;
   }
 
@@ -109,11 +120,11 @@ class User extends UserModel {
   }
 
   static async retrieveOnlineUsers() {
-    return this.find({ isOnline: true });
+    return this.get({ isOnline: true });
   }
 
   static async retrieveOfflineUsers() {
-    return this.find({ isOnline: false });
+    return this.get({ isOnline: false });
   }
 }
 

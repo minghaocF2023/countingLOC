@@ -6,12 +6,8 @@
  *       type: object
  *       description: New message
  *       required:
- *         - author
  *         - content
  *       properties:
- *         author:
- *           $ref: '#/components/schemas/Username'
- *           description: Message author
  *         content:
  *           type: string
  *           description: Message content
@@ -21,15 +17,14 @@
  *         - $ref: '#/components/schemas/NewMessage'
  *         - type: object
  *           properties:
- *             mid:
- *               type: string
- *               description: Message ID
- *               example: 650b635c9d39c281eac33bbf
+ *             senderName:
+ *               $ref: '#/components/schemas/Username'
+ *               description: Message author
  *             status:
  *               type: string
  *               description: Message status
  *               example: OK
- *             createdAt:
+ *             timestamp:
  *               type: string
  *               description: Message creation time
  *               example: 1970-01-01 00:00:00

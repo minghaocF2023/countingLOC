@@ -1,12 +1,25 @@
 /* eslint-disable no-underscore-dangle */
 import crypto from 'crypto';
 import User from '../models/userModel.js';
+import io from '../../app.js';
 
 class UserController {
+  socket = null;
+
+  constructor() {
+    io.on('connection', (socket) => {
+      this.socket = socket;
+    });
+  }
+
   static async getAllUsers(req, res) {
-    await User.find({}).then((users) => {
+    await User.get({}).then((users) => {
       res.status(200);
-      res.json({ message: 'OK', users: users.map((user) => user.username), banned_users: BANNED_USERNAMES });
+      res.json({
+        message: 'OK',
+        users: users.map(({ username, isOnline }) => ({ username, isOnline })),
+        banned_users: User.BANNED_USERNAMES,
+      });
     }).catch((e) => {
       console.error(e);
       res.status(500);
@@ -16,13 +29,13 @@ class UserController {
 
   static async getUserByUsername(req, res) {
     const username = req.params.username.toLowerCase();
-    await User.findOne({ username }).then((user) => {
+    await User.getOne({ username }).then((user) => {
       if (user === null) {
         res.status(404);
         res.json({ message: User.isBannedUsername(username) ? 'Banned username' : 'User not found' });
       } else {
         res.status(200);
-        res.json({ message: 'OK', user: user.username });
+        res.json({ message: 'OK', user: { username: user.username, isOnline: user.isOnline } });
       }
     }).catch((e) => {
       console.error(e);
@@ -53,7 +66,7 @@ class UserController {
     const { password } = req.body;
     const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
     // duplicate username check
-    const duplicateValidation = await User.findOne({
+    const duplicateValidation = await User.getOne({
       username,
     });
 
@@ -71,7 +84,7 @@ class UserController {
     }
     // validate username
     if (
-      (username.length < 3) || BANNED_USERNAMES.includes(username)
+      (username.length < 3) || User.BANNED_USERNAMES.includes(username)
       || (username.match(USERNAME_RULE) === null)
     ) {
       res.status(401);
@@ -104,22 +117,25 @@ class UserController {
       salt: '',
     };
     // validate username and password
-    if (!User.isValidUsername(data.username) || !User.isValidPassword(data.password)) {
+    if (!(await User.isValidUsername(data.username)) || !User.isValidPassword(data.password)) {
       res.status(400);
       res.json({ message: 'Invalid request' });
       return;
     }
     // duplicate username check
-    await User.findOne({ username: data.username }).then((user) => {
+    try {
+      const user = await User.getOne({ username: data.username });
       if (user !== null) {
         res.status(405);
         res.json({ message: 'Duplicated username' });
+        return;
       }
-    }).catch((e) => {
+    } catch (e) {
       console.error(e);
       res.status(500);
       res.json({ message: 'Server error' });
-    });
+      return;
+    }
     // password encrypt
     const salt = crypto.randomBytes(16);
     const hashedPassword = await User.encryptPassword(data.password, salt);
