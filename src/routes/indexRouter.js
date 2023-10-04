@@ -22,4 +22,8 @@ router.get('/chatwall', (req, res) => {
   res.render('chatwall');
 });
 
+// router.get('/messages/public', (req, res) => {
+//   res.render('chatwall');
+// });
+
 export default router;

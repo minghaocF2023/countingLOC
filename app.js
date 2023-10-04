@@ -62,6 +62,10 @@ const options = {
         description: 'Development server',
       },
       {
+        url: 'http://esn.xuyunxiao.top',
+        description: 'Remote Development server',
+      },
+      {
         url: 'http://172.29.92.57:3000',
         description: 'Leo server',
       },

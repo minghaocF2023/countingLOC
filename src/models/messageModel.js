@@ -23,9 +23,6 @@ const MessageSchema = new mongoose.Schema({
 const MessageModel = mongoose.model('Message', MessageSchema);
 
 class PublicMessage extends MessageModel {
-  // constructor(text, senderName, timestamp, status) {
-  //   super(text, senderName, timestamp, status);
-  // }
 
   getText() {
     return this.text;
@@ -43,8 +40,12 @@ class PublicMessage extends MessageModel {
     return this.status;
   }
 
+  /**
+   * Get all messages from the database
+   * @returns {Promise<Message[]>} A promise that resolves to an array of Message's
+   */
   static async getAllMessages() {
-    return this.find({});
+    return this.find({}).then((msgs) => msgs.map((msg) => new Message(msg)));
   }
 }
 

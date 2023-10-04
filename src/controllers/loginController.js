@@ -6,32 +6,11 @@ import { createServer } from 'http';
 import User from '../models/userModel.js';
 import socketServer from '../../app.js';
 
-// const httpServer = createServer();
-// const io = new Server(httpServer);
+dotenv.config();
+const TOKEN_SECRET = 'Some secret keys';
 
-// const io = socket;
-
-const TOKEN_SECRET = 'Some secret key';
 
 const onlineList = {};
-
-// socket io?
-// io.on('connection', (socket) => {
-//   console.log('A socket connected:', socket.id);
-//   socket.on('userOnline', async (username) => {
-//     console.log('userOnline:', username);
-//     const user = await User.findOne({ username: data.username });
-//     await user.setOnline();
-//     socket.broadcast('userOnline', username);
-//   });
-
-//   socket.on('disconnect', async () => {
-//     console.log(`A user disconnected: ${socket.username} (${socket.id})`);
-//     socket.broadcast('userOffline', username);
-//     const user = await User.findOne({ username: data.username });
-//     await user.setOffline();
-//   });
-// });
 
 class LoginController {
   socket = null;
@@ -42,8 +21,19 @@ class LoginController {
     });
   }
 
+  async populateOnlineList() {
+    try {
+      const users = await User.get(); 
+      users.forEach(user => {
+        onlineList[user.username] = user.isOnline;
+      });
+      // console.log(onlineList); 
+    } catch (error) {
+      console.error('Error populating online list:', error);
+    }
+  }
+
   static async loginUser(req, res) {
-    // console.log("teat login");
     if (!req.params.username || !req.body.password) {
       res.status(400);
       res.json({ message: 'Invalid request' });
@@ -60,18 +50,16 @@ class LoginController {
       return;
     }
 
-    // TODO: Create token and response
-    dotenv.config();
-    // process.env.TOKEN_SECRET;
+
     const payload = { username: data.username };
     const token = jwt.sign(payload, TOKEN_SECRET, { expiresIn: '3600s' });
     const username = req.params.username.toLowerCase();
-    const user = await User.findOne({ username });
+    const user = await User.getOne({ username });
 
-    // can this pass to frontend?
+    // pass to socket
     await user.setOnline();
     onlineList[data.username] = true;
-    // io.emit('userOnlineStatus', { username: data.username, isOnline: true });
+   
     socketServer.publishEvent('userOnlineStatus', { username: data.username, isOnline: true });
 
     res.status(200);
@@ -90,7 +78,7 @@ class LoginController {
     // update onlineList
     await user.setOffline();
     onlineList[username] = false;
-    socketServer.emit('userOnlineStatus', { username, isOnline: false });
+    socketServer.publishEvent('userOnlineStatus', { username, isOnline: false });
 
     if (!user) {
       res.status(404).json({ message: 'User not found' });
@@ -100,8 +88,6 @@ class LoginController {
       res.status(405).json({ message: 'User not logged in' });
     }
 
-    // await user.setOffline();
-    // res.status(200).json({ message: 'OK', user: username });
   }
 }
 

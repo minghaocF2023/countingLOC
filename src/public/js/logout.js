@@ -5,3 +5,8 @@ const userLogout = (username) => {
     console.log(res);
   });
 };
+
+$("#logout").on("click",()=>{
+  console.log("logout")
+  userLogout(localStorage.getItem("username"))
+})

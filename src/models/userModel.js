@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema({
   },
   isOnline: {
     type: Boolean,
+    required: true,
     default: false,
   },
   // TODO: status, isAdmin: false
@@ -33,21 +34,35 @@ const __dirname = dirname(__filename);
 const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
 
 class User extends UserModel {
-  static async get(...query) {
-    return this.find(...query).exec().then((users) => users.map((user) => new User(user)));
-  }
-
-  static async getOne(...query) {
-    return this.findOne(...query).exec().then((user) => new User(user));
+  /**
+   * Get all users
+   * @param {mongoose.FilterQuery} filter
+   * @param {mongoose.ProjectionType=} projection
+   * @param {mongoose.QueryOptions=} options
+   * @returns {User[]} array of users
+   */
+  static async get(filter, projection, options) {
+    return this.find(filter, projection, options).then((users) => users.map((user) => new User(user)));
   }
 
   /**
-   * Encrypt password with salt
+   * Get one user
+   * @param {mongoose.FilterQuery} filter
+   * @param {mongoose.ProjectionType=} projection
+   * @param {mongoose.QueryOptions=} options
+   * @returns {User | null} user
+   */
+  static async getOne(filter, projection, options) {
+    return this.findOne(filter, projection, options).then((user) => user ? new User(user): null);
+  }
+
+  /**
+   * Hash password with salt
    * @param {string} password plaintext password
    * @param {Buffer} salt base64 encoded salt
    * @returns base64 encoded hashed password
    */
-  static async encryptPassword(password, salt) {
+  static async hashPassword(password, salt) {
     return new Promise((resolve, reject) => {
       crypto.pbkdf2(password, salt, 310000, 32, 'sha256', async (err, hashedPassword) => {
         if (err) { reject(err); }
@@ -56,6 +71,11 @@ class User extends UserModel {
     });
   }
 
+  /**
+   * Check if username is banned
+   * @param {string} username in lowercase
+   * @returns {boolean} true if username is banned
+   */
   static isBannedUsername(username) {
     return BANNED_USERNAMES.includes(username);
   }
@@ -70,10 +90,10 @@ class User extends UserModel {
   }
 
   /**
-   * Create new user
+   * Check if username is valid and available for registration
    * @param {string} username in lowercase
    * @param {string} password plaintext password
-   * @returns {User} new user
+   * @returns {boolean} true if username is valid and available for registration
    */
   static async isValidUsername(username) {
     const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
@@ -85,21 +105,27 @@ class User extends UserModel {
     );
   }
 
+  /**
+   * Check if password is valid
+   * @param {string} password plaintext password
+   * @returns {boolean} true if password is valid
+   */
   static isValidPassword(password) {
     return password.length >= 4;
   }
 
   /**
-   * Check user credentials for login
+   * Validate user credentials for login
    * @param {string} username in lowercase
    * @param {string} password plaintext password
+   * @returns {boolean} true if username and password match an existing user
    */
   static async validate(username, password) {
     const user = await this.findOne({ username });
     if (!user) {
       return false;
     }
-    const hashedPassword = await this.encryptPassword(password, Buffer.from(user.salt, 'base64'));
+    const hashedPassword = await this.hashPassword(password, Buffer.from(user.salt, 'base64'));
     return hashedPassword === user.password;
   }
 
@@ -119,10 +145,18 @@ class User extends UserModel {
     await this.save();
   }
 
+  /**
+   * Get all online users
+   * @returns {User[]} array of online users
+   */
   static async retrieveOnlineUsers() {
     return this.get({ isOnline: true });
   }
 
+  /**
+   * Get all offline users
+   * @returns {User[]} array of offline users
+   */
   static async retrieveOfflineUsers() {
     return this.get({ isOnline: false });
   }

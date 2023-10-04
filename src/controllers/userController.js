@@ -44,19 +44,6 @@ class UserController {
     });
   }
 
-  // static async loginUser(req, res) {
-  //   const username = req.params.username.toLowerCase();
-  //   res.json({ message: 'Login success', user: username });
-  //   // TODO: Create token and response
-  //   // TODO: socket.io status change
-  // }
-
-  // static async logoutUser(req, res) {
-  //   const username = req.params.username.toLowerCase();
-  //   res.json({ message: 'Logout success', user: username });
-  //   // TODO
-  // }
-
   /**
    * @deprecated
    * Validate new user's username and password
@@ -71,7 +58,7 @@ class UserController {
     });
 
     if (duplicateValidation !== null) {
-      const hashedPassword = await User.encryptPassword(password, Buffer.from(duplicateValidation.salt, 'base64'));
+      const hashedPassword = await User.hashPassword(password, Buffer.from(duplicateValidation.salt, 'base64'));
       if (hashedPassword === duplicateValidation.password) {
         res.status(200);
         res.json({ message: 'login' });
@@ -138,7 +125,7 @@ class UserController {
     }
     // password encrypt
     const salt = crypto.randomBytes(16);
-    const hashedPassword = await User.encryptPassword(data.password, salt);
+    const hashedPassword = await User.hashPassword(data.password, salt);
     data.password = hashedPassword;
     data.salt = salt.toString('base64');
 
