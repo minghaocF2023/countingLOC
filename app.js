@@ -28,7 +28,6 @@ app.set('views', path.join(__dirname, 'src/views'));
 
 const options = {
   definition: {
-
     openapi: '3.1.0',
     info: {
       title: 'ESN Backend API',
@@ -42,7 +41,7 @@ const options = {
     },
     components: {
       securitySchemes: {
-        Authorization: {
+        bearerAuth: {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
@@ -50,7 +49,6 @@ const options = {
         },
       },
     },
-
     security: [
       {
         bearerAuth: [],
@@ -71,7 +69,6 @@ const options = {
       },
     ],
   },
-
   apis: ['./src/routes/*.js'],
 };
 
@@ -100,3 +97,4 @@ const socketServer = new SocketServer(io);
 server.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
 
 export default socketServer;
+export { socketServer };

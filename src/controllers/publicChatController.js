@@ -1,13 +1,18 @@
-import { Server } from 'socket.io';
-import http from 'http';
+// import { Server } from 'socket.io';
+// import http from 'http';
 import jwt from 'jsonwebtoken';
 import PublicMessage from '../models/messageModel.js';
-import socketServer from '../../app.js';
+import { socketServer } from '../../app.js';
 
 const TOKEN_SECRET = 'Some secret keys';
 
 // const httpServer = http.createServer();
 // const io = new Server(httpServer);
+
+/**
+ * Validate JWT token
+ * @param {string} token JWT token
+ */
 const validateToken = (token) => {
   jwt.verify(token, TOKEN_SECRET);
 };
@@ -26,29 +31,29 @@ const validateToken = (token) => {
  */
 
 class publicChatController {
-  socket = null;
+  // constructor() {
+  //   socketServer.on('connection', (socket) => {
+  //     this.socket = socket;
+  //   });
+  // }
 
-  constructor() {
-    socketServer.on('connection', (socket) => {
-      this.socket = socket;
-    });
-  }
-  
-  //get previous messages
+  /**
+   * Get all history messages
+   */
   static async getLatestMessages(req, res) {
-    if(!req.headers.authorization){
-      res.status(403).json({message: "Empty token"});
+    if (!req.headers.authorization) {
+      res.status(403).json({ message: 'Empty token' });
     }
-    console.log("Token: "+req.headers.authorization.split(" ")[1]);
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-  
-    validateToken(req.headers.authorization.split(" ")[1]);
-    //sort messages by timestamp
+    console.log(`Token: ${req.headers.authorization.split(' ')[1]}`);
+    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+
+    validateToken(req.headers.authorization.split(' ')[1]);
+    // sort messages by timestamp
     const messages = await PublicMessage.find().sort({ timeStamp: -1 });
     res.status(200).json({ success: true, data: messages });
   }
 
-  //post new messages
+  // post new messages
   static async postNew(req, res) {
     validateToken(req.headers.authorization);
 
@@ -68,6 +73,5 @@ class publicChatController {
 
     res.status(201).json({ success: true, data: newMessage });
   }
-
 }
 export default publicChatController;

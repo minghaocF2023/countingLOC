@@ -1,9 +1,9 @@
-/* eslint-disable no-underscore-dangle */
 import * as fs from 'fs';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import mongoose from '../services/db.js';
+
 // user class
 const UserSchema = new mongoose.Schema({
   username: {
@@ -29,38 +29,41 @@ const UserSchema = new mongoose.Schema({
 
 const UserModel = mongoose.model('User', UserSchema);
 
+// eslint-disable-next-line no-underscore-dangle
 const __filename = fileURLToPath(import.meta.url);
+// eslint-disable-next-line no-underscore-dangle
 const __dirname = dirname(__filename);
 const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
 
 class User extends UserModel {
   /**
    * Get all users
-   * @param {mongoose.FilterQuery} filter
-   * @param {mongoose.ProjectionType=} projection
-   * @param {mongoose.QueryOptions=} options
-   * @returns {User[]} array of users
+   * @param {mongoose.FilterQuery<User>} filter
+   * @param {mongoose.ProjectionType<User>?=} projection
+   * @param {mongoose.QueryOptions<User>?=} options
+   * @returns {Promise<User[]>} array of users
    */
   static async get(filter, projection, options) {
-    return this.find(filter, projection, options).then((users) => users.map((user) => new User(user)));
+    return this.find(filter, projection, options)
+      .then((users) => users.map((user) => new User(user)));
   }
 
   /**
    * Get one user
-   * @param {mongoose.FilterQuery} filter
-   * @param {mongoose.ProjectionType=} projection
-   * @param {mongoose.QueryOptions=} options
-   * @returns {User | null} user
+   * @param {mongoose.FilterQuery<User>?} filter
+   * @param {mongoose.ProjectionType<User>?=} projection
+   * @param {mongoose.QueryOptions<User>?=} options
+   * @returns {Promise<User | null>} user
    */
   static async getOne(filter, projection, options) {
-    return this.findOne(filter, projection, options).then((user) => user ? new User(user): null);
+    return this.findOne(filter, projection, options).then((user) => (user ? new User(user) : null));
   }
 
   /**
    * Hash password with salt
    * @param {string} password plaintext password
    * @param {Buffer} salt base64 encoded salt
-   * @returns base64 encoded hashed password
+   * @returns {Promise<string>} base64 encoded hashed password
    */
   static async hashPassword(password, salt) {
     return new Promise((resolve, reject) => {
@@ -83,24 +86,23 @@ class User extends UserModel {
   /**
    * Check if username is taken
    * @param {string} username in lowercase
-   * @returns {boolean} true if username is taken
+   * @returns {Promise<boolean>} true if username is taken
    */
   static async isUsernameTaken(username) {
     return this.exists({ username });
   }
 
   /**
-   * Check if username is valid and available for registration
+   * Check if username is valid for registration. Does not check if username is taken.
    * @param {string} username in lowercase
    * @param {string} password plaintext password
-   * @returns {boolean} true if username is valid and available for registration
+   * @returns {boolean} true if username is valid according to rules
    */
-  static async isValidUsername(username) {
+  static isValidUsername(username) {
     const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
     return (
       username.length >= 3
       && !this.isBannedUsername(username)
-      && !(await this.isUsernameTaken(username))
       && USERNAME_RULE.test(username)
     );
   }
@@ -118,7 +120,7 @@ class User extends UserModel {
    * Validate user credentials for login
    * @param {string} username in lowercase
    * @param {string} password plaintext password
-   * @returns {boolean} true if username and password match an existing user
+   * @returns {Promise<boolean>} true if username and password match an existing user
    */
   static async validate(username, password) {
     const user = await this.findOne({ username });

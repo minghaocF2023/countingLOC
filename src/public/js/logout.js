@@ -6,7 +6,7 @@ const userLogout = (username) => {
   });
 };
 
-$("#logout").on("click",()=>{
-  console.log("logout")
-  userLogout(localStorage.getItem("username"))
-})
+$('#logout').on('click', () => {
+  console.log('logout');
+  userLogout(localStorage.getItem('username'));
+});

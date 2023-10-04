@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const newBlock = (username, status) => {
-  let statusStr = status ? 'online' : 'offline';
+  const statusStr = status ? 'online' : 'offline';
   // if (status === true) {
   //   statusStr = 'online';
   // } else {
@@ -18,7 +18,7 @@ const newBlock = (username, status) => {
   const div = document.createElement('div');
   div.id = username;
   div.className = 'card mb-3 user-card';
-  div.innerHTML = `<div class="card-body">`
+  div.innerHTML = '<div class="card-body">'
     + `<h5 class="card-title">${username}</h5>`
     + `<p class="card-text"><span class="status ${statusStr}">${statusStr}</span></p>`
     + '</div>'
@@ -26,9 +26,7 @@ const newBlock = (username, status) => {
   return div;
 };
 
-const compareString = (a, b) => {
-  return a.localeCompare(b);
-}
+const compareString = (a, b) => a.localeCompare(b);
 
 const appendNewUser = (div, username, isOnline) => {
   // user already in div
@@ -41,38 +39,35 @@ const appendNewUser = (div, username, isOnline) => {
   const newList = div.children();
   const newUser = newBlock(username, isOnline);
   newList.push(newUser);
-  // sort 
-  newList.sort((a,b) => compareString(a.id, b.id));
+  // sort
+  newList.sort((a, b) => compareString(a.id, b.id));
   div.empty();
   div.append(newList);
-}
+};
 
 const connectSocket = () => {
   const socket = io();
   socket.emit('username', localStorage.getItem('username'));
-  console.log("connect socket")
-  socket.on("userOnlineStatus",(msg)=>{
-    console.log("someone login:" + msg.username + " " +msg.isOnline)
+  console.log('connect socket');
+  socket.on('userOnlineStatus', (msg) => {
+    console.log(`someone login:${msg.username} ${msg.isOnline}`);
 
-    const onlineListDiv = $("#online-user-list");
-    const offlineListDiv = $("#offline-user-list");
+    const onlineListDiv = $('#online-user-list');
+    const offlineListDiv = $('#offline-user-list');
 
-    appendNewUser(msg.isOnline?onlineListDiv:offlineListDiv, msg.username, msg.isOnline);
-  })
+    appendNewUser(msg.isOnline ? onlineListDiv : offlineListDiv, msg.username, msg.isOnline);
+  });
 };
 
-const compareByUsername = (a, b)=> {
-  return a.username.localeCompare(b.username);
-}
-
+const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
 $(window).on('load', () => {
   connectSocket();
   axios.get('/users').then((res) => {
-    let userStatus = res.data.users.sort(compareByUsername);
-    console.log("sort");
-    let onlineList = [];
-    let offlineList = [];
+    const userStatus = res.data.users.sort(compareByUsername);
+    console.log('sort');
+    const onlineList = [];
+    const offlineList = [];
     userStatus.forEach((element) => {
       if (element.isOnline === true) {
         onlineList.push(newBlock(element.username, element.isOnline));

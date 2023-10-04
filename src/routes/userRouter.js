@@ -290,48 +290,48 @@ router.put('/:username/online', LoginController.loginUser);
  */
 router.put('/:username/offline', LoginController.logoutUser);
 
-/**
-  * @swagger
-  * /users/validate:
-  *   post:
-  *     summary: validate new user information
-  *     description: validate the username and password input from a new user
-  *     tags: [obsolete]
-  *     requestBody:
-  *       required: true
-  *       content:
-  *         application/json:
-  *           schema:
-  *             $ref: '#/components/schemas/NewUser'
-  *     responses:
-  *       200:
-  *         description: validation success
-  *         schema:
-  *           type: object
-  *           $ref: '#/components/schemas/NewUser'
-*/
-router.post('/validate', UserController.validate);
+// /**
+//   * @swagger
+//   * /users/validate:
+//   *   post:
+//   *     summary: validate new user information
+//   *     description: validate the username and password input from a new user
+//   *     tags: [obsolete]
+//   *     requestBody:
+//   *       required: true
+//   *       content:
+//   *         application/json:
+//   *           schema:
+//   *             $ref: '#/components/schemas/NewUser'
+//   *     responses:
+//   *       200:
+//   *         description: validation success
+//   *         schema:
+//   *           type: object
+//   *           $ref: '#/components/schemas/NewUser'
+// */
+// router.post('/validate', UserController.validate);
 
-/**
-  * @swagger
-  * /users/register:
-  *   post:
-  *     summary: register a new user
-  *     description: Store new user's username and password into database
-  *     tags: [obsolete]
-  *     requestBody:
-  *       required: true
-  *       content:
-  *         application/json:
-  *           schema:
-  *             $ref: '#/components/schemas/NewUser'
-  *     responses:
-  *       200:
-  *         description: registration success
-  *         schema:
-  *           type: object
-  *           $ref: '#/components/schemas/NewUser'
-*/
-router.post('/register', UserController.createUser);
+// /**
+//   * @swagger
+//   * /users/register:
+//   *   post:
+//   *     summary: register a new user
+//   *     description: Store new user's username and password into database
+//   *     tags: [obsolete]
+//   *     requestBody:
+//   *       required: true
+//   *       content:
+//   *         application/json:
+//   *           schema:
+//   *             $ref: '#/components/schemas/NewUser'
+//   *     responses:
+//   *       200:
+//   *         description: registration success
+//   *         schema:
+//   *           type: object
+//   *           $ref: '#/components/schemas/NewUser'
+// */
+// router.post('/register', UserController.createUser);
 
 export default router;

@@ -1,6 +1,6 @@
 import mongoose from '../services/db.js';
 
-const MessageSchema = new mongoose.Schema({
+const PublicMessageSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
@@ -20,10 +20,9 @@ const MessageSchema = new mongoose.Schema({
   },
 });
 
-const MessageModel = mongoose.model('Message', MessageSchema);
+const PublicMessageModel = mongoose.model('PublicMessage', PublicMessageSchema);
 
-class PublicMessage extends MessageModel {
-
+class PublicMessage extends PublicMessageModel {
   getText() {
     return this.text;
   }
@@ -45,7 +44,7 @@ class PublicMessage extends MessageModel {
    * @returns {Promise<Message[]>} A promise that resolves to an array of Message's
    */
   static async getAllMessages() {
-    return this.find({}).then((msgs) => msgs.map((msg) => new Message(msg)));
+    return this.find({}).then((msgs) => msgs.map((msg) => new PublicMessage(msg)));
   }
 }
 

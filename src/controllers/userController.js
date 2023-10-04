@@ -1,18 +1,16 @@
-/* eslint-disable no-underscore-dangle */
 import crypto from 'crypto';
 import User from '../models/userModel.js';
-import socketServer from '../../app.js';
+import LoginController from './loginController.js';
+// import { socketServer } from '../../app.js';
 
 class UserController {
-  socket = null;
+  // constructor() {
+  //   socketServer.on('connection', (socket) => {
+  //     this.socket = socket;
+  //   });
+  // }
 
-  constructor() {
-    socketServer.on('connection', (socket) => {
-      this.socket = socket;
-    });
-  }
-
-  static async getAllUsers(req, res) {
+  static async getAllUsers(_req, res) {
     await User.get({}).then((users) => {
       res.status(200);
       res.json({
@@ -44,49 +42,51 @@ class UserController {
     });
   }
 
-  /**
-   * @deprecated
-   * Validate new user's username and password
-   */
-  static async validate(req, res) {
-    const username = req.body.username.toLowerCase();
-    const { password } = req.body;
-    const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
-    // duplicate username check
-    const duplicateValidation = await User.getOne({
-      username,
-    });
+  // /**
+  //  * @deprecated
+  //  * Validate new user's username and password
+  //  */
+  // static async validate(req, res) {
+  //   const username = req.body.username.toLowerCase();
+  //   const { password } = req.body;
+  //   const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
+  //   // duplicate username check
+  //   const duplicateValidation = await User.getOne({
+  //     username,
+  //   });
 
-    if (duplicateValidation !== null) {
-      const hashedPassword = await User.hashPassword(password, Buffer.from(duplicateValidation.salt, 'base64'));
-      if (hashedPassword === duplicateValidation.password) {
-        res.status(200);
-        res.json({ message: 'login' });
-        // TODO
-        return;
-      }
-      res.status(409);
-      res.json({ message: 'Duplicated User' });
-      return;
-    }
-    // validate username
-    if (
-      (username.length < 3) || User.BANNED_USERNAMES.includes(username)
-      || (username.match(USERNAME_RULE) === null)
-    ) {
-      res.status(401);
-      res.json({ message: 'Invalid Username' });
-      return;
-    }
-    // validate password
-    if (req.body.password.length < 4) {
-      res.status(401);
-      res.json({ message: 'Invalid Password' });
-      return;
-    }
-
-    res.json({ message: 'OK' });
-  }
+  //   if (duplicateValidation !== null) {
+  //     const hashedPassword = await User.hashPassword(
+  //       password,
+  //       Buffer.from(duplicateValidation.salt,'base64'),
+  //     );
+  //     if (hashedPassword === duplicateValidation.password) {
+  //       res.status(200);
+  //       res.json({ message: 'login' });
+  //       // TODO
+  //       return;
+  //     }
+  //     res.status(409);
+  //     res.json({ message: 'Duplicated User' });
+  //     return;
+  //   }
+  //   // validate username
+  //   if (
+  //     (username.length < 3) || User.BANNED_USERNAMES.includes(username)
+  //     || (username.match(USERNAME_RULE) === null)
+  //   ) {
+  //     res.status(401);
+  //     res.json({ message: 'Invalid Username' });
+  //     return;
+  //   }
+  //   // validate password
+  //   if (req.body.password.length < 4) {
+  //     res.status(401);
+  //     res.json({ message: 'Invalid Password' });
+  //     return;
+  //   }
+  //   res.json({ message: 'OK' });
+  // }
 
   /**
    * Store new user username and password into database
@@ -104,15 +104,15 @@ class UserController {
       salt: '',
     };
     // validate username and password
-    if (!(await User.isValidUsername(data.username)) || !User.isValidPassword(data.password)) {
+    if (!User.isValidUsername(data.username) || !User.isValidPassword(data.password)) {
       res.status(400);
       res.json({ message: 'Invalid request' });
       return;
     }
     // duplicate username check
     try {
-      const user = await User.getOne({ username: data.username });
-      if (user !== null) {
+      const isUsernameTaken = await User.isUsernameTaken(data.username);
+      if (isUsernameTaken) {
         res.status(405);
         res.json({ message: 'Duplicated username' });
         return;
@@ -134,7 +134,7 @@ class UserController {
     // save to database
     await newUser.save().then(() => {
       res.status(201);
-      res.json({ message: 'OK', token: 'placeholder' });
+      res.json({ message: 'OK', token: LoginController.generateToken(data.username) });
     }).catch((e) => {
       console.error(e);
       res.status(500);
