@@ -1,10 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-// import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-// import { createServer } from 'http';
 import User from '../models/userModel.js';
-import { socketServer } from '../../app.js';
 
 dotenv.config();
 const TOKEN_SECRET = 'Some secret keys';
@@ -12,12 +9,6 @@ const TOKEN_SECRET = 'Some secret keys';
 const onlineList = {};
 
 class LoginController {
-  // constructor() {
-  //   socketServer.on('connection', (socket) => {
-  //     this.socket = socket;
-  //   });
-  // }
-
   // async populateOnlineList() {
   //   try {
   //     const users = await User.get();
@@ -70,6 +61,7 @@ class LoginController {
       return;
     }
 
+    const socketServer = req.app.get('socketServer');
     socketServer.publishEvent('userOnlineStatus', { username: data.username, isOnline: true });
 
     res.status(200);
@@ -106,6 +98,7 @@ class LoginController {
       return;
     }
 
+    const socketServer = req.app.get('socketServer');
     socketServer.publishEvent('userOnlineStatus', { username, isOnline: false });
 
     res.status(200);

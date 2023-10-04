@@ -1,15 +1,8 @@
 import crypto from 'crypto';
 import User from '../models/userModel.js';
 import LoginController from './loginController.js';
-// import { socketServer } from '../../app.js';
 
 class UserController {
-  // constructor() {
-  //   socketServer.on('connection', (socket) => {
-  //     this.socket = socket;
-  //   });
-  // }
-
   static async getAllUsers(_req, res) {
     await User.get({}).then((users) => {
       res.status(200);
@@ -41,52 +34,6 @@ class UserController {
       res.json({ message: 'Server error' });
     });
   }
-
-  // /**
-  //  * @deprecated
-  //  * Validate new user's username and password
-  //  */
-  // static async validate(req, res) {
-  //   const username = req.body.username.toLowerCase();
-  //   const { password } = req.body;
-  //   const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
-  //   // duplicate username check
-  //   const duplicateValidation = await User.getOne({
-  //     username,
-  //   });
-
-  //   if (duplicateValidation !== null) {
-  //     const hashedPassword = await User.hashPassword(
-  //       password,
-  //       Buffer.from(duplicateValidation.salt,'base64'),
-  //     );
-  //     if (hashedPassword === duplicateValidation.password) {
-  //       res.status(200);
-  //       res.json({ message: 'login' });
-  //       // TODO
-  //       return;
-  //     }
-  //     res.status(409);
-  //     res.json({ message: 'Duplicated User' });
-  //     return;
-  //   }
-  //   // validate username
-  //   if (
-  //     (username.length < 3) || User.BANNED_USERNAMES.includes(username)
-  //     || (username.match(USERNAME_RULE) === null)
-  //   ) {
-  //     res.status(401);
-  //     res.json({ message: 'Invalid Username' });
-  //     return;
-  //   }
-  //   // validate password
-  //   if (req.body.password.length < 4) {
-  //     res.status(401);
-  //     res.json({ message: 'Invalid Password' });
-  //     return;
-  //   }
-  //   res.json({ message: 'OK' });
-  // }
 
   /**
    * Store new user username and password into database

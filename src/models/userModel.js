@@ -33,9 +33,11 @@ const UserModel = mongoose.model('User', UserSchema);
 const __filename = fileURLToPath(import.meta.url);
 // eslint-disable-next-line no-underscore-dangle
 const __dirname = dirname(__filename);
-const BANNED_USERNAMES = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../utils/banned_username.json')));
+const FILE_PATH = path.resolve(__dirname, '../utils/banned_username.json');
 
 class User extends UserModel {
+  static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
+
   /**
    * Get all users
    * @param {mongoose.FilterQuery<User>} filter
@@ -80,7 +82,7 @@ class User extends UserModel {
    * @returns {boolean} true if username is banned
    */
   static isBannedUsername(username) {
-    return BANNED_USERNAMES.includes(username);
+    return this.BANNED_USERNAMES.includes(username);
   }
 
   /**

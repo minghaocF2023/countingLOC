@@ -13,10 +13,16 @@ import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
 import SocketServer from './src/services/socket.js';
 
+const PORT = 3000;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
-const PORT = 3000;
+const server = createServer(app);
+const io = new Server(server);
+
+const socketServer = new SocketServer(io);
+app.set('socketServer', socketServer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -83,18 +89,4 @@ app.use(
   swaggerUi.setup(specs, { explorer: true }),
 );
 
-const server = createServer(app);
-const io = new Server(server);
-
-const socketServer = new SocketServer(io);
-
-// io.on('connection', (socket) => {
-//   console.log(`a user connected ${socket.id}`);
-//   socket.on('username', (msg) => {
-//     console.log(msg);
-//   });
-// });
 server.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
-
-export default socketServer;
-export { socketServer };

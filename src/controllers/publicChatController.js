@@ -1,13 +1,7 @@
-// import { Server } from 'socket.io';
-// import http from 'http';
 import jwt from 'jsonwebtoken';
 import PublicMessage from '../models/messageModel.js';
-import { socketServer } from '../../app.js';
 
 const TOKEN_SECRET = 'Some secret keys';
-
-// const httpServer = http.createServer();
-// const io = new Server(httpServer);
 
 /**
  * Validate JWT token
@@ -16,10 +10,6 @@ const TOKEN_SECRET = 'Some secret keys';
 const validateToken = (token) => {
   jwt.verify(token, TOKEN_SECRET);
 };
-
-// io.on('connection', (socket) => {
-//   console.log('A chat socket connected:', socket.id);
-// });
 
 /**
  * @typedef {{
@@ -31,12 +21,6 @@ const validateToken = (token) => {
  */
 
 class publicChatController {
-  // constructor() {
-  //   socketServer.on('connection', (socket) => {
-  //     this.socket = socket;
-  //   });
-  // }
-
   /**
    * Get all history messages
    */
@@ -44,8 +28,6 @@ class publicChatController {
     if (!req.headers.authorization) {
       res.status(403).json({ message: 'Empty token' });
     }
-    console.log(`Token: ${req.headers.authorization.split(' ')[1]}`);
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
     validateToken(req.headers.authorization.split(' ')[1]);
     // sort messages by timestamp
@@ -69,6 +51,7 @@ class publicChatController {
     await newMessage.save();
 
     // io.emit('newMessage', newMessage);
+    const socketServer = req.app.get('socketServer');
     socketServer.publishEvent('newMessage', newMessage);
 
     res.status(201).json({ success: true, data: newMessage });
