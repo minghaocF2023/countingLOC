@@ -1,13 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import crypto from 'crypto';
 import User from '../models/userModel.js';
-import io from '../../app.js';
+import socketServer from '../../app.js';
 
 class UserController {
   socket = null;
 
   constructor() {
-    io.on('connection', (socket) => {
+    socketServer.on('connection', (socket) => {
       this.socket = socket;
     });
   }

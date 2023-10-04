@@ -11,11 +11,12 @@ import { Server } from 'socket.io';
 import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
-// import SocketServer from './src/services/socket.js';
+import SocketServer from './src/services/socket.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
+const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -84,14 +85,14 @@ app.use(
 const server = createServer(app);
 const io = new Server(server);
 
-// SocketServer(io);
+const socketServer = new SocketServer(io);
 
-io.on('connection', (socket) => {
-  console.log(`a user connected ${socket.id}`);
-  socket.on('username', (msg) => {
-    console.log(msg);
-  });
-});
-server.listen(3000, () => console.log(`Listening on port ${3000}`));
+// io.on('connection', (socket) => {
+//   console.log(`a user connected ${socket.id}`);
+//   socket.on('username', (msg) => {
+//     console.log(msg);
+//   });
+// });
+server.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
 
-export default io;
+export default socketServer;

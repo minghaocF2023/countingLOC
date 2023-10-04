@@ -4,8 +4,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
 import User from '../models/userModel.js';
-// import socket from '../services/socket.js';
-import { io } from '../../app.js';
+import socketServer from '../../app.js';
 
 // const httpServer = createServer();
 // const io = new Server(httpServer);
@@ -38,7 +37,7 @@ class LoginController {
   socket = null;
 
   constructor() {
-    io.on('connection', (socket) => {
+    socketServer.on('connection', (socket) => {
       this.socket = socket;
     });
   }
@@ -73,6 +72,7 @@ class LoginController {
     await user.setOnline();
     onlineList[data.username] = true;
     // io.emit('userOnlineStatus', { username: data.username, isOnline: true });
+    socketServer.publishEvent('userOnlineStatus', { username: data.username, isOnline: true });
 
     res.status(200);
     res.json({ message: 'Login success', token, isOnline: true });
@@ -90,7 +90,7 @@ class LoginController {
     // update onlineList
     await user.setOffline();
     onlineList[username] = false;
-    io.emit('userOnlineStatus', { username, isOnline: false });
+    socketServer.emit('userOnlineStatus', { username, isOnline: false });
 
     if (!user) {
       res.status(404).json({ message: 'User not found' });

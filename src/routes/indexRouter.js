@@ -21,4 +21,5 @@ router.get('/esndirectory', (req, res) => {
 router.get('/chatwall', (req, res) => {
   res.render('chatwall');
 });
+
 export default router;
