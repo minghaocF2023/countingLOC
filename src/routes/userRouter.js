@@ -196,7 +196,7 @@ router.post('/', UserController.createUser);
  * /users/{username}/online:
  *   put:
  *     tags: [Users]
- *     summary: switch to online status
+ *     summary: login / switch to online status
  *     description: switch user to online status
  *     parameters:
  *       - $ref: '#/parameters/username'
@@ -242,55 +242,6 @@ router.post('/', UserController.createUser);
  */
 router.put('/:username/online', LoginController.updateOnlineStatus);
 
-/**
- * @swagger
- * /users/{username}:
- *   post:
- *     tags: [Users]
- *     summary: login
- *     description: login a user with password
- *     parameters:
- *       - $ref: '#/parameters/username'
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - password
- *             properties:
- *               password:
- *                 $ref: '#/components/schemas/UserPassword'
- *     responses:
- *       200:
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *              allOf:
- *                - $ref: '#/components/schemas/Response'
- *                - type: object
- *                  properties:
- *                    token:
- *                      $ref: '#/components/schemas/UserToken'
- *       400:
- *         description: Invalid request
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: Invalid request
- *       404:
- *         description: Fail to login
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: Incorrect username/password
- */
 router.post('/:username', LoginController.loginUser);
 /**
  * @swagger
