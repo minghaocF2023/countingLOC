@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-const userLogout = (username) => {
-  localStorage.removeItem('token');
-  localStorage.remoteItem('username');
-  axios.put(`/users/${username}/offline`).then((res) => {
-    console.log(res);
+const userLogout = async (username) => {
+  axios.put(`/users/${username}/offline`).then(() => {
+    console.log('offline');
   });
-  console.log('offline');
 };
 
-$('#logout').on('click', () => {
-  console.log('logout');
-  userLogout(localStorage.getItem('username'));
+$('#logout').on('click', async () => {
+  await userLogout(localStorage.getItem('username')).then(() => {
+    localStorage.removeItem('token');
+    localStorage.remoteItem('username');
+    window.location.href('join');
+  });
 });
 
 // close tab

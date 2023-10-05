@@ -49,10 +49,20 @@ const connectSocket = () => {
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
 $(window).on('load', () => {
+  // if unauthorized -> it is okay to stay at esndirectory (currently)
+  axios.put(
+    `users/${localStorage.getItem('username')}/online`,
+    null,
+    { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
+  ).then(() => {
+    console.log('set status online');
+  });
+
   connectSocket();
+
+  // get esn directory info
   axios.get('/users').then((res) => {
     const userStatus = res.data.users.sort(compareByUsername);
-    console.log('sort');
     const onlineList = [];
     const offlineList = [];
     userStatus.forEach((element) => {
@@ -66,10 +76,9 @@ $(window).on('load', () => {
     $('#online-user-list').append(onlineList);
     $('#offline-user-list').append(offlineList);
   });
-//   const mockUserJson = [
-//     { username: 'User1', isOnline: true },
-//     { username: 'User2', isOnline: true },
-//     { username: 'User3', isOnline: false },
-//     { username: 'User4', isOnline: true },
-//   ];
 });
+
+// if not logged in -> change button text to login
+if (!localStorage.getItem('token')) {
+  $('#logout').html('Login');
+}

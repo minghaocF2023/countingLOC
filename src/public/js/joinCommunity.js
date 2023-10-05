@@ -43,7 +43,7 @@ const setupUserInfo = (res, inputUsername) => new Promise((resolve) => {
  * user login
  */
 const login = async (inputUsername, inputPassword, firstTime) => {
-  axios.put(`/users/${inputUsername}/online`, { password: inputPassword }).then(async (res) => {
+  axios.post(`/users/${inputUsername}`, { password: inputPassword }).then(async (res) => {
     await setupUserInfo(res, inputUsername);
     if (firstTime === true) {
       window.location.href = '/acknowledge';
@@ -151,3 +151,12 @@ if (registerButton) {
     });
   });
 }
+
+// if (localStorage.getItem('token')) {
+//   window.location = 'esndirectory';
+// }
+
+$(window).on('load', () => {
+  localStorage.removeItem('token');
+  localStorage.setItem('username', '');
+});
