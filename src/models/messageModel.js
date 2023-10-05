@@ -10,9 +10,9 @@ const PublicMessageSchema = new mongoose.Schema({
     required: true,
   },
   timestamp: {
-    type: Date,
+    type: Number,
     required: true,
-    default: Date.now,
+    default: Date.now(),
   },
   status: {
     type: String,

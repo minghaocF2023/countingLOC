@@ -1,15 +1,5 @@
-import jwt from 'jsonwebtoken';
 import PublicMessage from '../models/messageModel.js';
-
-const TOKEN_SECRET = 'Some secret keys';
-
-/**
- * Validate JWT token
- * @param {string} token JWT token
- */
-const validateToken = (token) => {
-  jwt.verify(token, TOKEN_SECRET);
-};
+import JWT from '../utils/jwt.js';
 
 /**
  * @typedef {{
@@ -25,11 +15,17 @@ class publicChatController {
    * Get all history messages
    */
   static async getLatestMessages(req, res) {
-    if (!req.headers.authorization) {
-      res.status(403).json({ message: 'Empty token' });
+    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
+      res.status(401).json({ message: 'User not logged in' });
+      return;
     }
 
-    validateToken(req.headers.authorization.split(' ')[1]);
+    const payload = JWT.verifyToken(req.headers.authorization.split(' ')[1]);
+    if (payload === null) {
+      res.status(401);
+      res.json({ message: 'User not logged in' });
+      return;
+    }
     // sort messages by timestamp
     const messages = await PublicMessage.find().sort({ timeStamp: -1 });
     res.status(200).json({ success: true, data: messages });
@@ -37,20 +33,30 @@ class publicChatController {
 
   // post new messages
   static async postNew(req, res) {
-    validateToken(req.headers.authorization);
+    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
+      res.status(401).json({ message: 'User not logged in' });
+      return;
+    }
 
-    if (!req.params.text) {
+    const payload = JWT.verifyToken(req.headers.authorization.split(' ')[1]);
+    if (payload === null) {
+      res.status(401);
+      res.json({ message: 'User not logged in' });
+      return;
+    }
+    if (!req.body.content) {
       res.status(400);
       res.json({ message: 'Invalid request' });
       return;
     }
-    const {
-      content, senderName, timestamp, status,
-    } = req.body;
-    const newMessage = new PublicMessage(content, senderName, timestamp, status);
+
+    const { content } = req.body;
+    const data = {
+      content, senderName: payload.username, timestamp: Date.now(), status: 'OK',
+    };
+    const newMessage = new PublicMessage(data);
     await newMessage.save();
 
-    // io.emit('newMessage', newMessage);
     const socketServer = req.app.get('socketServer');
     socketServer.publishEvent('newMessage', newMessage);
 

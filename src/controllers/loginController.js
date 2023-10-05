@@ -1,35 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User from '../models/userModel.js';
+import JWT from '../utils/jwt.js';
 
 dotenv.config();
-const TOKEN_SECRET = 'Some secret keys';
 
 const onlineList = {};
 
 class LoginController {
-  // async populateOnlineList() {
-  //   try {
-  //     const users = await User.get();
-  //     users.forEach((user) => {
-  //       onlineList[user.username] = user.isOnline;
-  //     });
-  //     // console.log(onlineList);
-  //   } catch (error) {
-  //     console.error('Error populating online list:', error);
-  //   }
-  // }
-
-  static generateToken(username) {
-    const payload = { username };
-    return jwt.sign(payload, TOKEN_SECRET, { expiresIn: '3600s' });
-  }
-
-  static verifyToken(token) {
-    return jwt.verify(token, TOKEN_SECRET);
-  }
-
   static async loginUser(req, res) {
     if (!req.params.username || !req.body.password) {
       res.status(400);
@@ -47,7 +25,7 @@ class LoginController {
       return;
     }
 
-    const token = LoginController.generateToken(data.username);
+    const token = JWT.generateToken(data.username);
 
     try {
       // pass to socket

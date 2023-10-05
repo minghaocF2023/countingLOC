@@ -4,7 +4,10 @@ class SocketServer {
   constructor(io) {
     this.socketIO = io;
     this.socketIO.on('connection', (socket) => {
-      console.log(`a user connected ${socket.id}`);
+      console.log(`a user connected ${socket.id}...`);
+      socket.on('disconnect', () => {
+        console.log(`a user disconnected ${socket.id}`);
+      });
     });
   }
 

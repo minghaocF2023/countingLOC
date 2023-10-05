@@ -35,7 +35,7 @@ const showWarning = (title, message) => {
 
 const setupUserInfo = (res, inputUsername) => new Promise((resolve) => {
   localStorage.setItem('token', res.data.token);
-  localStorage.setItem('username', inputUsername);
+  localStorage.setItem('username', inputUsername.toLowerCase());
   showSuccess('Login', 'Login Successful');
   resolve();
 });

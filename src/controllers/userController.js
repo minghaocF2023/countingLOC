@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import User from '../models/userModel.js';
-import LoginController from './loginController.js';
+import JWT from '../utils/jwt.js';
 
 class UserController {
   static async getAllUsers(_req, res) {
@@ -49,6 +49,7 @@ class UserController {
       username: req.body.username.toLowerCase(),
       password: req.body.password,
       salt: '',
+      isOnline: true,
     };
     // validate username and password
     if (!User.isValidUsername(data.username) || !User.isValidPassword(data.password)) {
@@ -81,7 +82,7 @@ class UserController {
     // save to database
     await newUser.save().then(() => {
       res.status(201);
-      res.json({ message: 'OK', token: LoginController.generateToken(data.username) });
+      res.json({ message: 'OK', token: JWT.generateToken(data.username) });
     }).catch((e) => {
       console.error(e);
       res.status(500);

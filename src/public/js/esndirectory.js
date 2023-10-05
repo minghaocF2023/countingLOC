@@ -1,19 +1,6 @@
 /* eslint-disable no-undef */
 const newBlock = (username, status) => {
   const statusStr = status ? 'online' : 'offline';
-  // if (status === true) {
-  //   statusStr = 'online';
-  // } else {
-  //   statusStr = 'offline';
-  // }
-  // let code = '';
-  // code += `<div id="${username}" class="card mb-3 user-card">`;
-  // code += '<div class="card-body">';
-  // code += `<h5 class="card-title">${username}</h5>`;
-  // code += `<p class="card-text"><span class="status ${statusStr}">${statusStr}</span></p>`;
-  // code += '</div>';
-  // code += '</div>';
-  // return code;
 
   const div = document.createElement('div');
   div.id = username;
