@@ -6,12 +6,8 @@
  *       type: object
  *       description: New message
  *       required:
- *         - author
  *         - content
  *       properties:
- *         author:
- *           $ref: '#/components/schemas/Username'
- *           description: Message author
  *         content:
  *           type: string
  *           description: Message content
@@ -21,28 +17,27 @@
  *         - $ref: '#/components/schemas/NewMessage'
  *         - type: object
  *           properties:
- *             mid:
- *               type: string
- *               description: Message ID
- *               example: 650b635c9d39c281eac33bbf
+ *             senderName:
+ *               $ref: '#/components/schemas/Username'
+ *               description: Message author
  *             status:
  *               type: string
  *               description: Message status
  *               example: OK
- *             createdAt:
+ *             timestamp:
  *               type: string
  *               description: Message creation time
  *               example: 1970-01-01 00:00:00
  */
 
 import express from 'express';
-import MessageController from '../controllers/messageController.js';
+import PublicChatController from '../controllers/publicChatController.js';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /api/messages/public:
+ * /messages/public:
  *   get:
  *     tags: [Messages]
  *     summary: Get all public messages
@@ -62,11 +57,11 @@ const router = express.Router();
  *                       items:
  *                        $ref: '#/components/schemas/Message'
  */
-router.get('/public', MessageController.getAllPublicMessages);
+router.get('/public', PublicChatController.getLatestMessages);
 
 // /**
 //  * @swagger
-//  * /api/messages/public/{username}:
+//  * /messages/public/{username}:
 //  *   get:
 //  *     tags: [Messages]
 //  *     summary: Get all public messages sent by a user
@@ -76,7 +71,7 @@ router.get('/public', MessageController.getAllPublicMessages);
 
 /**
  * @swagger
- * /api/messages/public:
+ * /messages/public:
  *   post:
  *     tags: [Messages]
  *     summary: Post a new public message
@@ -118,6 +113,6 @@ router.get('/public', MessageController.getAllPublicMessages);
  *             example:
  *               message: User not found
  */
-router.post('/public', MessageController.createPublicMessage);
+router.post('/public', PublicChatController.postNew);
 
 export default router;

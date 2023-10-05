@@ -34,5 +34,8 @@ module.exports = {
         json: 'ignorePackages',
       },
     ],
+
+    indent: ['error', 2],
+
   },
 };

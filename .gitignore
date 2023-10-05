@@ -4,3 +4,5 @@ coverage
 .idea
 **/.DS_Store
 *.test.py
+.test
+package-lock.json

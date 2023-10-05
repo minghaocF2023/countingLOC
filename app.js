@@ -6,17 +6,27 @@ import path, { dirname } from 'path';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { fileURLToPath } from 'url';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
+import SocketServer from './src/services/socket.js';
+
+const PORT = 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
+const server = createServer(app);
+const io = new Server(server);
+
+const socketServer = new SocketServer(io);
+app.set('socketServer', socketServer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use('/node_modules', express.static(`${__dirname}/node_modules/`));
 app.use(express.static('src/public'));
 
 app.set('view engine', 'ejs');
@@ -35,10 +45,33 @@ const options = {
         url: 'https://spdx.org/licenses/MIT.html',
       },
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          value: 'Bearer <JWT token here>',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
     servers: [
       {
         url: 'http://localhost:3000',
         description: 'Development server',
+      },
+      {
+        url: 'http://esn.xuyunxiao.top',
+        description: 'Remote Development server',
+      },
+      {
+        url: 'http://172.29.92.57:3000',
+        description: 'Leo server',
       },
     ],
   },
@@ -46,8 +79,8 @@ const options = {
 };
 
 app.use('/', indexRouter);
-app.use('/api/users/', userRouter);
-app.use('/api/messages/', messageRouter);
+app.use('/users/', userRouter);
+app.use('/messages/', messageRouter);
 
 const specs = swaggerJSDoc(options);
 app.use(
@@ -56,7 +89,4 @@ app.use(
   swaggerUi.setup(specs, { explorer: true }),
 );
 
-app.listen(3000, () => {
-  // eslint-disable-next-line no-console
-  console.log('Server started on port 3000');
-});
+server.listen(PORT, () => console.log(`Listening on port ${PORT}...`));

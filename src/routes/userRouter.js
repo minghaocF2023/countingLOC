@@ -7,9 +7,27 @@
  *       description: User's username
  *       example: testUser
  *     UserPassword:
- *        type: string
- *        description: User's password
- *        example: testPassword
+ *       type: string
+ *       description: User's password
+ *       example: testPassword
+ *     UserToken:
+ *       type: string
+ *       description: User's JWT token
+ *     UserOnlineStatus:
+ *       type: boolean
+ *       example: false
+ *     User:
+ *       type: object
+ *       description: User entries for frontend
+ *       properties:
+ *         username:
+ *           $ref: '#/components/schemas/Username'
+ *         isOnline:
+ *           $ref: '#/components/schemas/UserOnlineStatus'
+ *     UserList:
+ *       type: array
+ *       items:
+ *         $ref: '#/components/schemas/User'
  *     UsernameList:
  *       type: array
  *       description: List of usernames
@@ -55,12 +73,13 @@
 
 import express from 'express';
 import UserController from '../controllers/userController.js';
+import LoginController from '../controllers/loginController.js';
 
 const router = express.Router();
 
 /**
  * @swagger
- * /api/users:
+ * /users:
  *   get:
  *     tags: [Users]
  *     summary: Get all users
@@ -76,21 +95,24 @@ const router = express.Router();
  *                 - type: object
  *                   properties:
  *                     users:
- *                       $ref: '#/components/schemas/UsernameList'
+ *                       $ref: '#/components/schemas/UserList'
  *                       description: List of registered usernames
  *                     banned_users:
  *                       $ref: '#/components/schemas/UsernameList'
  *                       description: List of banned usernames
  *             example:
  *               message: OK
- *               users: [testUser1, testUser2]
+ *               users: [
+ *                 {username: testUser1, isOnline: true},
+ *                 {username: testUser2, isOnline: false}
+ *               ]
  *               banned_users: [bannedUser1, bannedUser2]
  */
 router.get('/', UserController.getAllUsers);
 
 /**
  * @swagger
- * /api/users/{username}:
+ * /users/{username}:
  *   get:
  *     tags: [Users]
  *     summary: Get user by username
@@ -108,7 +130,7 @@ router.get('/', UserController.getAllUsers);
  *                 - type: object
  *                   properties:
  *                     user:
- *                       $ref: '#/components/schemas/Username'
+ *                       $ref: '#/components/schemas/User'
  *       404:
  *         description: Not a registered user
  *         content:
@@ -127,7 +149,7 @@ router.get('/:username', UserController.getUserByUsername);
 
 /**
  * @swagger
- * /api/users:
+ * /users:
  *   post:
  *     tags: [Users]
  *     summary: Create a new user
@@ -148,8 +170,8 @@ router.get('/:username', UserController.getUserByUsername);
  *                - $ref: '#/components/schemas/Response'
  *                - type: object
  *                  properties:
- *                    user:
- *                      $ref: '#/components/schemas/Username'
+ *                    token:
+ *                      $ref: '#/components/schemas/UserToken'
  *       400:
  *         description: Invalid request
  *         content:
@@ -171,7 +193,7 @@ router.post('/', UserController.createUser);
 
 /**
  * @swagger
- * /api/users/{username}/online:
+ * /users/{username}/online:
  *   put:
  *     tags: [Users]
  *     summary: login
@@ -199,8 +221,8 @@ router.post('/', UserController.createUser);
  *                - $ref: '#/components/schemas/Response'
  *                - type: object
  *                  properties:
- *                    user:
- *                      $ref: '#/components/schemas/Username'
+ *                    token:
+ *                      $ref: '#/components/schemas/UserToken'
  *       400:
  *         description: Invalid request
  *         content:
@@ -218,11 +240,11 @@ router.post('/', UserController.createUser);
  *             example:
  *               message: Incorrect username/password
  */
-router.put('/:username/online', UserController.loginUser);
+router.put('/:username/online', LoginController.loginUser);
 
 /**
  * @swagger
- * /api/users/{username}/offline:
+ * /users/{username}/offline:
  *   put:
  *     tags: [Users]
  *     summary: logout
@@ -266,50 +288,50 @@ router.put('/:username/online', UserController.loginUser);
  *             example:
  *               message: User not logged in
  */
-router.put('/:username/offline', UserController.logoutUser);
+router.put('/:username/offline', LoginController.logoutUser);
 
-/**
-  * @swagger
-  * /api/users/validate:
-  *   post:
-  *     summary: validate new user information
-  *     description: validate the username and password input from a new user
-  *     tags: [obsolete]
-  *     requestBody:
-  *       required: true
-  *       content:
-  *         application/json:
-  *           schema:
-  *             $ref: '#/components/schemas/NewUser'
-  *     responses:
-  *       200:
-  *         description: validation success
-  *         schema:
-  *           type: object
-  *           $ref: '#/components/schemas/NewUser'
-*/
-router.post('/validate', UserController.validate);
+// /**
+//   * @swagger
+//   * /users/validate:
+//   *   post:
+//   *     summary: validate new user information
+//   *     description: validate the username and password input from a new user
+//   *     tags: [obsolete]
+//   *     requestBody:
+//   *       required: true
+//   *       content:
+//   *         application/json:
+//   *           schema:
+//   *             $ref: '#/components/schemas/NewUser'
+//   *     responses:
+//   *       200:
+//   *         description: validation success
+//   *         schema:
+//   *           type: object
+//   *           $ref: '#/components/schemas/NewUser'
+// */
+// router.post('/validate', UserController.validate);
 
-/**
-  * @swagger
-  * /api/users/register:
-  *   post:
-  *     summary: register a new user
-  *     description: Store new user's username and password into database
-  *     tags: [obsolete]
-  *     requestBody:
-  *       required: true
-  *       content:
-  *         application/json:
-  *           schema:
-  *             $ref: '#/components/schemas/NewUser'
-  *     responses:
-  *       200:
-  *         description: registration success
-  *         schema:
-  *           type: object
-  *           $ref: '#/components/schemas/NewUser'
-*/
-router.post('/register', UserController.createUser);
+// /**
+//   * @swagger
+//   * /users/register:
+//   *   post:
+//   *     summary: register a new user
+//   *     description: Store new user's username and password into database
+//   *     tags: [obsolete]
+//   *     requestBody:
+//   *       required: true
+//   *       content:
+//   *         application/json:
+//   *           schema:
+//   *             $ref: '#/components/schemas/NewUser'
+//   *     responses:
+//   *       200:
+//   *         description: registration success
+//   *         schema:
+//   *           type: object
+//   *           $ref: '#/components/schemas/NewUser'
+// */
+// router.post('/register', UserController.createUser);
 
 export default router;
