@@ -34,6 +34,21 @@ const connectSocket = () => {
 };
 
 $(window).on('load', () => {
+  axios.put(
+    `users/${localStorage.getItem('username')}/online`,
+    null,
+    { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
+  ).then(() => {
+    // if authorized -> start fetching public messages
+
+  }).catch((err) => {
+    // if navigate to chat wall without token, should back to join page
+    if (err.response.data.message === 'Unauthorized Request') {
+      window.location = '/join';
+    }
+  });
+
+  console.log('start fetching messages');
   axios.get('/messages/public', {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -52,18 +67,6 @@ $(window).on('load', () => {
     }
   });
   connectSocket();
-  // const mockUserJson = [
-  //   {
-  //     senderName: 'User1', status: 'OK', content: 'Hello World', timestamp: '17:00 PM, Oct 03, 2023',
-  //   },
-  //   {
-  //     senderName: 'User2', status: 'emergency', content: 'Hello World', timestamp: '17:00 PM, Oct 03, 2023',
-  //   }, {
-  //     senderName: 'User3', status: 'help', content: 'Hello World', timestamp: '17:00 PM, Oct 03, 2023',
-  //   }, {
-  //     senderName: 'User4', status: undefined, content: 'Hello World', timestamp: '17:00 PM, Oct 03, 2023',
-  //   },
-  // ];
 });
 
 $('#send').on('click', () => {
