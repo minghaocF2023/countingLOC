@@ -1,9 +1,10 @@
 module.exports = {
   env: {
     browser: true,
-    commonjs: true,
+    commonjs: false,
     es2021: true,
     node: true,
+    jest: true,
   },
   extends: 'airbnb-base',
   overrides: [
@@ -12,7 +13,7 @@ module.exports = {
         node: true,
       },
       files: [
-        '.eslintrc.{js,cjs}',
+        '.eslintrc.{js,mjs}',
       ],
       parserOptions: {
         sourceType: 'script',
@@ -21,9 +22,20 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 'latest',
+    sourceType: 'module',
   },
   rules: {
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'import/extensions': [
+      'error',
+      {
+        js: 'ignorePackages',
+        json: 'ignorePackages',
+      },
+    ],
+
+    indent: ['error', 2],
+
   },
 };
