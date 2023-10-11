@@ -1,3 +1,5 @@
+// import { PrivateMessage } from '../models/models.js';
+
 class privateChatController {
   static async getMessageBetweenUsers(req, res) {
     res.status(501).json({ message: 'Not implemented' });
