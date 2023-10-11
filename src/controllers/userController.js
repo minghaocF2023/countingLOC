@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import User from '../models/userModel.js';
+import { User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 
 class UserController {

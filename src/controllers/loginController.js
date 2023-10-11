@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import dotenv from 'dotenv';
-import User from '../models/userModel.js';
+import { User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 
 dotenv.config();
