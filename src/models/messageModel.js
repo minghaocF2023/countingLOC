@@ -41,7 +41,7 @@ class PublicMessage extends PublicMessageModel {
 
   /**
    * Get all messages from the database
-   * @returns {Promise<Message[]>} A promise that resolves to an array of Message's
+   * @returns {Promise<PublicMessage[]>} A promise that resolves to an array of Message's
    */
   static async getAllMessages() {
     return this.find({}).then((msgs) => msgs.map((msg) => new PublicMessage(msg)));
