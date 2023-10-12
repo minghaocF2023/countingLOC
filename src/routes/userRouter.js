@@ -335,6 +335,30 @@ router.put('/:username/offline', LoginController.logoutUser);
  *                       type: array
  *                       items:
  *                        $ref: '#/components/schemas/Username'
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
  */
 router.get('/:username/private', privateChatController.getChattedUsers);
 
@@ -357,6 +381,30 @@ router.get('/:username/private', privateChatController.getChattedUsers);
  *               allOf:
  *                 - $ref: '#/components/schemas/Response'
  *                 - type: object
+  *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
  */
 router.post(':username/status/:statusCode', UserController.updateStatus);
 /**
@@ -382,6 +430,30 @@ router.post(':username/status/:statusCode', UserController.updateStatus);
  *                       type: array
  *                       items:
  *                        $ref: '#/components/schemas/StatusHistory'
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
 */
 router.get(':username/statuscrumbs', UserController.getStatusHistory);
 
