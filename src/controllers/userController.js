@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import User from '../models/userModel.js';
+import { User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 
 class UserController {
@@ -88,6 +88,14 @@ class UserController {
       res.status(500);
       res.json({ message: 'Database error' });
     });
+  }
+
+  static async updateStatus(req, res) {
+    res.status(501).json({ message: 'Not implemented' });
+  }
+
+  static async getStatusHistory(req, res) {
+    res.status(501).json({ message: 'Not implemented' });
   }
 }
 

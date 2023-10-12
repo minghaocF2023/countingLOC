@@ -6,6 +6,19 @@
  *       type: string
  *       description: User's username
  *       example: testUser
+ *     StatusHistory:
+ *       type: object
+ *       description: User's status
+ *       properties:
+ *         timestamp:
+ *           type: string
+ *           description: status time
+ *           example: 1970-01-01 00:00:00
+ *         status:
+ *           type: string
+ *           description: status code
+ *           example: "GREEN"
+ *
  *     UserPassword:
  *       type: string
  *       description: User's password
@@ -69,11 +82,20 @@
  *     schema:
  *       type: string
  *     example: testUser
+ *   statusCode:
+ *     name: statusCode
+ *     in: path
+ *     description: current statusCode
+ *     required: true
+ *     schema:
+ *       type: string
+ *     example: GREEN
  */
 
 import express from 'express';
 import UserController from '../controllers/userController.js';
 import LoginController from '../controllers/loginController.js';
+import privateChatController from '../controllers/privateChatController.js';
 
 const router = express.Router();
 
@@ -290,6 +312,150 @@ router.post('/:username', LoginController.loginUser);
  *               message: User not logged in
  */
 router.put('/:username/offline', LoginController.logoutUser);
+/**
+ * @swagger
+ * /users/{username}/private:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get all users that have privately chatted before
+ *     description: Get all users that have privately chatted before
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+ *                   properties:
+ *                     users:
+ *                       type: array
+ *                       items:
+ *                        $ref: '#/components/schemas/Username'
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.get('/:username/private', privateChatController.getChattedUsers);
+
+/**
+ * @swagger
+ * /users/{username}/status/{statusCode}:
+ *   post:
+ *     tags: [Users]
+ *     summary: Update user status
+ *     description: Update user status
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *       - $ref: '#/parameters/statusCode'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+  *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.post(':username/status/:statusCode', UserController.updateStatus);
+/**
+ * @swagger
+* /users/{username}/statuscrumbs:
+*   get:
+*     tags: [Users]
+*     summary: Get user status history.
+*     description: Get user status history.
+*     parameters:
+*       - $ref: '#/parameters/username'
+*     responses:
+*       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+ *                   properties:
+ *                     status:
+ *                       type: array
+ *                       items:
+ *                        $ref: '#/components/schemas/StatusHistory'
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+*/
+router.get(':username/statuscrumbs', UserController.getStatusHistory);
 
 // /**
 //   * @swagger

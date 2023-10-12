@@ -1,4 +1,4 @@
-import PublicMessage from '../models/messageModel.js';
+import { PublicMessage } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 
 /**
