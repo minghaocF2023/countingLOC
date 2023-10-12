@@ -45,7 +45,7 @@
  *             status:
  *               type: string
  *               description: Message status
- *               example: OK
+ *               example: GREEN
  *             timestamp:
  *               type: string
  *               description: Message creation time
@@ -263,6 +263,30 @@ router.post('/private', privateChatController.postNewPrivateMessage);
  *                       type: array
  *                       items:
  *                        $ref: '#/components/schemas/PrivateMessageList'
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
  */
 router.get('/private/:sender/:receiver', privateChatController.getMessageBetweenUsers);
 
