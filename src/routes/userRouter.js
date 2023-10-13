@@ -96,6 +96,7 @@ import express from 'express';
 import UserController from '../controllers/userController.js';
 import LoginController from '../controllers/loginController.js';
 import privateChatController from '../controllers/privateChatController.js';
+import StatusController from '../controllers/statusController.js';
 
 const router = express.Router();
 
@@ -406,7 +407,9 @@ router.get('/:username/private', privateChatController.getChattedUsers);
  *             example:
  *               message: User not logged in
  */
-router.post(':username/status/:statusCode', UserController.updateStatus);
+router.post(':username/status/:statusCode', StatusController.updateStatus);
+router.get('/status', StatusController.getStatus);
+
 /**
  * @swagger
 * /users/{username}/statuscrumbs:
@@ -455,7 +458,7 @@ router.post(':username/status/:statusCode', UserController.updateStatus);
  *             example:
  *               message: User not logged in
 */
-router.get(':username/statuscrumbs', UserController.getStatusHistory);
+// router.get(':username/statuscrumbs', UserController.getStatusHistory);
 
 // /**
 //   * @swagger

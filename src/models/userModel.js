@@ -38,6 +38,15 @@ const userFactory = (mongoose) => {
       default: false,
     },
     // TODO: status, isAdmin: false
+    status: {
+      type: String,
+      default: 'Undefined',
+      enum: ['OK', 'Help', 'Emergency', 'Undefined'],
+    },
+    statusTimestamp: {
+      type: Date,
+      default: Date.now,
+    },
   });
 
   const UserModel = mongoose.model('User', UserSchema);
