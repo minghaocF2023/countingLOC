@@ -28,15 +28,18 @@
 import { realConnection } from '../services/db.js';
 import userFactory from './userModel.js';
 import publicMessageFactory from './publicMessageModel.js';
+import PrivateMessageFactory from './privateMessageModel.js';
 
 // Factory functions to get models based on desired connection:
 const createUserModel = (connection) => userFactory(connection);
 const createPublicMessageModel = (connection) => publicMessageFactory(connection);
-
+const createPrivateMessageModel = (connection) => PrivateMessageFactory(connection);
 // Default Models for real database:
 const User = createUserModel(realConnection);
 const PublicMessage = createPublicMessageModel(realConnection);
+const PrivateMessage = createPrivateMessageModel(realConnection);
 
 export {
-  User, PublicMessage, createUserModel, createPublicMessageModel,
+  User, PublicMessage, PrivateMessage,
+  createUserModel, createPublicMessageModel, createPrivateMessageModel,
 };

@@ -360,7 +360,7 @@ router.put('/:username/offline', LoginController.logoutUser);
  *             example:
  *               message: User not logged in
  */
-router.get('/:username/private', privateChatController.getChattedUsers);
+router.get('/:username/private', privateChatController.getAllPrivate);
 
 /**
  * @swagger

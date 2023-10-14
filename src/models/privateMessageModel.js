@@ -26,6 +26,30 @@ const PrivateMessageFactory = (mongoose) => {
   const PrivateMessageModel = mongoose.model('PrivateMessage', PrivateMessageSchema);
 
   class PrivateMessage extends PrivateMessageModel {
+    /**
+     * Get all private messages
+     * @param {mongoose.FilterQuery<PrivateMessage>} filter
+     * @param {mongoose.ProjectionType<PrivateMessage>?=} projection
+     * @param {mongoose.QueryOptions<PrivateMessage>?=} options
+     * @returns {Promise<PrivateMessage[]>} array of private messages
+     */
+    static async get(filter, projection, options) {
+      return this.find(filter, projection, options)
+        .then((privateMessages) => privateMessages.map((pm) => new PrivateMessage(pm)));
+    }
+
+    /**
+     * Get one private message
+     * @param {mongoose.FilterQuery<PrivateMessage>?} filter
+     * @param {mongoose.ProjectionType<PrivateMessage>?=} projection
+     * @param {mongoose.QueryOptions<PrivateMessage>?=} options
+     * @returns {Promise<PrivateMessage | null>} privateMessage
+     */
+    static async getOne(filter, projection, options) {
+      return this.findOne(filter, projection, options)
+        .then((pm) => (pm ? new PrivateMessage(pm) : null));
+    }
+
     getText() {
       return this.text;
     }
