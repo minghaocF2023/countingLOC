@@ -58,6 +58,7 @@
  *           example: 1000
  */
 import express from 'express';
+import { startSpeedTest, getIsTestState } from '../controllers/speedTestController.js';
 
 const router = express.Router();
 
@@ -160,3 +161,7 @@ router.get('/speedtest', (req, res) => {
 router.post('/speedtest', (req, res) => {
   res.status(501).json({ message: 'Not implemented.' });
 });
+
+router.post('/startspeedtest', startSpeedTest);
+router.get('/istest', getIsTestState);
+export default router;

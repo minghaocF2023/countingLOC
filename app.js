@@ -11,6 +11,7 @@ import { Server } from 'socket.io';
 import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
+import adminRouter from './src/routes/adminRouter.js';
 import SocketServer from './src/services/socket.js';
 
 const PORT = 3000;
@@ -81,7 +82,7 @@ const options = {
 app.use('/', indexRouter);
 app.use('/users/', userRouter);
 app.use('/messages/', messageRouter);
-
+app.use('/admin/', adminRouter);
 const specs = swaggerJSDoc(options);
 app.use(
   '/docs',

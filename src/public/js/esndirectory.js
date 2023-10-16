@@ -48,6 +48,25 @@ const connectSocket = () => {
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
+const startSpeedTest = (isTest) => {
+  axios.post('admin/startspeedtest', { isTest }).then((res) => {
+    console.log(res);
+  });
+};
+
+// $('.speed-test').on('click', () => {
+//   startSpeedTest();
+// });
+$(document).ready(() => {
+  $('#speedTestSwitch').on('change', function () {
+    if ($(this).prop('checked')) {
+      startSpeedTest(true);
+    } else {
+      startSpeedTest(false);
+    }
+  });
+});
+
 $(window).on('load', () => {
   // if unauthorized -> it is okay to stay at esndirectory (currently)
   axios.put(

@@ -29,6 +29,16 @@
             outline: 2px solid rgb(178, 212, 216);
             outline-offset: -2px;
         }
+
+        .custom-control-label::before, .custom-control-label::after {
+            width: 1.5rem;
+            height: 0.875rem;
+        }
+        
+        .custom-control-label::after {
+            width: 0.75rem;
+            height: 0.75rem;
+        }        
     </style>
 </head>
 
@@ -49,6 +59,13 @@
                 <li class="nav-item">
                     <a class="nav-link chat-wall active" href="/chatwall">Chat Wall</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link speed-test">Speed Test</a>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="speedTestSwitch">
+                        <label class="custom-control-label" for="speedTestSwitch"></label>
+                    </div>
+                </li>                
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
