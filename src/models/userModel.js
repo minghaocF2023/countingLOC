@@ -34,6 +34,10 @@ const userFactory = (connection) => {
       type: String,
       required: true,
     },
+    chatrooms: {
+      type: Array,
+      required: false,
+    },
     isOnline: {
       type: Boolean,
       required: true,
@@ -173,6 +177,32 @@ const userFactory = (connection) => {
      */
     static async retrieveOfflineUsers() {
       return this.get({ isOnline: false });
+    }
+
+    // TODO: all getters
+    getUserId() {
+      // eslint-disable-next-line no-underscore-dangle
+      return this._id;
+    }
+
+    getUsername() {
+      return this.username;
+    }
+
+    getPassword() {
+      return this.password;
+    }
+
+    getSalt() {
+      return this.salt;
+    }
+
+    getChatrooms() {
+      return this.chatrooms;
+    }
+
+    getIsOnline() {
+      return this.isOnline;
     }
   }
 

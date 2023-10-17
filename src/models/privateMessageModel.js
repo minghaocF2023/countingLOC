@@ -1,5 +1,9 @@
 const PrivateMessageFactory = (mongoose) => {
   const PrivateMessageSchema = new mongoose.Schema({
+    chatroomId: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+    },
     content: {
       type: String,
       required: true,
@@ -50,8 +54,12 @@ const PrivateMessageFactory = (mongoose) => {
         .then((pm) => (pm ? new PrivateMessage(pm) : null));
     }
 
+    getChatroomID() {
+      return this.chatroomId;
+    }
+
     getText() {
-      return this.text;
+      return this.content;
     }
 
     getSenderName() {
