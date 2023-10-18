@@ -126,7 +126,7 @@ class privateChatController {
     User.getOne(userQuery).then(async (user) => {
       const chatrooms = user.getChatrooms();
       // eslint-disable-next-line prefer-const
-      let otherUsers = [];
+      const otherUsers = [];
       const taskList = [];
       chatrooms.forEach((chatroomId) => {
         const task = new Promise((resolve) => {
@@ -145,7 +145,7 @@ class privateChatController {
       });
 
       Promise.all(taskList).then(() => {
-        res.status(200).json({ otherUsers });
+        res.status(200).json({ users: otherUsers });
       });
     });
   }
