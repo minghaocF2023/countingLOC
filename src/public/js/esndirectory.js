@@ -44,9 +44,33 @@ const connectSocket = () => {
 
     appendNewUser(msg.isOnline ? onlineListDiv : offlineListDiv, msg.username, msg.isOnline);
   });
+  // speed test sockets
+  socket.on('startspeedtest', () => {
+    alert('should go to 503 page');
+  });
+  socket.on('finishspeedtest', () => {
+    alert('should back to previous page');
+  });
 };
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
+
+const startSpeedTest = () => {
+  alert('start speed test');
+};
+
+$('.speed-test').on('click', () => {
+  startSpeedTest();
+});
+// $(document).ready(() => {
+//   $('#speedTestSwitch').on('change', function () {
+//     if ($(this).prop('checked')) {
+//       startSpeedTest(true);
+//     } else {
+//       startSpeedTest(false);
+//     }
+//   });
+// });
 
 $(window).on('load', () => {
   // if unauthorized -> it is okay to stay at esndirectory (currently)

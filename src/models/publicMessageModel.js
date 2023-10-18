@@ -1,6 +1,10 @@
 // import mongoose from '../services/db.js';
+import mongoose from 'mongoose';
 
-const PublicMessageFactory = (mongoose) => {
+const PublicMessageFactory = (connection) => {
+  if (connection.models.PublicMessage) {
+    return connection.models.PublicMessage;
+  }
   const PublicMessageSchema = new mongoose.Schema({
     content: {
       type: String,
@@ -21,7 +25,7 @@ const PublicMessageFactory = (mongoose) => {
     },
   });
 
-  const PublicMessageModel = mongoose.model('PublicMessage', PublicMessageSchema);
+  const PublicMessageModel = connection.model('PublicMessage', PublicMessageSchema);
 
   class PublicMessage extends PublicMessageModel {
     getText() {

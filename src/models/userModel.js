@@ -3,6 +3,7 @@ import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 // import mongoose from '../services/db.js';
+import mongoose from 'mongoose';
 
 // eslint-disable-next-line no-underscore-dangle
 const __filename = fileURLToPath(import.meta.url);
@@ -16,8 +17,9 @@ const FILE_PATH = path.resolve(__dirname, '../utils/banned_username.json');
  * @param {mongoose} mongoose database connection
  * @returns User class
  */
-const userFactory = (mongoose) => {
+const userFactory = (connection) => {
   // user class
+  // console.log(connection);
   const UserSchema = new mongoose.Schema({
     username: {
       type: String,
@@ -40,7 +42,7 @@ const userFactory = (mongoose) => {
     // TODO: status, isAdmin: false
   });
 
-  const UserModel = mongoose.model('User', UserSchema);
+  const UserModel = connection.model('User', UserSchema);
 
   class User extends UserModel {
     static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));

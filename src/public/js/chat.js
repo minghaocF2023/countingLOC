@@ -31,7 +31,32 @@ const connectSocket = () => {
     const newMsg = createChatMessage(msg.senderName, msg.status, msg.content, msg.timestamp);
     $('#chat-list').append(newMsg);
   });
+
+  // speed test sockets
+  socket.on('startspeedtest', () => {
+    alert('should go to 503 page');
+  });
+  socket.on('finishspeedtest', () => {
+    alert('should back to previous page');
+  });
 };
+
+const startSpeedTest = () => {
+  alert('start speed test');
+};
+
+$('.speed-test').on('click', () => {
+  startSpeedTest();
+});
+// $(document).ready(() => {
+//   $('#speedTestSwitch').on('change', function () {
+//     if ($(this).prop('checked')) {
+//       startSpeedTest(true);
+//     } else {
+//       startSpeedTest(false);
+//     }
+//   });
+// });
 
 $(window).on('load', () => {
   axios.put(
