@@ -1,20 +1,18 @@
 // import { Server, Socket } from 'socket.io';
 
-class SocketServer {
+class PrivateSocketServer {
   constructor(io) {
     this.socketIO = io;
     this.userToSocket = new Map();
     this.socketIO.on('connection', (socket) => {
-      SocketServer.handleConnection(socket, this.userToSocket);
+      PrivateSocketServer.handleConnection(socket, this.userToSocket);
     });
   }
 
   static handleConnection(socket, userToSocket) {
-    const { username } = socket.handshake.auth;
     console.log(`private a user connected ${socket.id}...`);
-    // console.log('Handshake data:', socket.handshake);
-    userToSocket.set(username, socket.id);
-    console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
+    userToSocket.set();
+    console.log(`userlist: ${this.userToSocket}`);
 
     socket.on('disconnect', () => {
       console.log(`a user disconnected ${socket.id}`);
@@ -25,17 +23,13 @@ class SocketServer {
     // });
   }
 
-  publishEvent(event, data) {
-    this.socketIO.emit(event, data);
-  }
-
-  sendToPrivate(event, receiverName, content) {
+  sendToPrivate(receiverName, content) {
     const receiverSocketId = this.userToSocket.get(receiverName);
-    this.socketIO.to(receiverSocketId).emit(event, {
+    this.socketIO.to(receiverSocketId).emit('privatemessage', {
       content,
       from: this.socketIO.id,
     });
   }
 }
 
-export default SocketServer;
+export default PrivateSocketServer;

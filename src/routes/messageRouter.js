@@ -94,6 +94,14 @@
  *     schema:
  *       type: string
  *     example: receiveuser
+ *   isInChat:
+ *     name: isInChat
+ *     in: query
+ *     description: if user is in chat
+ *     required: true
+ *     schema:
+ *       type: boolean
+ *     example: true
  */
 import express from 'express';
 import PublicChatController from '../controllers/publicChatController.js';
@@ -253,6 +261,7 @@ router.post('/private', privateChatController.postNewPrivate);
  *     parameters:
  *       - $ref: '#/parameters/userA'
  *       - $ref: '#/parameters/userB'
+ *       - $ref: '#/parameters/isInChat'
  *     responses:
  *       200:
  *         description: Success

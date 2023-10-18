@@ -5,7 +5,9 @@ class privateChatController {
   static async getLatestMessageBetweenUsers(req, res) {
     // get all messages between userA and userB
     const { userA, userB } = req.params;
-
+    const isInChat = req.query.isInChat === 'true';
+    // hardcode
+    // const { isInChat } = req.body;
     if (!userA || !userB) {
       res.status(400).json({ message: 'Both userA and userB are required' });
     }
@@ -16,11 +18,13 @@ class privateChatController {
         { senderName: userB, receiverName: userA },
       ],
     };
-
+    // assume userB = receiver
+    let anyMessageUnread = false;
+    const messageToBeViewed = [];
     PrivateMessage.get(query).then((privateMessages) => {
       const resData = [];
       // organize response data
-      privateMessages.forEach((pm) => {
+      privateMessages.forEach(async (pm) => {
         const element = {
           chatroomId: pm.getChatroomID(),
           content: pm.getText(),
@@ -28,13 +32,46 @@ class privateChatController {
           receiverName: pm.getReceiverName(),
           status: pm.getStatus(),
           timestamp: pm.getTimestamp(),
+          isViewed: pm.getIsViewed(),
         };
+        if (isInChat && element.isViewed === false && element.receiverName === userB) {
+          // eslint-disable-next-line no-underscore-dangle
+          messageToBeViewed.push(pm._id);
+          element.isViewed = true;
+        }
         resData.push(element);
+
+        // if already in private chatroom, and if any message is not viewed, update as viewed
+
+        // if any messages is not viewed yet, set anyMessageUnread as true
+        if (element.receiverName === userB && element.isViewed === false) {
+          anyMessageUnread = true;
+        }
       });
-      // success
-      res.status(200).json({ message: 'OK', data: resData });
-    }).catch(() => res.status(500).json({ message: 'Database error' }));
-    // error
+      const changeToViewedTaskList = [];
+      messageToBeViewed.forEach((messageId) => {
+        const task = new Promise((resolve) => {
+          PrivateMessage.markedAsViewed(messageId).then(() => {
+            resolve();
+          });
+        });
+        changeToViewedTaskList.push(task);
+      });
+
+      Promise.all(changeToViewedTaskList).then(() => {
+        // if user is not in chatroom, messageUnread = false
+        const response = { message: 'OK', data: resData, messageUnread: false };
+
+        if (!isInChat) {
+          if (anyMessageUnread) {
+            response.messageUnread = true;
+          }
+        }
+
+        // success
+        res.status(200).json(response);
+      }).catch(() => res.status(500).json({ message: 'Database error' }));
+    });
   }
 
   /**
@@ -95,19 +132,21 @@ class privateChatController {
         receiverName,
         timestamp: Date.now(),
         status: 'OK',
+        isViewed: false,
       };
       const newPrivateMessage = new PrivateMessage(data);
       await newPrivateMessage.save();
 
-      // const socketServer = req.app.get('socketServer');
-      // socketServer.publishEvent('newPrivateMessage', newPrivateMessage);
+      // broadcast to receiver
+      const socketServer = req.app.get('socketServer');
+      socketServer.sendToPrivate(receiverName, data.content);
 
       res.status(201).json({ success: true, data: newPrivateMessage });
     });
   }
 
   /**
-   * TODO: get all private users that have chatted with ME
+   * get all private users that have chatted with ME
    */
   static async getAllPrivate(req, res) {
     // for private wall

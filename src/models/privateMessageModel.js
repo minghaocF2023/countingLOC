@@ -25,6 +25,11 @@ const PrivateMessageFactory = (mongoose) => {
       type: String,
       required: true,
     },
+    isViewed: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   });
 
   const PrivateMessageModel = mongoose.model('PrivateMessage', PrivateMessageSchema);
@@ -76,6 +81,21 @@ const PrivateMessageFactory = (mongoose) => {
 
     getStatus() {
       return this.status;
+    }
+
+    getIsViewed() {
+      return this.isViewed;
+    }
+
+    // update message isViewed status
+    static async markedAsViewed(messageId) {
+      const message = await PrivateMessage.findById(messageId);
+      if (message) {
+        message.isViewed = true;
+        await message.save().then(() => {
+          console.log('updated to viewed');
+        });
+      }
     }
 
     /**

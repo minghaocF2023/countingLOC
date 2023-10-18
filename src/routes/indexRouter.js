@@ -23,6 +23,10 @@ router.get('/chatwall', (req, res) => {
   res.render(speedTestController.getTestState() ? '503page' : 'chatwall');
 });
 
+router.get('/privatechat', (req, res) => {
+  res.render('privateChat');
+});
+
 // router.get('/messages/public', (req, res) => {
 //   res.render('chatwall');
 // });
