@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 // import mongoose from '../services/db.js';
 import mongoose from 'mongoose';
-import { realConnection, testConnection } from '../services/db.js';
 
 // eslint-disable-next-line no-underscore-dangle
 const __filename = fileURLToPath(import.meta.url);

@@ -31,12 +31,18 @@ const connectSocket = () => {
     const newMsg = createChatMessage(msg.senderName, msg.status, msg.content, msg.timestamp);
     $('#chat-list').append(newMsg);
   });
+
+  // speed test sockets
+  socket.on('startspeedtest', () => {
+    alert('should go to 503 page');
+  });
+  socket.on('finishspeedtest', () => {
+    alert('should back to previous page');
+  });
 };
 
-const startSpeedTest = (isTest) => {
-  axios.post('admin/startspeedtest', { isTest }).then((res) => {
-    console.log(res);
-  });
+const startSpeedTest = () => {
+  alert('start speed test');
 };
 
 $('.speed-test').on('click', () => {

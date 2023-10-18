@@ -1,6 +1,5 @@
 // import mongoose from '../services/db.js';
 import mongoose from 'mongoose';
-import { realConnection, testConnection } from '../services/db.js';
 
 const PublicMessageFactory = (connection) => {
   if (connection.models.PublicMessage) {

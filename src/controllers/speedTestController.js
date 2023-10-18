@@ -1,55 +1,102 @@
-// import mongoose from 'mongoose';
-// import publicMessageFactory from '../models/publicMessageModel.js';
 import { testConnection } from '../services/db.js';
 import publicMessageFactory from '../models/publicMessageModel.js';
+import JWT from '../utils/jwt.js';
 
 class speedTestController {
-  testState = false;
+  static testState = false;
 
-  static getState = () => this.testState;
+  static getTestState = () => speedTestController.testState;
 
-  static setState = (state) => {
-    this.testState = state;
-  };
+  static setState(state) {
+    speedTestController.testState = state;
+  }
 
   /**
    * to check if current system is in performance testing state
    */
   static async getIsTestState(req, res) {
-    res.status(200).json({ message: 'OK', isTest: this.testState });
+    res.status(200).json({ message: 'OK', isTest: speedTestController.testState });
   }
 
   static async startSpeedTest(req, res) {
-    const { isTest, duration, interval } = req.body;
-    this.setState(isTest);
-    // console.log('Speed test started');
+    // user authentication
+    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
+      res.status(401).json({ message: 'User not logged in' });
+      return;
+    }
+
+    const payload = JWT.verifyToken(req.headers.authorization.split(' ')[1]);
+    if (payload === null) {
+      res.status(401);
+      res.json({ message: 'User not logged in' });
+      return;
+    }
+    const { duration, interval } = req.body;
+    speedTestController.testState = true;
     const PublicTestMessage = publicMessageFactory(testConnection);
 
     // socket notify users that start testing!
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('speedtest', { test: true });
+    socketServer.publishEvent('startspeedtest');
 
-    // Create a new test message
-    const testMessage = new PublicTestMessage({
-      content: 'This is a 20 word ms',
-      senderName: 'Test sender',
-      timestamp: Date.now(),
-      status: 'GREEN',
-    });
+    const startTime = Date.now();
+    let postCount = 0;
+    let getCount = 0;
+    let isPosting = true;
+    const MAX_POST_COUNT = 1000;
+    const errors = [];
 
-    // Save the test message to the database
-    try {
-      await testMessage.save();
-      console.log('Test message saved to the database');
-      res.status(200).json({ message: 'OK' });
-    } catch (error) {
-      console.error('Failed to save test message:', error);
-      res.status(500).json({ message: 'Failed to save test message' });
-    }
-  }
+    const testInterval = setInterval(async () => {
+      const elapsed = Date.now() - startTime;
+      // Switch to GET requests halfway through the test
+      // OR if the max number of POSTs has been reached
+      if ((elapsed > duration / 2 || postCount >= MAX_POST_COUNT) && isPosting) {
+        isPosting = false;
+      }
+      if (isPosting) {
+        try {
+          // Create a new test message
+          const testMessage = new PublicTestMessage({
+            content: '12345678901234567890',
+            senderName: `Test Sender ${postCount}`,
+            timestamp: Date.now(),
+            status: 'GREEN',
+          });
+          await testMessage.save();
+          postCount += 1;
+        } catch (error) {
+          console.error('Failed to save test message:', error);
+          errors.push(error);
+        }
+      } else {
+        try {
+          await PublicTestMessage.findOne({ senderName: `Test Sender ${getCount}` });
+          getCount += 1;
+        } catch (error) {
+          console.error('Failed to get test messages:', error);
+          errors.push(error);
+        }
+      }
+      // Stop the test if the duration has elapsed
+      if (elapsed > duration) {
+        clearInterval(testInterval);
+        try {
+          await PublicTestMessage.deleteMany();
+        } catch (deleteError) {
+          console.error('Failed to clear test messages:', deleteError);
+        }
+        speedTestController.setState(false);
+        res.status(200).json({
+          message: 'Test completed',
+          POSTs: postCount,
+          GETs: getCount,
+          errors,
+        });
 
-  static async getMessageBetweenUsers(req, res) {
-    res.status(501).json({ message: 'Not implemented' });
+        // broadcast to users that performance test is finished
+        socketServer.publishEvent('finishspeedtest');
+      }
+    }, interval);
   }
 }
 export default speedTestController;

@@ -44,14 +44,19 @@ const connectSocket = () => {
 
     appendNewUser(msg.isOnline ? onlineListDiv : offlineListDiv, msg.username, msg.isOnline);
   });
+  // speed test sockets
+  socket.on('startspeedtest', () => {
+    alert('should go to 503 page');
+  });
+  socket.on('finishspeedtest', () => {
+    alert('should back to previous page');
+  });
 };
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
-const startSpeedTest = (isTest) => {
-  axios.post('admin/startspeedtest', { isTest }).then((res) => {
-    console.log(res);
-  });
+const startSpeedTest = () => {
+  alert('start speed test');
 };
 
 $('.speed-test').on('click', () => {
