@@ -82,10 +82,10 @@
  *     schema:
  *       type: string
  *     example: testUser
- *   statusCode:
- *     name: statusCode
+ *   status:
+ *     name: status
  *     in: path
- *     description: current statusCode
+ *     description: current status
  *     required: true
  *     schema:
  *       type: string
@@ -365,60 +365,11 @@ router.get('/:username/private', privateChatController.getChattedUsers);
 
 /**
  * @swagger
- * /users/{username}/status/{statusCode}:
- *   post:
- *     tags: [Users]
- *     summary: Update user status
- *     description: Update user status
- *     parameters:
- *       - $ref: '#/parameters/username'
- *       - $ref: '#/parameters/statusCode'
- *     responses:
- *       200:
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/Response'
- *                 - type: object
-  *       400:
- *         description: Invalid request
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: Invalid request
- *       404:
- *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: User not found
- *       401:
- *         description: User not logged in
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: User not logged in
- */
-router.post(':username/status/:statusCode', StatusController.updateStatus);
-router.get('/status', StatusController.getStatus);
-
-/**
- * @swagger
-* /users/{username}/statuscrumbs:
+* /users/:username/status:
 *   get:
 *     tags: [Users]
-*     summary: Get user status history.
-*     description: Get user status history.
-*     parameters:
-*       - $ref: '#/parameters/username'
+*     summary: Get one use's' status history.
+*     description: Get one use's' status history.
 *     responses:
 *       200:
  *         description: Success
@@ -458,7 +409,55 @@ router.get('/status', StatusController.getStatus);
  *             example:
  *               message: User not logged in
 */
-// router.get(':username/statuscrumbs', UserController.getStatusHistory);
+router.get('/:username/status', (req, res) => {
+  StatusController.getStatus(req, res);
+});
+
+/**
+ * @swagger
+ * /users/{username}/status/{status}:
+ *   post:
+ *     tags: [Users]
+ *     summary: Update user status
+ *     description: Update user status
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *       - $ref: '#/parameters/status'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+  *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.post('/:username/status/:status', StatusController.updateStatus);
 
 // /**
 //   * @swagger
