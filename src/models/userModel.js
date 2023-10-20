@@ -44,6 +44,15 @@ const userFactory = (connection) => {
       default: false,
     },
     // TODO: status, isAdmin: false
+    status: {
+      type: String,
+      default: 'Undefined',
+      enum: ['OK', 'Help', 'Emergency', 'Undefined'],
+    },
+    statusTimestamp: {
+      type: Date,
+      default: Date.now,
+    },
   });
 
   const UserModel = connection.model('User', UserSchema);
