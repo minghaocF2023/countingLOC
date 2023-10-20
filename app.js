@@ -13,6 +13,7 @@ import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
 import adminRouter from './src/routes/adminRouter.js';
 import SocketServer from './src/services/socket.js';
+import PrivateSocketServer from './src/services/privateSocket.js';
 
 const PORT = 3000;
 
@@ -24,6 +25,7 @@ const io = new Server(server);
 
 const socketServer = new SocketServer(io);
 app.set('socketServer', socketServer);
+app.set('privateSocketServer', PrivateSocketServer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

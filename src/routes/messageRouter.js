@@ -2,14 +2,10 @@
  * @swagger
  * components:
  *   schemas:
- *     sender:
+ *     user:
  *       type: string
- *       description: Sender's username
- *       example: sendername
- *     receiver:
- *       type: string
- *       description: Receiver's username
- *       example: receivername
+ *       description: user's username
+ *       example: username
  *     NewMessage:
  *       type: object
  *       description: New message
@@ -74,14 +70,22 @@
 /**
  * @swagger
  * parameters:
- *   sender:
- *     name: sender
+ *   userA:
+ *     name: userA
  *     in: path
- *     description: Username of a sender
+ *     description: Username of a userA
  *     required: true
  *     schema:
  *       type: string
- *     example: senduser
+ *     example: userA
+ *   userB:
+ *     name: userB
+ *     in: path
+ *     description: Username of a userB
+ *     required: true
+ *     schema:
+ *       type: string
+ *     example: userB
  *   receiver:
  *     name: receiver
  *     in: path
@@ -90,6 +94,14 @@
  *     schema:
  *       type: string
  *     example: receiveuser
+ *   isInChat:
+ *     name: isInChat
+ *     in: query
+ *     description: if user is in chat
+ *     required: true
+ *     schema:
+ *       type: boolean
+ *     example: true
  */
 import express from 'express';
 import PublicChatController from '../controllers/publicChatController.js';
@@ -191,7 +203,7 @@ router.post('/public', PublicChatController.postNew);
  *   post:
  *     tags: [Messages]
  *     summary: Post a new private message
- *     description: Post a new message on the public wall
+ *     description: Post a new message on the private wall
  *     requestBody:
  *       required: true
  *       content:
@@ -237,18 +249,19 @@ router.post('/public', PublicChatController.postNew);
  *             example:
  *               message: User not logged in
  */
-router.post('/private', privateChatController.postNewPrivateMessage);
+router.post('/private', privateChatController.postNewPrivate);
 
 /**
  * @swagger
- * /messages/private/{sender}/{receiver}:
+ * /messages/private/{userA}/{userB}:
  *   get:
  *     tags: [Messages]
  *     summary: Get all private messages between sender and receiver
  *     description: Get all messages published on the public wall
  *     parameters:
- *       - $ref: '#/parameters/sender'
- *       - $ref: '#/parameters/receiver'
+ *       - $ref: '#/parameters/userA'
+ *       - $ref: '#/parameters/userB'
+ *       - $ref: '#/parameters/isInChat'
  *     responses:
  *       200:
  *         description: Success
@@ -288,6 +301,6 @@ router.post('/private', privateChatController.postNewPrivateMessage);
  *             example:
  *               message: User not logged in
  */
-router.get('/private/:sender/:receiver', privateChatController.getMessageBetweenUsers);
+router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
 
 export default router;
