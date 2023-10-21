@@ -25,8 +25,11 @@ const scrollToBottom = () => {
   $('#chat-list').children().last()[0].scrollIntoView();
 };
 
-const connectSocket = () => {
-  const socket = io();
+const connectSocket = (username) => {
+  const URL = 'http://localhost:3000';
+  const socket = io(URL, { autoConnect: false });
+  socket.auth = { username };
+  socket.connect();
   socket.on('newMessage', (msg) => {
     const newMsg = createChatMessage(msg.senderName, msg.status, msg.content, msg.timestamp);
     $('#chat-list').append(newMsg);
@@ -91,7 +94,7 @@ $(window).on('load', () => {
       window.location = '/join';
     }
   });
-  connectSocket();
+  connectSocket(localStorage.getItem('username'));
 });
 
 $('#send').on('click', () => {

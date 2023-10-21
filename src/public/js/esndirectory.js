@@ -32,10 +32,12 @@ const appendNewUser = (div, username, isOnline) => {
   div.append(newList);
 };
 
-const connectSocket = () => {
-  const socket = io();
-  socket.emit('username', localStorage.getItem('username'));
-  console.log('connect socket');
+const connectSocket = (username) => {
+  // const socket = io();
+  const URL = 'http://localhost:3000';
+  const socket = io(URL, { autoConnect: false });
+  socket.auth = { username };
+  socket.connect();
   socket.on('userOnlineStatus', (msg) => {
     console.log(`someone login:${msg.username} ${msg.isOnline}`);
 
@@ -82,7 +84,7 @@ $(window).on('load', () => {
     console.log('set status online');
   });
 
-  connectSocket();
+  connectSocket(localStorage.getItem('username'));
 
   // get esn directory info
   axios.get('/users').then((res) => {
