@@ -53,7 +53,7 @@ const options = {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT',
+          in: 'header',
           value: 'Bearer <JWT token here>',
         },
       },
