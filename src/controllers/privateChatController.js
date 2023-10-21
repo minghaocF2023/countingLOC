@@ -1,5 +1,6 @@
 import { Chatroom, PrivateMessage, User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
+import 'dotenv/config';
 
 class privateChatController {
   static async getLatestMessageBetweenUsers(req, res) {
@@ -83,8 +84,8 @@ class privateChatController {
       res.status(401).json({ message: 'User not logged in' });
       return;
     }
-
-    const payload = JWT.verifyToken(req.headers.authorization.split(' ')[1]);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
     if (payload === null) {
       res.status(401);
       res.json({ message: 'User not logged in' });
@@ -139,7 +140,7 @@ class privateChatController {
 
       // broadcast to receiver
       const socketServer = req.app.get('socketServer');
-      socketServer.sendToPrivate(receiverName, data.content);
+      socketServer.sendToPrivate('privatemessage', receiverName, data.content);
 
       res.status(201).json({ success: true, data: newPrivateMessage });
     });
@@ -151,7 +152,8 @@ class privateChatController {
   static async getAllPrivate(req, res) {
     // for private wall
     // get list of users who have chatted before
-    const payload = JWT.verifyToken(req.headers.authorization.split(' ')[1]);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
     if (payload === null) {
       res.status(401);
       res.json({ message: 'User not logged in' });

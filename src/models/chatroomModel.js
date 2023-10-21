@@ -1,4 +1,6 @@
-const ChatroomFactory = (mongoose) => {
+import mongoose from 'mongoose';
+
+const ChatroomFactory = (connection) => {
   const ChatroomSchema = new mongoose.Schema({
     senderName: {
       type: String,
@@ -10,7 +12,7 @@ const ChatroomFactory = (mongoose) => {
     },
   });
 
-  const ChatroomModel = mongoose.model('Chatroom', ChatroomSchema);
+  const ChatroomModel = connection.model('Chatroom', ChatroomSchema);
 
   class Chatroom extends ChatroomModel {
     /**

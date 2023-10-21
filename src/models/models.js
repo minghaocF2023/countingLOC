@@ -29,17 +29,18 @@ import { realConnection } from '../services/db.js';
 import userFactory from './userModel.js';
 import publicMessageFactory from './publicMessageModel.js';
 import PrivateMessageFactory from './privateMessageModel.js';
-
+import ChatroomFactory from './chatroomModel.js';
 // Factory functions to get models based on desired connection:
 const createUserModel = (connection) => userFactory(connection);
 const createPublicMessageModel = (connection) => publicMessageFactory(connection);
 const createPrivateMessageModel = (connection) => PrivateMessageFactory(connection);
+const createChatroomModel = (connection) => ChatroomFactory(connection);
 // Default Models for real database:
 const User = createUserModel(realConnection);
 const PublicMessage = createPublicMessageModel(realConnection);
 const PrivateMessage = createPrivateMessageModel(realConnection);
-
+const Chatroom = createChatroomModel(realConnection);
 export {
-  User, PublicMessage, PrivateMessage,
-  createUserModel, createPublicMessageModel, createPrivateMessageModel,
+  User, PublicMessage, PrivateMessage, Chatroom,
+  createUserModel, createPublicMessageModel, createPrivateMessageModel, createChatroomModel,
 };

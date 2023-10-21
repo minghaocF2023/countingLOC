@@ -82,7 +82,8 @@ class UserController {
     // save to database
     await newUser.save().then(() => {
       res.status(201);
-      res.json({ message: 'OK', token: JWT.generateToken(data.username) });
+      const jwt = new JWT(process.env.JWTSECRET);
+      res.json({ message: 'OK', token: jwt.generateToken(data.username) });
     }).catch((e) => {
       console.error(e);
       res.status(500);

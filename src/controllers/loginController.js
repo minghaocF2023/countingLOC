@@ -30,8 +30,8 @@ class LoginController {
       res.json({ message: 'Incorrect username/password' });
       return;
     }
-
-    const token = JWT.generateToken(data.username);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const token = jwt.generateToken(data.username);
 
     res.status(200);
     res.json({ message: 'OK', token });
@@ -49,7 +49,8 @@ class LoginController {
     }
 
     const token = req.headers.authorization.split(' ')[1];
-    const payload = JWT.verifyToken(token);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const payload = jwt.verifyToken(token);
     // check username
     if (!req.params.username) {
       res.status(400);
@@ -64,7 +65,6 @@ class LoginController {
       res.json({ message: 'Unauthorized Request' }); // maybe some other message
       return;
     }
-
     try {
       // update database user status
       const user = await User.getOne({ username });

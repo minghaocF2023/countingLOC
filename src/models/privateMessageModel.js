@@ -1,4 +1,6 @@
-const PrivateMessageFactory = (mongoose) => {
+import mongoose from 'mongoose';
+
+const PrivateMessageFactory = (connection) => {
   const PrivateMessageSchema = new mongoose.Schema({
     chatroomId: {
       type: mongoose.Types.ObjectId,
@@ -32,7 +34,7 @@ const PrivateMessageFactory = (mongoose) => {
     },
   });
 
-  const PrivateMessageModel = mongoose.model('PrivateMessage', PrivateMessageSchema);
+  const PrivateMessageModel = connection.model('PrivateMessage', PrivateMessageSchema);
 
   class PrivateMessage extends PrivateMessageModel {
     /**
