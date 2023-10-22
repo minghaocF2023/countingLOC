@@ -36,6 +36,7 @@ const connectSocket = (username) => {
     if (senderName === receiver) {
       const newMsg = createChatMessage(senderName, status, content, timestamp);
       $('#chat-list').append(newMsg);
+      scrollToBottom();
     }
   });
 };

@@ -34,6 +34,7 @@ const connectSocket = (username) => {
   socket.on('newMessage', (msg) => {
     const newMsg = createChatMessage(msg.senderName, msg.status, msg.content, msg.timestamp);
     $('#chat-list').append(newMsg);
+    scrollToBottom();
   });
 
   // speed test sockets
