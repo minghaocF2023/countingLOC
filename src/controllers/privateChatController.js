@@ -169,7 +169,6 @@ class privateChatController {
         timestamp: Date.now(),
         status: (await this.userModel.getOne({ username: payload.username })).status,
         isViewed: false,
-        isNotified: false,
       };
       // const newPrivateMessage = new PrivateMessage(data);
       // eslint-disable-next-line new-cap
@@ -179,7 +178,6 @@ class privateChatController {
       // broadcast to receiver
       const socketServer = req.app.get('socketServer');
       socketServer.sendToPrivate('privatemessage', receiverName, data);
-      await newPrivateMessage.updateOne({ isNotified: socketServer.isConnected(receiverName) });
 
       res.status(201).json({ success: true, data: newPrivateMessage });
     });
