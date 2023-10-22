@@ -26,6 +26,7 @@ afterEach(async () => {
 afterAll(async () => {
   await mongoose.connection.close();
   await mongod.stop();
+  // await server.close();
   if (server && server.listening) {
     await server.close();
   }
@@ -34,8 +35,8 @@ afterAll(async () => {
 // /**
 // Query-type test: Fetch a user's status
 test('Fetch user status successfully', async () => {
-  const testUser = 'YukeTest1';
-  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inl1a2V0ZXN0MSIsImlhdCI6MTY5Nzk2MDY1NywiZXhwIjoxNjk3OTY0MjU3fQ.aRfWPx6_kUniaa6i0jV4XlfViDZDwclVZSENHbny83Q';
+  const testUser = 'leo';
+  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxlbyIsImlhdCI6MTY5Nzk5Mzg5NX0.ez2Jzh97hTCwLi14FW1m8QM1FQkUiI6OmhY10r5Hybs';
   const response = await axios.get(`${HOST}/users/${testUser}/status`, {
     headers: {
       Authorization: `Bearer ${mockToken}`,
@@ -50,8 +51,8 @@ test('Fetch user status successfully', async () => {
 
 // State-updating test: Updating a user's status
 test('Update user status', async () => {
-  const testUser = 'YukeTest1';
-  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inl1a2V0ZXN0MSIsImlhdCI6MTY5Nzk2MDY1NywiZXhwIjoxNjk3OTY0MjU3fQ.aRfWPx6_kUniaa6i0jV4XlfViDZDwclVZSENHbny83Q';
+  const testUser = 'leo';
+  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxlbyIsImlhdCI6MTY5Nzk5Mzg5NX0.ez2Jzh97hTCwLi14FW1m8QM1FQkUiI6OmhY10r5Hybs';
   const newStatus = 'OK'; // The new status you want to set
 
   const response = await axios.post(`${HOST}/users/${testUser}/status/${newStatus}`, null, {
