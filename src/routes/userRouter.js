@@ -95,11 +95,21 @@
 import express from 'express';
 import UserController from '../controllers/userController.js';
 import LoginController from '../controllers/loginController.js';
-import privateChatController from '../controllers/privateChatController.js';
+import PrivateChatController from '../controllers/privateChatController.js';
 import StatusController from '../controllers/statusController.js';
+import userFactory from '../models/userModel.js';
+import PrivateMessageFactory from '../models/privateMessageModel.js';
+import ChatroomFactory from '../models/chatroomModel.js';
+import { realConnection } from '../services/db.js';
 
 const router = express.Router();
-
+const userModel = userFactory(realConnection);
+const privateChatModel = PrivateMessageFactory(realConnection);
+const chatroomModel = ChatroomFactory(realConnection);
+const userController = new UserController(userModel);
+const loginController = new LoginController(userModel);
+const statusController = new StatusController(userModel);
+const privateChatController = new PrivateChatController(privateChatModel, chatroomModel, userModel);
 /**
  * @swagger
  * /users:
@@ -131,7 +141,9 @@ const router = express.Router();
  *               ]
  *               banned_users: [bannedUser1, bannedUser2]
  */
-router.get('/', UserController.getAllUsers);
+router.get('/', (req, res) => {
+  userController.getAllUsers(req, res);
+});
 
 /**
  * @swagger
@@ -168,7 +180,9 @@ router.get('/', UserController.getAllUsers);
  *                 value:
  *                   message: Banned username
  */
-router.get('/:username', UserController.getUserByUsername);
+router.get('/:username', (req, res) => {
+  userController.getUserByUsername(req, res);
+});
 
 /**
  * @swagger
@@ -212,7 +226,9 @@ router.get('/:username', UserController.getUserByUsername);
  *             example:
  *               message: Duplicated username
  */
-router.post('/', UserController.createUser);
+router.post('/', (req, res) => {
+  userController.createUser(req, res);
+});
 
 /**
  * @swagger
@@ -263,9 +279,13 @@ router.post('/', UserController.createUser);
  *             example:
  *               message: Incorrect username/password
  */
-router.put('/:username/online', LoginController.updateOnlineStatus);
+router.put('/:username/online', (req, res) => {
+  loginController.updateOnlineStatus(req, res);
+});
 
-router.post('/:username', LoginController.loginUser);
+router.post('/:username', (req, res) => {
+  loginController.loginUser(req, res);
+});
 /**
  * @swagger
  * /users/{username}/offline:
@@ -312,7 +332,9 @@ router.post('/:username', LoginController.loginUser);
  *             example:
  *               message: User not logged in
  */
-router.put('/:username/offline', LoginController.logoutUser);
+router.put('/:username/offline', (req, res) => {
+  loginController.logoutUser(req, res);
+});
 /**
  * @swagger
  * /users/{username}/private:
@@ -361,7 +383,9 @@ router.put('/:username/offline', LoginController.logoutUser);
  *             example:
  *               message: User not logged in
  */
-router.get('/:username/private', privateChatController.getAllPrivate);
+router.get('/:username/private', (req, res) => {
+  privateChatController.getAllPrivate(req, res);
+});
 
 /**
  * @swagger
@@ -410,7 +434,7 @@ router.get('/:username/private', privateChatController.getAllPrivate);
  *               message: User not logged in
 */
 router.get('/:username/status', (req, res) => {
-  StatusController.getStatus(req, res);
+  statusController.getStatus(req, res);
 });
 
 /**
@@ -457,7 +481,9 @@ router.get('/:username/status', (req, res) => {
  *             example:
  *               message: User not logged in
  */
-router.post('/:username/status/:status', StatusController.updateStatus);
+router.post('/:username/status/:status', (req, res) => {
+  statusController.updateStatus(req, res);
+});
 
 // /**
 //   * @swagger

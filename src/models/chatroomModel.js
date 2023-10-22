@@ -12,7 +12,13 @@ const ChatroomFactory = (connection) => {
     },
   });
 
-  const ChatroomModel = connection.model('Chatroom', ChatroomSchema);
+  let ChatroomModel;
+  if (connection.models.Chatroom) {
+    ChatroomModel = connection.models.Chatroom;
+  } else {
+    ChatroomModel = connection.model('Chatroom', ChatroomSchema);
+  }
+  // const ChatroomModel = connection.model('Chatroom', ChatroomSchema);
 
   class Chatroom extends ChatroomModel {
     /**

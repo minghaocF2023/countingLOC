@@ -105,9 +105,25 @@
  */
 import express from 'express';
 import PublicChatController from '../controllers/publicChatController.js';
-import privateChatController from '../controllers/privateChatController.js';
+import PrivateChatController from '../controllers/privateChatController.js';
+import PublicMessageFactory from '../models/publicMessageModel.js';
+import PrivateMessageFactory from '../models/privateMessageModel.js';
+import UserFactory from '../models/userModel.js';
+import ChatroomFactory from '../models/chatroomModel.js';
+import { realConnection } from '../services/db.js';
 
 const router = express.Router();
+const userModel = UserFactory(realConnection);
+const publicMessageModel = PublicMessageFactory(realConnection);
+const privateMessageModel = PrivateMessageFactory(realConnection);
+const chatroomModel = ChatroomFactory(realConnection);
+
+const publicChatController = new PublicChatController(publicMessageModel, userModel);
+const privateChatController = new PrivateChatController(
+  privateMessageModel,
+  chatroomModel,
+  userModel,
+);
 
 /**
  * @swagger
@@ -131,7 +147,10 @@ const router = express.Router();
  *                       items:
  *                        $ref: '#/components/schemas/Message'
  */
-router.get('/public', PublicChatController.getLatestMessages);
+// router.get('/public', PublicChatController.getLatestMessages);
+router.get('/public', (req, res) => {
+  publicChatController.getLatestMessages(req, res);
+});
 
 // /**
 //  * @swagger
@@ -195,7 +214,10 @@ router.get('/public', PublicChatController.getLatestMessages);
  *             example:
  *               message: User not logged in
  */
-router.post('/public', PublicChatController.postNew);
+// router.post('/public', PublicChatController.postNew);
+router.post('/public', (req, res) => {
+  publicChatController.postNew(req, res);
+});
 
 /**
  * @swagger
@@ -249,7 +271,10 @@ router.post('/public', PublicChatController.postNew);
  *             example:
  *               message: User not logged in
  */
-router.post('/private', privateChatController.postNewPrivate);
+// router.post('/private', privateChatController.postNewPrivate);
+router.post('/private', (req, res) => {
+  privateChatController.postNewPrivate(req, res);
+});
 
 /**
  * @swagger
@@ -301,6 +326,9 @@ router.post('/private', privateChatController.postNewPrivate);
  *             example:
  *               message: User not logged in
  */
-router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
+// router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
+router.get('/private/:userA/:userB', (req, res) => {
+  privateChatController.getLatestMessageBetweenUsers(req, res);
+});
 
 export default router;
