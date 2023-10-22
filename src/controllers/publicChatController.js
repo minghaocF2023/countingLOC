@@ -38,7 +38,8 @@ class publicChatController {
       return;
     }
 
-    const payload = JWT.verifyToken(req.headers.authorization.split(' ')[1]);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
     if (payload === null) {
       res.status(401);
       res.json({ message: 'User not logged in' });
