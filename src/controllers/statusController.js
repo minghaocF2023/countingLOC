@@ -1,5 +1,6 @@
 import { User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
+import 'dotenv/config';
 
 class StatusController {
   static async getStatus(req, res) {
@@ -8,7 +9,8 @@ class StatusController {
     }
 
     const token = req.headers.authorization.split(' ')[1];
-    const payload = JWT.verifyToken(token);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const payload = jwt.verifyToken(token);
 
     if (payload === null) {
       return res.status(401).json({ message: 'User not logged in' });
@@ -28,7 +30,8 @@ class StatusController {
       return res.status(401).json({ message: 'User not logged in' });
     }
 
-    const payload = JWT.verifyToken(req.headers.authorization.split(' ')[1]);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
     if (payload === null) {
       return res.status(401).json({ message: 'User not logged in' });
     }

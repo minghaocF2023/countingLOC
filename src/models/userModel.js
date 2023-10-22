@@ -6,9 +6,9 @@ import crypto from 'crypto';
 import mongoose from 'mongoose';
 
 // eslint-disable-next-line no-underscore-dangle
-const __filename = fileURLToPath(import.meta.url);
+const filename = fileURLToPath(import.meta.url);
 // eslint-disable-next-line no-underscore-dangle
-const __dirname = dirname(__filename);
+const __dirname = dirname(filename);
 const FILE_PATH = path.resolve(__dirname, '../utils/banned_username.json');
 
 /**

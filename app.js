@@ -16,9 +16,9 @@ import SocketServer from './src/services/socket.js';
 import PrivateSocketServer from './src/services/privateSocket.js';
 
 const PORT = 3000;
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// console.log('is import.meta.url a string?', typeof import.meta.url);
+const filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(filename);
 const app = express();
 const server = createServer(app);
 const io = new Server(server);

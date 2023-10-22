@@ -7,7 +7,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "eslint": "eslint .",
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "coverage": "jest --coverage"
   },
   "repository": {
@@ -24,6 +24,7 @@
     "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
     "babel-jest": "^29.7.0",
+    "babel-plugin-transform-import-meta": "^2.2.1",
     "body-parser": "^1.20.2",
     "eslint": "^8.50.0",
     "eslint-config-airbnb-base": "^15.0.0",
