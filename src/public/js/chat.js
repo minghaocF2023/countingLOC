@@ -4,8 +4,10 @@
 const createChatMessage = (senderName, status, content, timestamp) => {
   const STATUS = {
     OK: '<i class="fas fa-check-circle" style="color:green"></i>',
-    help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
-    emergency: '<i class="fas fa-exclamation-triangle" style="color:red"></i>',
+    Help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
+    Emergency: '<i class="fas fa-exclamation-triangle" style="color:red"></i>',
+    Undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
+    undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
   };
   const iconHTML = STATUS[status];
   const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;

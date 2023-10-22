@@ -1,4 +1,4 @@
-import { PublicMessage } from '../models/models.js';
+import { PublicMessage, User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 
 /**
@@ -53,7 +53,10 @@ class publicChatController {
 
     const { content } = req.body;
     const data = {
-      content, senderName: payload.username, timestamp: Date.now(), status: 'OK',
+      content,
+      senderName: payload.username,
+      timestamp: Date.now(),
+      status: (await User.getOne({ username: payload.username })).status,
     };
     const newMessage = new PublicMessage(data);
     await newMessage.save();

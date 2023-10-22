@@ -5,6 +5,8 @@ const STATUS = {
   OK: '<i class="fas fa-check-circle" style="color:green"></i>',
   Help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
   Emergency: '<i class="fas fa-exclamation-triangle" style="color:red"></i>',
+  undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
+  Undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
 };
 
 const setStatus = async (status) => {
