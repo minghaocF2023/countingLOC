@@ -27,6 +27,10 @@ router.get('/privatechat', (req, res) => {
   res.render('privateChat');
 });
 
+router.get('/privatechat', (req, res) => {
+  res.render('privateChat');
+});
+
 // router.get('/messages/public', (req, res) => {
 //   res.render('chatwall');
 // });
