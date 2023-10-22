@@ -84,6 +84,14 @@ const userFactory = (connection) => {
         .then((user) => (user ? new User(user) : null));
     }
 
+    static async updateDoc(filter, projection, options) {
+      return this.updateOne(filter, projection, options).then((user) => {
+        console.log(`updated: ${user}`);
+      }).catch((error) => {
+        console.log(`error while updating: ${error}`);
+      });
+    }
+
     /**
      * Hash password with salt
      * @param {string} password plaintext password

@@ -41,7 +41,8 @@ const ChatroomFactory = (connection) => {
 
     getChatroomId() {
       // eslint-disable-next-line no-underscore-dangle
-      return this._id;
+      const idObject = new mongoose.Types.ObjectId(this._id);
+      return idObject;
     }
 
     getSenderName() {

@@ -116,11 +116,11 @@ class privateChatController {
           ],
         };
         User.get(userQuery).then((users) => {
-          users.forEach((user) => {
+          users.forEach(async (user) => {
             const userId = user.getUserId();
             const chatrooms = user.getChatrooms();
             chatrooms.push(newChatroom.getChatroomId());
-            User.updateOne({ _id: userId }, { $set: { chatrooms } });
+            User.updateDoc({ _id: userId }, { chatrooms });
           });
         });
         targetChatroom = newChatroom;
