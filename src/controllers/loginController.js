@@ -79,6 +79,8 @@ class LoginController {
     // socket broadcast
     const socketServer = req.app.get('socketServer');
     socketServer.publishEvent('userOnlineStatus', { username, isOnline: true });
+
+    res.status(200).json({ message: 'OK' });
   }
 
   // update user offline status

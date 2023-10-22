@@ -10,6 +10,9 @@ const newBlock = (username, status) => {
     + `<p class="card-text"><span class="status ${statusStr}">${statusStr}</span></p>`
     + '</div>'
     + '</div>';
+  div.onclick = () => {
+    window.location.href = `/privateChat?username=${username}`;
+  };
   return div;
 };
 
@@ -107,10 +110,3 @@ $(window).on('load', () => {
 if (!localStorage.getItem('token')) {
   $('#logout').html('Login');
 }
-
-// private chat
-$('.user-card').on('click', (e) => {
-  console.log('123');
-  // const username = e;
-  // window.location.href = `/privatechat/${username}`;
-});

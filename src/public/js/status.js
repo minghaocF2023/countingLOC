@@ -51,3 +51,6 @@ Object.keys(STATUS).forEach((key) => {
     setStatusIcon(key);
   });
 });
+
+export default STATUS;
+export { setStatus, setStatusIcon, getStatus };

@@ -132,7 +132,7 @@ class privateChatController {
         senderName: payload.username,
         receiverName,
         timestamp: Date.now(),
-        status: 'OK',
+        status: (await User.getOne({ username: payload.username })).status,
         isViewed: false,
       };
       const newPrivateMessage = new PrivateMessage(data);
@@ -140,7 +140,7 @@ class privateChatController {
 
       // broadcast to receiver
       const socketServer = req.app.get('socketServer');
-      socketServer.sendToPrivate('privatemessage', receiverName, data.content);
+      socketServer.sendToPrivate('privatemessage', receiverName, data);
 
       res.status(201).json({ success: true, data: newPrivateMessage });
     });
