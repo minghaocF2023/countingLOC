@@ -28,8 +28,7 @@ const scrollToBottom = () => {
 };
 
 const connectSocket = (username) => {
-  const URL = 'http://localhost:3000';
-  const socket = io(URL, { autoConnect: false });
+  const socket = io(undefined, { autoConnect: false });
   socket.auth = { username };
   socket.connect();
   socket.on('newMessage', (msg) => {

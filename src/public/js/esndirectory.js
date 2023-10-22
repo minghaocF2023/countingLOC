@@ -34,8 +34,7 @@ const appendNewUser = (div, username, isOnline) => {
 
 const connectSocket = (username) => {
   // const socket = io();
-  const URL = 'http://localhost:3000';
-  const socket = io(URL, { autoConnect: false });
+  const socket = io(undefined, { autoConnect: false });
   socket.auth = { username };
   socket.connect();
   socket.on('userOnlineStatus', (msg) => {
@@ -108,3 +107,10 @@ $(window).on('load', () => {
 if (!localStorage.getItem('token')) {
   $('#logout').html('Login');
 }
+
+// private chat
+$('.user-card').on('click', (e) => {
+  console.log('123');
+  // const username = e;
+  // window.location.href = `/privatechat/${username}`;
+});

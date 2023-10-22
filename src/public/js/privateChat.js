@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 const connectSocket = (username) => {
-  const URL = 'http://localhost:3000';
-  const socket = io(URL, { autoConnect: false });
+  const socket = io(undefined, { autoConnect: false });
   socket.auth = { username };
   socket.connect();
   //   socket.emit('username', localStorage.getItem('username'));

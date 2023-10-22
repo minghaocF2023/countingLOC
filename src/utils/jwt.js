@@ -20,6 +20,7 @@ class JWT {
     try {
       return jwt.verify(token, this.TOKEN_SECRET);
     } catch (err) {
+      console.error(token);
       console.error(err);
       return null;
     }
