@@ -37,6 +37,8 @@ const connectSocket = (username) => {
       const newMsg = createChatMessage(senderName, status, content, timestamp);
       $('#chat-list').append(newMsg);
       scrollToBottom();
+    } else if (window.confirm(`You have a new message from ${senderName}`)) {
+      window.location = `/privateChat?username=${senderName}`;
     }
   });
 };
@@ -58,7 +60,7 @@ await axios.put(
 });
 
 console.log('start fetching messages');
-axios.get(`/messages/private/${username}/${receiver}`, {
+axios.get(`/messages/private/${username}/${receiver}?isInChat=true`, {
   headers: {
     Authorization: `Bearer ${localStorage.getItem('token')}`,
   },
