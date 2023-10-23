@@ -32,7 +32,9 @@ const connectSocket = (username) => {
   socket.connect();
   //   socket.emit('username', localStorage.getItem('username'));
   socket.on('privatemessage', (msg) => {
-    const { senderName, status, content, timestamp } = msg.content;
+    const {
+      senderName, status, content, timestamp,
+    } = msg.content;
     if (senderName === receiver) {
       const newMsg = createChatMessage(senderName, status, content, timestamp);
       $('#chat-list').append(newMsg);
