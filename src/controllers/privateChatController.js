@@ -141,7 +141,7 @@ class privateChatController {
         senderName: payload.username,
         receiverName,
         timestamp: Date.now(),
-        status: (await User.getOne({ username: payload.username })).status,
+        status: (await this.userModel.getOne({ username: payload.username })).status,
         isViewed: false,
       };
       // const newPrivateMessage = new PrivateMessage(data);

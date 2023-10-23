@@ -24,11 +24,11 @@ router.get('/chatwall', (req, res) => {
 });
 
 router.get('/privatechat', (req, res) => {
-  res.render('privateChat');
+  res.render(speedTestController.getTestState() ? '503page' : 'privatechat');
 });
 
-router.get('/privatechat', (req, res) => {
-  res.render('privateChat');
+router.get('/speedtest', (req, res) => {
+  res.render(speedTestController.getTestState() ? '503page' : 'speedtest');
 });
 
 // router.get('/messages/public', (req, res) => {

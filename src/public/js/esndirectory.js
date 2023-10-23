@@ -59,13 +59,13 @@ const connectSocket = (username) => {
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
-const startSpeedTest = () => {
-  alert('start speed test');
-};
+// const startSpeedTest = () => {
+//   alert('start speed test');
+// };
 
-$('.speed-test').on('click', () => {
-  startSpeedTest();
-});
+// $('.speed-test').on('click', () => {
+//   startSpeedTest();
+// });
 // $(document).ready(() => {
 //   $('#speedTestSwitch').on('change', function () {
 //     if ($(this).prop('checked')) {
