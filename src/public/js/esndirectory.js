@@ -65,16 +65,6 @@ const connectSocket = (username) => {
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
-// $(document).ready(() => {
-//   $('#speedTestSwitch').on('change', function () {
-//     if ($(this).prop('checked')) {
-//       startSpeedTest(true);
-//     } else {
-//       startSpeedTest(false);
-//     }
-//   });
-// });
-
 $(window).on('DOMContentLoaded', async () => {
   // if unauthorized -> it is okay to stay at esndirectory (currently)
   await axios.put(
