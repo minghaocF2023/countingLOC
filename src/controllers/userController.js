@@ -1,15 +1,19 @@
 import crypto from 'crypto';
-import { User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
+import { isValidUsername, isValidPassword, isBannedUsername } from '../public/js/validation.js';
 
 class UserController {
-  static async getAllUsers(_req, res) {
-    await User.get({}).then((users) => {
+  constructor(userModel) {
+    this.userModel = userModel;
+  }
+
+  async getAllUsers(req, res) {
+    await this.userModel.get({}).then((users) => {
       res.status(200);
       res.json({
         message: 'OK',
         users: users.map(({ username, isOnline }) => ({ username, isOnline })),
-        banned_users: User.BANNED_USERNAMES,
+        banned_users: this.userModel.BANNED_USERNAMES,
       });
     }).catch((e) => {
       console.error(e);
@@ -18,12 +22,12 @@ class UserController {
     });
   }
 
-  static async getUserByUsername(req, res) {
+  async getUserByUsername(req, res) {
     const username = req.params.username.toLowerCase();
-    await User.getOne({ username }).then((user) => {
+    await this.userModel.getOne({ username }).then((user) => {
       if (user === null) {
         res.status(404);
-        res.json({ message: User.isBannedUsername(username) ? 'Banned username' : 'User not found' });
+        res.json({ message: isBannedUsername(username) ? 'Banned username' : 'User not found' });
       } else {
         res.status(200);
         res.json({ message: 'OK', user: { username: user.username, isOnline: user.isOnline } });
@@ -38,7 +42,7 @@ class UserController {
   /**
    * Store new user username and password into database
    */
-  static async createUser(req, res) {
+  async createUser(req, res) {
     // validate request body
     if (req.body.username === undefined || req.body.password === undefined) {
       res.status(400);
@@ -52,14 +56,15 @@ class UserController {
       isOnline: true,
     };
     // validate username and password
-    if (!User.isValidUsername(data.username) || !User.isValidPassword(data.password)) {
+    if (!isValidUsername(data.username)
+     || !isValidPassword(data.password)) {
       res.status(400);
       res.json({ message: 'Invalid request' });
       return;
     }
     // duplicate username check
     try {
-      const isUsernameTaken = await User.isUsernameTaken(data.username);
+      const isUsernameTaken = await this.userModel.isUsernameTaken(data.username);
       if (isUsernameTaken) {
         res.status(405);
         res.json({ message: 'Duplicated username' });
@@ -73,11 +78,11 @@ class UserController {
     }
     // password encrypt
     const salt = crypto.randomBytes(16);
-    const hashedPassword = await User.hashPassword(data.password, salt);
+    const hashedPassword = await this.userModel.hashPassword(data.password, salt);
     data.password = hashedPassword;
     data.salt = salt.toString('base64');
 
-    const newUser = new User(data);
+    const newUser = this.userModel.createUser(data);
 
     // save to database
     await newUser.save().then(() => {
@@ -90,14 +95,6 @@ class UserController {
       res.json({ message: 'Database error' });
     });
   }
-
-  // static async updateStatus(req, res) {
-  //   res.status(501).json({ message: 'Not implemented' });
-  // }
-
-  // static async getStatusHistory(req, res) {
-  //   res.status(501).json({ message: 'Not implemented' });
-  // }
 }
 
 export default UserController;

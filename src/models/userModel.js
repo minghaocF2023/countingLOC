@@ -1,15 +1,14 @@
-import * as fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+// import * as fs from 'fs';
+// import path, { dirname } from 'path';
+// import { fileURLToPath } from 'url';
 import crypto from 'crypto';
-// import mongoose from '../services/db.js';
 import mongoose from 'mongoose';
 
 // eslint-disable-next-line no-underscore-dangle
-const filename = fileURLToPath(import.meta.url);
+// const filename = fileURLToPath(import.meta.url);
 // eslint-disable-next-line no-underscore-dangle
-const __dirname = dirname(filename);
-const FILE_PATH = path.resolve(__dirname, '../utils/banned_username.json');
+// const __dirname = dirname(filename);
+// const FILE_PATH = path.resolve(__dirname, '../utils/banned_username.json');
 
 /**
  * User class factory using given database connection
@@ -55,10 +54,15 @@ const userFactory = (connection) => {
     },
   });
 
-  const UserModel = connection.model('User', UserSchema);
+  let UserModel;
+  if (connection.models.User) {
+    UserModel = connection.models.User;
+  } else {
+    UserModel = connection.model('User', UserSchema);
+  }
 
   class User extends UserModel {
-    static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
+    // static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
 
     /**
      * Get all users
@@ -112,16 +116,16 @@ const userFactory = (connection) => {
      * @param {string} username in lowercase
      * @returns {boolean} true if username is banned
      */
-    static isBannedUsername(username) {
-      return this.BANNED_USERNAMES.includes(username);
-    }
+    // static isBannedUsername(username) {
+    //   return this.BANNED_USERNAMES.includes(username);
+    // }
 
     /**
      * Check if username is taken
      * @param {string} username in lowercase
      * @returns {Promise<boolean>} true if username is taken
      */
-    static async isUsernameTaken(username) {
+    async isUsernameTaken(username) {
       return this.exists({ username });
     }
 
@@ -131,13 +135,18 @@ const userFactory = (connection) => {
      * @param {string} password plaintext password
      * @returns {boolean} true if username is valid according to rules
      */
-    static isValidUsername(username) {
-      const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
-      return (
-        username.length >= 3
-        && !this.isBannedUsername(username)
-        && USERNAME_RULE.test(username)
-      );
+    // static isValidUsername(username) {
+    //   const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
+    //   return (
+    //     username.length >= 3
+    //     && !this.isBannedUsername(username)
+    //     && USERNAME_RULE.test(username)
+    //   );
+    // }
+
+    async createUser(data) {
+      const user = new this(data);
+      return user;
     }
 
     /**
@@ -145,9 +154,9 @@ const userFactory = (connection) => {
      * @param {string} password plaintext password
      * @returns {boolean} true if password is valid
      */
-    static isValidPassword(password) {
-      return password.length >= 4;
-    }
+    // static isValidPassword(password) {
+    //   return password.length >= 4;
+    // }
 
     /**
      * Validate user credentials for login

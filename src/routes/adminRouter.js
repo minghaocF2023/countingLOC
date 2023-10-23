@@ -50,60 +50,13 @@
  *           example: 1000
  */
 import express from 'express';
-import speedTestController from '../controllers/speedTestController.js';
+import SpeedTestController from '../controllers/speedTestController.js';
+import { testConnection } from '../services/db.js';
+import PublicMessageFactory from '../models/publicMessageModel.js';
 
+const testPublicChatModel = PublicMessageFactory(testConnection);
+const speedTestController = new SpeedTestController(testPublicChatModel);
 const router = express.Router();
-
-// /**
-//  * @swagger
-//  * /admin/speedtest:
-//  *   post:
-//  *     tags: [Admin]
-//  *     summary: start testing, suspend the system operations except the test API
-//  *     description: get the speed test report of each functions
-//  *     requestBody:
-//  *       required: true
-//  *       content:
-//  *         application/json:
-//  *           schema:
-//  *             $ref: '#/components/schemas/SpeedTestReq'
-//  *     responses:
-//  *       200:
-//  *         description: Success
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               allOf:
-//  *                 - $ref: '#/components/schemas/Response'
-//  *                 - type: object
-//  *       400:
-//  *         description: Invalid request
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               $ref: '#/components/schemas/Response'
-//  *             example:
-//  *               message: Invalid request
-//  *       403:
-//  *         description: User Unauthorized
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               $ref: '#/components/schemas/Response'
-//  *             example:
-//  *               message: User unauthorized
-//  *       401:
-//  *         description: User not logged in
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               $ref: '#/components/schemas/Response'
-//  *             example:
-//  *               message: User not logged in
-//  */
-// router.get('/speedtest', (req, res) => {
-//   res.status(501).json({ message: 'Not implemented.' });
-// });
 
 /**
  * @swagger
@@ -171,8 +124,14 @@ const router = express.Router();
  *             example:
  *               message: User not logged in
  */
-router.post('/speedtest', speedTestController.startSpeedTest);
+router.post('/speedtest', (req, res) => {
+  speedTestController.startSpeedTest(req, res);
+});
 
-router.post('/startspeedtest', speedTestController.startSpeedTest);
-router.get('/istest', speedTestController.getIsTestState);
+router.post('/startspeedtest', (req, res) => {
+  speedTestController.startSpeedTest(req, res);
+});
+router.get('/istest', (req, res) => {
+  speedTestController.getIsTestState(req, res);
+});
 export default router;

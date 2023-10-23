@@ -1,4 +1,3 @@
-import { PublicMessage, User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 
 /**
@@ -11,10 +10,16 @@ import JWT from '../utils/jwt.js';
  */
 
 class publicChatController {
+  // constructor
+  constructor(publicChatModel, userModel) {
+    this.publicChatModel = publicChatModel;
+    this.userModel = userModel;
+  }
+
   /**
    * Get all history messages
    */
-  static async getLatestMessages(req, res) {
+  async getLatestMessages(req, res) {
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
       res.status(401).json({ message: 'User not logged in' });
       return;
@@ -27,12 +32,14 @@ class publicChatController {
       return;
     }
     // sort messages by timestamp
-    const messages = await PublicMessage.find().sort({ timeStamp: -1 });
+    // const messages = await PublicMessage.find().sort({ timeStamp: -1 });
+    // const messages = this.publicChatModel.find().sort({ timeStamp: -1 });
+    const messages = await this.publicChatModel.find({}).sort({ timeStamp: -1 });
     res.status(200).json({ success: true, data: messages });
   }
 
   // post new messages
-  static async postNew(req, res) {
+  async postNew(req, res) {
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
       res.status(401).json({ message: 'User not logged in' });
       return;
@@ -56,9 +63,11 @@ class publicChatController {
       content,
       senderName: payload.username,
       timestamp: Date.now(),
-      status: (await User.getOne({ username: payload.username })).status,
+      status: (await this.userModel.getOne({ username: payload.username })).status,
     };
-    const newMessage = new PublicMessage(data);
+    // const newMessage = new PublicMessage(data);
+    // eslint-disable-next-line new-cap
+    const newMessage = new this.publicChatModel(data);
     await newMessage.save();
 
     const socketServer = req.app.get('socketServer');

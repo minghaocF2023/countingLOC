@@ -1,9 +1,15 @@
-import { Chatroom, PrivateMessage, User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 import 'dotenv/config';
 
 class privateChatController {
-  static async getLatestMessageBetweenUsers(req, res) {
+  // constructor
+  constructor(privateChatModel, chatroomModel, userModel) {
+    this.privateChatModel = privateChatModel;
+    this.chatroomModel = chatroomModel;
+    this.userModel = userModel;
+  }
+
+  async getLatestMessageBetweenUsers(req, res) {
     // get all messages between userA and userB
     const { userA, userB } = req.params;
     const isInChat = req.query.isInChat === 'true';
@@ -22,7 +28,9 @@ class privateChatController {
     // assume userB = receiver
     let anyMessageUnread = false;
     const messageToBeViewed = [];
-    PrivateMessage.get(query).then((privateMessages) => {
+
+    // PrivateMessage.get(query).then((privateMessages) => {
+    this.privateChatModel.find(query).then((privateMessages) => {
       const resData = [];
       // organize response data
       privateMessages.forEach(async (pm) => {
@@ -52,7 +60,7 @@ class privateChatController {
       const changeToViewedTaskList = [];
       messageToBeViewed.forEach((messageId) => {
         const task = new Promise((resolve) => {
-          PrivateMessage.markedAsViewed(messageId).then(() => {
+          this.privateChatModel.markedAsViewed(messageId).then(() => {
             resolve();
           });
         });
@@ -78,7 +86,7 @@ class privateChatController {
   /**
    * send a new private message
    */
-  static async postNewPrivate(req, res) {
+  async postNewPrivate(req, res) {
     const { content, receiverName } = req.body;
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
       res.status(401).json({ message: 'User not logged in' });
@@ -100,11 +108,12 @@ class privateChatController {
         { senderName: receiverName, receiverName: senderName },
       ],
     };
-    Chatroom.getOne(query).then(async (chatroom) => {
+    // Chatroom.getOne(query).then(async (chatroom) => {
+    this.chatroomModel.getOne(query).then(async (chatroom) => {
       // if not found, create a new chatroom
       let targetChatroom = chatroom;
       if (!targetChatroom) {
-        const newChatroom = new Chatroom({
+        const newChatroom = this.chatroomModel({
           senderName,
           receiverName,
         });
@@ -115,12 +124,12 @@ class privateChatController {
             { username: receiverName },
           ],
         };
-        User.get(userQuery).then((users) => {
+        this.userModel.get(userQuery).then((users) => {
           users.forEach(async (user) => {
             const userId = user.getUserId();
             const chatrooms = user.getChatrooms();
             chatrooms.push(newChatroom.getChatroomId());
-            User.updateDoc({ _id: userId }, { chatrooms });
+            this.userModel.updateDoc({ _id: userId }, { chatrooms });
           });
         });
         targetChatroom = newChatroom;
@@ -135,7 +144,9 @@ class privateChatController {
         status: (await User.getOne({ username: payload.username })).status,
         isViewed: false,
       };
-      const newPrivateMessage = new PrivateMessage(data);
+      // const newPrivateMessage = new PrivateMessage(data);
+      // eslint-disable-next-line new-cap
+      const newPrivateMessage = new this.privateChatModel(data);
       await newPrivateMessage.save();
 
       // broadcast to receiver
@@ -149,7 +160,7 @@ class privateChatController {
   /**
    * get all private users that have chatted with ME
    */
-  static async getAllPrivate(req, res) {
+  async getAllPrivate(req, res) {
     // for private wall
     // get list of users who have chatted before
     const jwt = new JWT(process.env.JWTSECRET);
@@ -164,14 +175,14 @@ class privateChatController {
     const userQuery = { username };
     // eslint-disable-next-line prefer-const
 
-    User.getOne(userQuery).then(async (user) => {
+    this.userModel.getOne(userQuery).then(async (user) => {
       const chatrooms = user.getChatrooms();
       // eslint-disable-next-line prefer-const
       const otherUsers = [];
       const taskList = [];
       chatrooms.forEach((chatroomId) => {
         const task = new Promise((resolve) => {
-          Chatroom.findById(chatroomId).then(async (chatroom) => {
+          this.chatroomModel.findById(chatroomId).then(async (chatroom) => {
             if (chatroom) {
               const otherUser = chatroom.senderName
               === username ? chatroom.receiverName : chatroom.senderName;

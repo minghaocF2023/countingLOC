@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import dotenv from 'dotenv';
-import { User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 
 dotenv.config();
@@ -8,7 +7,11 @@ dotenv.config();
 const onlineList = {};
 
 class LoginController {
-  static async loginUser(req, res) {
+  constructor(userModel) {
+    this.userModel = userModel;
+  }
+
+  async loginUser(req, res) {
     // check request is valid
     if (!req.params.username || (!req.body.password)) {
       res.status(400);
@@ -25,7 +28,7 @@ class LoginController {
     }
     data.password = req.body.password;
     // validate user info
-    if (!(await User.validate(data.username, data.password))) {
+    if (!(await this.userModel.validate(data.username, data.password))) {
       res.status(404);
       res.json({ message: 'Incorrect username/password' });
       return;
@@ -40,7 +43,7 @@ class LoginController {
   /**
    * Update user online status
    */
-  static async updateOnlineStatus(req, res) {
+  async updateOnlineStatus(req, res) {
     // if no token -> 403 error
     if (!req.headers.authorization) {
       res.status(403);
@@ -67,7 +70,7 @@ class LoginController {
     }
     try {
       // update database user status
-      const user = await User.getOne({ username });
+      const user = await this.userModel.getOne({ username });
       await user.setOnline();
       onlineList[username] = true;
     } catch (error) {
@@ -84,7 +87,7 @@ class LoginController {
   }
 
   // update user offline status
-  static async logoutUser(req, res) {
+  async logoutUser(req, res) {
     if (!req.params.username) {
       res.status(400);
       res.json({ message: 'Invalid request' });
@@ -93,7 +96,7 @@ class LoginController {
     const username = req.params.username.toLowerCase();
 
     try {
-      const user = await User.getOne({ username });
+      const user = await this.userModel.getOne({ username });
 
       if (!user) {
         res.status(404).json({ message: 'User not found' });

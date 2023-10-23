@@ -1,8 +1,10 @@
-import { testConnection } from '../services/db.js';
-import publicMessageFactory from '../models/publicMessageModel.js';
 import JWT from '../utils/jwt.js';
 
 class speedTestController {
+  constructor(publicChatModel) {
+    this.publicChatModel = publicChatModel;
+  }
+
   static testState = false;
 
   static getTestState = () => speedTestController.testState;
@@ -14,11 +16,12 @@ class speedTestController {
   /**
    * to check if current system is in performance testing state
    */
-  static async getIsTestState(req, res) {
+  // eslint-disable-next-line class-methods-use-this
+  async getIsTestState(req, res) {
     res.status(200).json({ message: 'OK', isTest: speedTestController.testState });
   }
 
-  static async startSpeedTest(req, res) {
+  async startSpeedTest(req, res) {
     // user authentication
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
       res.status(401).json({ message: 'User not logged in' });
@@ -33,7 +36,7 @@ class speedTestController {
     }
     const { duration, interval } = req.body;
     speedTestController.testState = true;
-    const PublicTestMessage = publicMessageFactory(testConnection);
+    const PublicTestMessage = this.publicChatModel;
 
     // socket notify users that start testing!
     const socketServer = req.app.get('socketServer');
