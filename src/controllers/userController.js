@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import JWT from '../utils/jwt.js';
+import { isValidUsername, isValidPassword, isBannedUsername } from '../public/js/validation.js';
 
 class UserController {
   constructor(userModel) {
@@ -26,7 +27,7 @@ class UserController {
     await this.userModel.getOne({ username }).then((user) => {
       if (user === null) {
         res.status(404);
-        res.json({ message: this.userModel.isBannedUsername(username) ? 'Banned username' : 'User not found' });
+        res.json({ message: isBannedUsername(username) ? 'Banned username' : 'User not found' });
       } else {
         res.status(200);
         res.json({ message: 'OK', user: { username: user.username, isOnline: user.isOnline } });
@@ -55,8 +56,8 @@ class UserController {
       isOnline: true,
     };
     // validate username and password
-    if (!this.userModel.isValidUsername(data.username)
-     || !this.userModel.isValidPassword(data.password)) {
+    if (!isValidUsername(data.username)
+     || !isValidPassword(data.password)) {
       res.status(400);
       res.json({ message: 'Invalid request' });
       return;
