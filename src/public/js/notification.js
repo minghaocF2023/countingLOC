@@ -21,4 +21,35 @@ const notify = (msg) => {
   );
 };
 
+const alertMsgDuringOffline = (user) => {
+  showInfo(
+    'New message',
+    `You have a new message from ${user} during offline`,
+    `/privateChat?username=${user}`,
+  );
+};
+
+const getChattedUsers = async () => axios.get(
+  `/users/${localStorage.getItem('username')}/private`,
+  { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
+).then((res) => {
+  const { users } = res.data;
+  return users;
+});
+
+const hasUnreadMsg = async (user) => axios.get(
+  `/messages/private/${localStorage.getItem('username')}/${user}?isInChat=false`,
+  { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
+).then((res) => {
+  const { messageToBeNotified } = res.data;
+  return messageToBeNotified;
+});
+
+(await getChattedUsers()).forEach(async (user) => {
+  if (await hasUnreadMsg(user)) {
+    alertMsgDuringOffline(user);
+  }
+});
+
 window.notify = notify;
+window.getChattedUsers = getChattedUsers;
