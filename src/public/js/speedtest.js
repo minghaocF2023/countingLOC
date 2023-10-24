@@ -12,9 +12,9 @@ const authToken = localStorage.getItem('token');
 
 const testPost = (interval) => setInterval(() => {
   axios.post(
-    '/messages/public?isTest=true',
+    '/messages/public',
     { content: TEST_CONTENT },
-    { headers: { Authorization: `Bearer ${authToken}` } },
+    { headers: { Authorization: `Bearer ${authToken}` }, params: { istest: 'true' } },
   ).then(() => {
     postCount += 1;
     postSent += 1;
@@ -26,8 +26,8 @@ const testPost = (interval) => setInterval(() => {
 
 const testGet = (interval) => setInterval(() => {
   axios.get(
-    '/messages/public?isTest=true',
-    { headers: { Authorization: `Bearer ${authToken}` } },
+    '/messages/public',
+    { headers: { Authorization: `Bearer ${authToken}` }, params: { istest: 'true' } },
   ).then(() => {
     getCount += 1;
   });
