@@ -54,6 +54,11 @@ class LoginController {
     const token = req.headers.authorization.split(' ')[1];
     const jwt = new JWT(process.env.JWTSECRET);
     const payload = jwt.verifyToken(token);
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
     // check username
     if (!req.params.username) {
       res.status(400);

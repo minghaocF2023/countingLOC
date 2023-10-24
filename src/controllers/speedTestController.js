@@ -101,6 +101,7 @@ class speedTestController {
   //     }
   //   }, interval);
   // }
+  // eslint-disable-next-line class-methods-use-this
   async startSpeedTest(req, res) {
     // user authentication
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
@@ -113,6 +114,11 @@ class speedTestController {
       res.status(401);
       res.json({ message: 'User not logged in' });
     }
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
     const { username } = payload;
     global.isTest = true;
     global.testUser = username;
@@ -120,6 +126,7 @@ class speedTestController {
     res.status(200).json({ message: `set isTest to ${global.isTest}` });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async stopSpeedTest(req, res) {
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
       res.status(401).json({ message: 'User not logged in' });
@@ -130,6 +137,11 @@ class speedTestController {
     if (payload === null) {
       res.status(401);
       res.json({ message: 'User not logged in' });
+    }
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
     }
     global.isTest = false;
     global.testUser = null;

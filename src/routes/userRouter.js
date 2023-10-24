@@ -100,21 +100,27 @@ import StatusController from '../controllers/statusController.js';
 import userFactory from '../models/userModel.js';
 import PrivateMessageFactory from '../models/privateMessageModel.js';
 import ChatroomFactory from '../models/chatroomModel.js';
-import { getTestMode } from '../utils/testMode.js';
 import { realConnection, testConnection } from '../services/db.js';
 
 const router = express.Router();
 // const userModel = userFactory(realConnection);
 // const privateChatModel = PrivateMessageFactory(realConnection);
 // const chatroomModel = ChatroomFactory(realConnection);
-const userModel = userFactory(getTestMode() ? testConnection : realConnection);
+const userModel = userFactory(realConnection);
 const testUserModel = userFactory(testConnection);
-const privateChatModel = PrivateMessageFactory(getTestMode() ? testConnection : realConnection);
-const chatroomModel = ChatroomFactory(getTestMode() ? testConnection : realConnection);
+const testPrivateChatModel = PrivateMessageFactory(testConnection);
+const testChatroomModel = ChatroomFactory(testConnection);
+const privateChatModel = PrivateMessageFactory(realConnection);
+const chatroomModel = ChatroomFactory(realConnection);
 const userController = new UserController(userModel);
 const loginController = new LoginController(userModel);
 const statusController = new StatusController(userModel);
 const privateChatController = new PrivateChatController(privateChatModel, chatroomModel, userModel);
+const testPrivateChatController = new PrivateChatController(
+  testPrivateChatModel,
+  testChatroomModel,
+  testUserModel,
+);
 /**
  * @swagger
  * /users:
@@ -149,7 +155,7 @@ const privateChatController = new PrivateChatController(privateChatModel, chatro
 router.get('/', (req, res) => {
   // userController.getAllUsers(req, res);
   if (req.query.istest === 'true') {
-    const testUserController = new StatusController(testUserModel);
+    const testUserController = new UserController(testUserModel);
     testUserController.getAllUsers(req, res);
   } else {
     userController.getAllUsers(req, res);
@@ -194,10 +200,10 @@ router.get('/', (req, res) => {
 router.get('/:username', (req, res) => {
   // userController.getUserByUsername(req, res);
   if (req.query.istest === 'true') {
-    const testUserController = new StatusController(testUserModel);
-    testUserController.getByUsername(req, res);
+    const testUserController = new UserController(testUserModel);
+    testUserController.getUserByUsername(req, res);
   } else {
-    statusController.getByUsername(req, res);
+    userController.getUserByUsername(req, res);
   }
 });
 
@@ -246,10 +252,19 @@ router.get('/:username', (req, res) => {
 router.post('/', (req, res) => {
   // userController.createUser(req, res);
   if (req.query.istest === 'true') {
-    const testUserController = new StatusController(testUserModel);
+    const testUserController = new UserController(testUserModel);
     testUserController.createUser(req, res);
   } else {
     userController.createUser(req, res);
+  }
+});
+
+router.delete('/', (req, res) => {
+  if (req.query.istest === 'true') {
+    const testUserController = new UserController(testUserModel);
+    testUserController.deleteUser(req, res);
+  } else {
+    userController.deleteUser(req, res);
   }
 });
 
@@ -305,7 +320,7 @@ router.post('/', (req, res) => {
 router.put('/:username/online', (req, res) => {
   // loginController.updateOnlineStatus(req, res);
   if (req.query.istest === 'true') {
-    const testLoginController = new StatusController(testUserModel);
+    const testLoginController = new LoginController(testUserModel);
     testLoginController.updateOnlineStatus(req, res);
   } else {
     loginController.updateOnlineStatus(req, res);
@@ -315,12 +330,13 @@ router.put('/:username/online', (req, res) => {
 router.post('/:username', (req, res) => {
   // loginController.loginUser(req, res);
   if (req.query.istest === 'true') {
-    const testLoginController = new StatusController(testUserModel);
+    const testLoginController = new LoginController(testUserModel);
     testLoginController.loginUser(req, res);
   } else {
-    loginController.loginuser(req, res);
+    loginController.loginUser(req, res);
   }
 });
+
 /**
  * @swagger
  * /users/{username}/offline:
@@ -370,12 +386,13 @@ router.post('/:username', (req, res) => {
 router.put('/:username/offline', (req, res) => {
   // loginController.logoutUser(req, res);
   if (req.query.istest === 'true') {
-    const testLoginController = new StatusController(testUserModel);
+    const testLoginController = new LoginController(testUserModel);
     testLoginController.logoutUser(req, res);
   } else {
     loginController.logoutUser(req, res);
   }
 });
+
 /**
  * @swagger
  * /users/{username}/private:
@@ -424,25 +441,24 @@ router.put('/:username/offline', (req, res) => {
  *             example:
  *               message: User not logged in
  */
+// privateChatController.getAllPri
+
 router.get('/:username/private', (req, res) => {
-  // privateChatController.getAllPrivate(req, res);
   if (req.query.istest === 'true') {
-    const testPrivateChatController = new StatusController(testUserModel);
     testPrivateChatController.getAllPrivate(req, res);
   } else {
     privateChatController.getAllPrivate(req, res);
   }
 });
-
 /**
  * @swagger
-* /users/:username/status:
-*   get:
-*     tags: [Users]
-*     summary: Get one use's' status history.
-*     description: Get one use's' status history.
-*     responses:
-*       200:
+ * /users/:username/status:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get one use's' status history.
+ *     description: Get one use's' status history.
+ *     responses:
+ *       200:
  *         description: Success
  *         content:
  *           application/json:
@@ -479,7 +495,7 @@ router.get('/:username/private', (req, res) => {
  *               $ref: '#/components/schemas/Response'
  *             example:
  *               message: User not logged in
-*/
+ */
 router.get('/:username/status', (req, res) => {
   // if (req.query.istest === 'true') {
   //   const testStatusController = new StatusController(testUserModel);

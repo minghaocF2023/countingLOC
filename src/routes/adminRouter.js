@@ -106,7 +106,7 @@ const router = express.Router();
  *               message: User not logged in
  */
 router.post('/stopspeedtest', (req, res) => {
-  speedTestController.startSpeedTest(req, res);
+  speedTestController.stopSpeedTest(req, res);
 });
 
 /**

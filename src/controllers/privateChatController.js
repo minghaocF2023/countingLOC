@@ -100,6 +100,11 @@ class privateChatController {
       return;
     }
 
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
+
     // search the chatroom belongs to the sender and receiver
     const senderName = payload.username;
     const query = {
@@ -171,6 +176,11 @@ class privateChatController {
       res.json({ message: 'User not logged in' });
       return;
     }
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
+
     const { username } = payload;
     // user -> getChatroom -> another user -> append to result array
     const userQuery = { username };
