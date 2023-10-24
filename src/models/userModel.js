@@ -145,11 +145,7 @@ const userFactory = (connection) => {
     // }
 
     static createUser(data) {
-<<<<<<< HEAD
       const user = new this(data);
-=======
-      const user = new User(data);
->>>>>>> 334844f (Add online notifications)
       return user;
     }
 
@@ -181,14 +177,16 @@ const userFactory = (connection) => {
      * Set user online status
      */
     async setOnline() {
-      await this.updateOne({ isOnline: true });
+      this.isOnline = true;
+      await this.save();
     }
 
     /**
      * Set user offline status
      */
     async setOffline() {
-      await this.updateOne({ isOnline: false });
+      this.isOnline = false;
+      await this.save();
     }
 
     /**
