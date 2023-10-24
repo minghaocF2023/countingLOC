@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESN Directory</title>
+    <title>Speed Test</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
@@ -66,14 +66,14 @@
     <a class="navbar-brand">ESN</a>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item mr-2">
-                <a class="nav-link esn-directory btn btn-outline-secondary active" href="/esndirectory">ESN Directory</a>
-            </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link public-chat btn btn-outline-secondary" href="/chatwall">Chat Wall</a>
+            <li class="nav-item">
+                <a class="nav-link esn-directory" href="/esndirectory">ESN Directory</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link speed-test btn btn-outline-secondary" href="/speedtest">Speed Test</a>
+                <a class="nav-link public-chat" href="/chatwall">Chat Wall</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link speed-test active">Speed Test</a>
             </li>          
         </ul>
         <ul class="navbar-nav">
@@ -97,25 +97,46 @@
     </div>
 </nav>
 
-<!-- Individual User -->
-<div class="container mt-4">
-    <div  class="online-users" style="padding-top:50px">
-        <h4  class="mb-3">Online Users</h4>
-        <div id="online-user-list"></div>
-        <!-- Dynamically Append offline users here. -->
-    </div>
-    <div class="offline-users mt-5">
-        <h4 class="mb-3">Offline Users</h4>
-        <div id="offline-user-list">
-            <!-- Dynamically Append offline users here. -->
+<div class="container mt-5 pt-5">
+    <h1 class="mb-4"><i class="fas fa-tachometer-alt mr-2"></i>ESN Speed Test</h1>
+    <div class="card">
+        <div class="card-body">
+            <form action="/admin/speedtest" method="post" id="speedTestForm">
+                <div class="form-group mb-2">
+                    <label for="duration" class="mr-2">Duration:</label><br>
+                    <input type="number" class="form-control" name="duration" id="duration" placeholder="Enter duration in seconds" required>
+                </div>
+                <div class="form-group mb-2">
+                    <label for="interval" class="mr-2">Interval:</label><br>
+                    <input type="number" class="form-control" name="interval" id="interval" placeholder="Enter interval in milliseconds" required>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary mb-2"><i class="fas fa-play"></i> Start</button>
+                    <button type="button" class="btn btn-danger mb-2 ml-2" id="stopButton"><i class="fas fa-stop"></i> Stop</button>
+                </div>
+            </form>
         </div>
-       
-        
+    </div>
+
+    <div class="mt-4">
+        <h2><i class="fas fa-chart-bar mr-2"></i>Performance</h2>
+        <p><strong>POST Performance:</strong> <span id="post-performance">0</span> requests/second</p>
+        <p><strong>GET Performance:</strong> <span id="get-performance">0</span> requests/second</p>
     </div>
 </div>
+
+
+<!-- JS scripts remain the same -->
 <script type="module" src="js/status.js"></script>
-<script type="module" src="js/esndirectory.js"></script>
 <script type="module" src="js/logout.js"></script>
+<script type="module" src="js/speedtest.js"></script>
+
 </body>
 
 </html>
+
+
+
+
+
+
