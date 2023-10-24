@@ -38,7 +38,7 @@ const getChattedUsers = async () => axios.get(
 });
 
 const hasUnreadMsg = async (user) => axios.get(
-  `/messages/private/${localStorage.getItem('username')}/${user}?isInChat=false`,
+  `/messages/private/${user}/${localStorage.getItem('username')}?isInChat=false`,
   { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
 ).then((res) => {
   const { messageToBeNotified } = res.data;

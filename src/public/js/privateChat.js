@@ -24,6 +24,11 @@ const scrollToBottom = () => {
   $('#chat-list').children().last()[0].scrollIntoView();
 };
 
+const fetchMessages = async (username) => axios.get(
+  `/messages/private/${receiver}/${username}?isInChat=true`,
+  { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
+)
+
 const connectSocket = (username) => {
   const socket = io(undefined, { autoConnect: false });
   socket.auth = { username };
@@ -37,6 +42,9 @@ const connectSocket = (username) => {
       const newMsg = createChatMessage(senderName, status, content, timestamp);
       $('#chat-list').append(newMsg);
       scrollToBottom();
+      fetchMessages(username).catch((err) => {
+        console.error(err);
+      });
     } else {
       notify(msg);
     }
@@ -60,11 +68,7 @@ await axios.put(
 });
 
 console.log('start fetching messages');
-axios.get(`/messages/private/${username}/${receiver}?isInChat=true`, {
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  },
-}).then((res) => {
+fetchMessages(username).then((res) => {
   let list = '';
   res.data.data.forEach((element) => {
     list += createChatMessage(

@@ -26,7 +26,7 @@ class SocketServer {
     // });
   }
 
-  static isConnected(username) {
+  isConnected(username) {
     return this.userToSocket.get(username) !== null;
   }
 
