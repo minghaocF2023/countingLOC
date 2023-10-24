@@ -1,17 +1,27 @@
 import jwt from 'jsonwebtoken';
 
 class JWT {
-  static TOKEN_SECRET = 'Some secret keys';
+  constructor(secret) {
+    if (JWT.instance) {
+      // eslint-disable-next-line no-constructor-return
+      return JWT.instance;
+    }
 
-  static generateToken(username) {
+    this.TOKEN_SECRET = secret;
+    JWT.instance = this;
+  }
+
+  generateToken(username) {
     const payload = { username };
     return jwt.sign(payload, this.TOKEN_SECRET, { expiresIn: '3600s' });
   }
 
-  static verifyToken(token) {
+  verifyToken(token) {
     try {
       return jwt.verify(token, this.TOKEN_SECRET);
     } catch (err) {
+      console.error(token);
+      console.error(err);
       return null;
     }
   }

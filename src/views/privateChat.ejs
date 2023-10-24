@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Wall</title>
+    <title>Private Chat</title>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -35,7 +35,7 @@
             outline: 2px solid rgb(178, 212, 216);
             outline-offset: -2px;
         }
-
+        
         .navbar-nav .dropdown-menu a {
             cursor: pointer;
         }
@@ -57,10 +57,13 @@
                     <a class="nav-link esn-directory btn btn-outline-secondary" href="/esndirectory">ESN Directory</a>
                 </li>
                 <li class="nav-item mr-2">
-                    <a class="nav-link chat-wall btn btn-outline-secondary active" href="/chatwall">Chat Wall</a>
+                    <a class="nav-link chat-wall btn btn-outline-secondary" href="/chatwall">Chat Wall</a>
                 </li>
                 <li class="nav-item mr-2">
                     <a class="nav-link speed-test btn btn-outline-secondary" href="/speedtest">Speed Test</a>
+                </li>
+                <li class="nav-item mr-2">
+                    <span class="nav-link chat-wall btn btn-outline-secondary active">Private Chat</span>
                 </li> 
             </ul>
             <ul class="navbar-nav">
@@ -106,8 +109,7 @@
     <script type="module" src="js/logout.js"></script>
     <script type="module" src="js/notification.js"></script>
     <script type="module" src="js/status.js"></script>
-    <script type="module" src="js/chat.js"></script>
-    
+    <script type="module" src="js/privateChat.js"></script>
 </body>
 
 </html>

@@ -40,40 +40,34 @@
  *       type: object
  *       description: speed test request
  *       properties:
- *         function:
- *           type: string
- *           description: API name
- *           example: /messages/private
- *         type:
- *           type: string
- *           description: API type
- *           example: post
- *         reqData:
- *           type: object
- *           description: optional request data for testing
- *           $ref: '#/components/schemas/PrivateMessage'
  *         duration:
+ *           type: int
+ *           description: test duration (ms)
+ *           example: 10000
+ *         interval:
  *           type: int
  *           description: test duration (ms)
  *           example: 1000
  */
 import express from 'express';
+import SpeedTestController from '../controllers/speedTestController.js';
+import { testConnection } from '../services/db.js';
+import PublicMessageFactory from '../models/publicMessageModel.js';
+import ChatroomFactory from '../models/chatroomModel.js';
 
+const testChatroomModel = ChatroomFactory(testConnection);
+const testPublicChatModel = PublicMessageFactory(testConnection);
+const speedTestController = new SpeedTestController(testPublicChatModel);
 const router = express.Router();
 
 /**
  * @swagger
- * /admin/speedtest:
+ * /admin/stopspeedtest:
  *   post:
  *     tags: [Admin]
- *     summary: start testing, suspend the system operations except the test API
- *     description: get the speed test report of each functions
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/SpeedTestReq'
+ *     summary: suspend system, and start performance test
+ *     description: call a api for {duration} and with {interval} between every api call,
+ *      will broadcast {startspeedtest} & {finishspeedtest} socket when test begin and finish
  *     responses:
  *       200:
  *         description: Success
@@ -83,6 +77,11 @@ const router = express.Router();
  *               allOf:
  *                 - $ref: '#/components/schemas/Response'
  *                 - type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       desciption: test result message
+ *                       example: set istest to false
  *       400:
  *         description: Invalid request
  *         content:
@@ -108,17 +107,18 @@ const router = express.Router();
  *             example:
  *               message: User not logged in
  */
-router.get('/speedtest', (req, res) => {
-  res.status(501).json({ message: 'Not implemented.' });
+router.post('/stopspeedtest', (req, res) => {
+  speedTestController.stopSpeedTest(req, res);
 });
 
 /**
  * @swagger
- * /admin/speedtest:
- *   get:
+ * /admin/startspeedtest:
+ *   post:
  *     tags: [Admin]
- *     summary: get test report
- *     description: get the speed test report of each functions
+ *     summary: suspend system, and start performance test
+ *     description: call a api for {duration} and with {interval} between every api call,
+ *      will broadcast {startspeedtest} & {finishspeedtest} socket when test begin and finish
  *     responses:
  *       200:
  *         description: Success
@@ -129,9 +129,10 @@ router.get('/speedtest', (req, res) => {
  *                 - $ref: '#/components/schemas/Response'
  *                 - type: object
  *                   properties:
- *                      report:
- *                         type: object
- *                         $ref: '#/components/schemas/Report'
+ *                     message:
+ *                       type: string
+ *                       desciption: test result message
+ *                       example: set speedtest to true
  *       400:
  *         description: Invalid request
  *         content:
@@ -141,7 +142,7 @@ router.get('/speedtest', (req, res) => {
  *             example:
  *               message: Invalid request
  *       403:
- *         description: User unauthorized
+ *         description: User Unauthorized
  *         content:
  *           application/json:
  *             schema:
@@ -157,6 +158,21 @@ router.get('/speedtest', (req, res) => {
  *             example:
  *               message: User not logged in
  */
-router.post('/speedtest', (req, res) => {
-  res.status(501).json({ message: 'Not implemented.' });
+router.post('/startspeedtest', (req, res) => {
+  speedTestController.startSpeedTest(req, res);
 });
+router.get('/istest', (req, res) => {
+  speedTestController.getIsTestState(req, res);
+});
+
+router.delete('/chatroom', (req, res) => {
+  if (req.query.istest === 'true') {
+    testChatroomModel.findOneAndRemove({
+      senderName: req.body.senderName,
+      receiverName: req.body.receiverName,
+    }).then(() => {
+      res.status(200).json({ message: 'delete successful' });
+    });
+  }
+});
+export default router;

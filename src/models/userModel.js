@@ -1,14 +1,14 @@
-import * as fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+// import * as fs from 'fs';
+// import path, { dirname } from 'path';
+// import { fileURLToPath } from 'url';
 import crypto from 'crypto';
-// import mongoose from '../services/db.js';
+import mongoose from 'mongoose';
 
 // eslint-disable-next-line no-underscore-dangle
-const __filename = fileURLToPath(import.meta.url);
+// const filename = fileURLToPath(import.meta.url);
 // eslint-disable-next-line no-underscore-dangle
-const __dirname = dirname(__filename);
-const FILE_PATH = path.resolve(__dirname, '../utils/banned_username.json');
+// const __dirname = dirname(filename);
+// const FILE_PATH = path.resolve(__dirname, '../utils/banned_username.json');
 
 /**
  * User class factory using given database connection
@@ -16,8 +16,9 @@ const FILE_PATH = path.resolve(__dirname, '../utils/banned_username.json');
  * @param {mongoose} mongoose database connection
  * @returns User class
  */
-const userFactory = (mongoose) => {
+const userFactory = (connection) => {
   // user class
+  // console.log(connection);
   const UserSchema = new mongoose.Schema({
     username: {
       type: String,
@@ -32,18 +33,36 @@ const userFactory = (mongoose) => {
       type: String,
       required: true,
     },
+    chatrooms: {
+      type: Array,
+      required: false,
+    },
     isOnline: {
       type: Boolean,
       required: true,
       default: false,
     },
     // TODO: status, isAdmin: false
+    status: {
+      type: String,
+      default: 'Undefined',
+      enum: ['OK', 'Help', 'Emergency', 'Undefined'],
+    },
+    statusTimestamp: {
+      type: Date,
+      default: Date.now,
+    },
   });
 
-  const UserModel = mongoose.model('User', UserSchema);
+  let UserModel;
+  if (connection.models.User) {
+    UserModel = connection.models.User;
+  } else {
+    UserModel = connection.model('User', UserSchema);
+  }
 
   class User extends UserModel {
-    static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
+    // static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
 
     /**
      * Get all users
@@ -69,6 +88,14 @@ const userFactory = (mongoose) => {
         .then((user) => (user ? new User(user) : null));
     }
 
+    static async updateDoc(filter, projection, options) {
+      return this.updateOne(filter, projection, options).then((user) => {
+        console.log(`updated: ${user}`);
+      }).catch((error) => {
+        console.log(`error while updating: ${error}`);
+      });
+    }
+
     /**
      * Hash password with salt
      * @param {string} password plaintext password
@@ -89,9 +116,9 @@ const userFactory = (mongoose) => {
      * @param {string} username in lowercase
      * @returns {boolean} true if username is banned
      */
-    static isBannedUsername(username) {
-      return this.BANNED_USERNAMES.includes(username);
-    }
+    // static isBannedUsername(username) {
+    //   return this.BANNED_USERNAMES.includes(username);
+    // }
 
     /**
      * Check if username is taken
@@ -108,13 +135,18 @@ const userFactory = (mongoose) => {
      * @param {string} password plaintext password
      * @returns {boolean} true if username is valid according to rules
      */
-    static isValidUsername(username) {
-      const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
-      return (
-        username.length >= 3
-        && !this.isBannedUsername(username)
-        && USERNAME_RULE.test(username)
-      );
+    // static isValidUsername(username) {
+    //   const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
+    //   return (
+    //     username.length >= 3
+    //     && !this.isBannedUsername(username)
+    //     && USERNAME_RULE.test(username)
+    //   );
+    // }
+
+    static createUser(data) {
+      const user = new this(data);
+      return user;
     }
 
     /**
@@ -122,9 +154,9 @@ const userFactory = (mongoose) => {
      * @param {string} password plaintext password
      * @returns {boolean} true if password is valid
      */
-    static isValidPassword(password) {
-      return password.length >= 4;
-    }
+    // static isValidPassword(password) {
+    //   return password.length >= 4;
+    // }
 
     /**
      * Validate user credentials for login
@@ -171,6 +203,32 @@ const userFactory = (mongoose) => {
      */
     static async retrieveOfflineUsers() {
       return this.get({ isOnline: false });
+    }
+
+    // TODO: all getters
+    getUserId() {
+      // eslint-disable-next-line no-underscore-dangle
+      return this._id;
+    }
+
+    getUsername() {
+      return this.username;
+    }
+
+    getPassword() {
+      return this.password;
+    }
+
+    getSalt() {
+      return this.salt;
+    }
+
+    getChatrooms() {
+      return this.chatrooms;
+    }
+
+    getIsOnline() {
+      return this.isOnline;
     }
   }
 

@@ -11,18 +11,24 @@ import { Server } from 'socket.io';
 import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
+import adminRouter from './src/routes/adminRouter.js';
 import SocketServer from './src/services/socket.js';
+import PrivateSocketServer from './src/services/privateSocket.js';
+
+global.isTest = false;
+global.testUser = null;
 
 const PORT = 3000;
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// console.log('is import.meta.url a string?', typeof import.meta.url);
+const filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(filename);
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
 const socketServer = new SocketServer(io);
 app.set('socketServer', socketServer);
+app.set('privateSocketServer', PrivateSocketServer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,7 +56,7 @@ const options = {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT',
+          in: 'header',
           value: 'Bearer <JWT token here>',
         },
       },
@@ -81,7 +87,7 @@ const options = {
 app.use('/', indexRouter);
 app.use('/users/', userRouter);
 app.use('/messages/', messageRouter);
-
+app.use('/admin/', adminRouter);
 const specs = swaggerJSDoc(options);
 app.use(
   '/docs',
@@ -90,3 +96,5 @@ app.use(
 );
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
+
+export default server;

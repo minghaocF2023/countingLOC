@@ -1,6 +1,10 @@
 // import mongoose from '../services/db.js';
+import mongoose from 'mongoose';
 
-const PublicMessageFactory = (mongoose) => {
+const PublicMessageFactory = (connection) => {
+  if (connection.models.PublicMessage) {
+    return connection.models.PublicMessage;
+  }
   const PublicMessageSchema = new mongoose.Schema({
     content: {
       type: String,
@@ -21,9 +25,27 @@ const PublicMessageFactory = (mongoose) => {
     },
   });
 
-  const PublicMessageModel = mongoose.model('PublicMessage', PublicMessageSchema);
+  let PublicMessageModel;
+  if (connection.models.PublicMessage) {
+    PublicMessageModel = connection.models.PublicMessage;
+  } else {
+    PublicMessageModel = connection.model('PublicMessage', PublicMessageSchema);
+  }
+  // const PublicMessageModel = connection.model('PublicMessage', PublicMessageSchema);
 
   class PublicMessage extends PublicMessageModel {
+    /**
+     * Get all public messages
+     * @param {mongoose.FilterQuery<PrivateMessage>} filter
+     * @param {mongoose.ProjectionType<PrivateMessage>?=} projection
+     * @param {mongoose.QueryOptions<PrivateMessage>?=} options
+     * @returns {Promise<PrivateMessage[]>} array of private messages
+     */
+    static async get(filter, projection, options) {
+      return this.find(filter, projection, options)
+        .then((publicMessages) => publicMessages.map((pm) => new PublicMessage(pm)));
+    }
+
     getText() {
       return this.text;
     }
@@ -38,6 +60,12 @@ const PublicMessageFactory = (mongoose) => {
 
     getStatus() {
       return this.status;
+    }
+
+    static async createPublicChat(data) {
+      const newChat = new this(data);
+      await newChat.save();
+      return newChat;
     }
 
     /**

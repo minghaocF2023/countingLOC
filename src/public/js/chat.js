@@ -4,8 +4,10 @@
 const createChatMessage = (senderName, status, content, timestamp) => {
   const STATUS = {
     OK: '<i class="fas fa-check-circle" style="color:green"></i>',
-    help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
-    emergency: '<i class="fas fa-exclamation-triangle" style="color:red"></i>',
+    Help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
+    Emergency: '<i class="fas fa-exclamation-triangle" style="color:red"></i>',
+    Undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
+    undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
   };
   const iconHTML = STATUS[status];
   const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
@@ -25,13 +27,34 @@ const scrollToBottom = () => {
   $('#chat-list').children().last()[0].scrollIntoView();
 };
 
-const connectSocket = () => {
-  const socket = io();
+const connectSocket = (username) => {
+  const socket = io(undefined, { autoConnect: false });
+  socket.auth = { username };
+  socket.connect();
   socket.on('newMessage', (msg) => {
     const newMsg = createChatMessage(msg.senderName, msg.status, msg.content, msg.timestamp);
     $('#chat-list').append(newMsg);
+    scrollToBottom();
   });
+  socket.on('privatemessage', (msg) => notify(msg));
 };
+
+// const startSpeedTest = () => {
+//   alert('start speed test');
+// };
+
+// $('.speed-test').on('click', () => {
+//   startSpeedTest();
+// });
+// $(document).ready(() => {
+//   $('#speedTestSwitch').on('change', function () {
+//     if ($(this).prop('checked')) {
+//       startSpeedTest(true);
+//     } else {
+//       startSpeedTest(false);
+//     }
+//   });
+// });
 
 $(window).on('load', () => {
   axios.put(
@@ -66,11 +89,14 @@ $(window).on('load', () => {
       window.location = '/join';
     }
   });
-  connectSocket();
+  connectSocket(localStorage.getItem('username'));
 });
 
 $('#send').on('click', () => {
   const msg = $('#message').val();
+  if (msg === '') {
+    return;
+  }
   axios.post('/messages/public', { content: msg }, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,

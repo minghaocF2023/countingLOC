@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import dotenv from 'dotenv';
-import { User } from '../models/models.js';
 import JWT from '../utils/jwt.js';
 
 dotenv.config();
@@ -8,7 +7,11 @@ dotenv.config();
 const onlineList = {};
 
 class LoginController {
-  static async loginUser(req, res) {
+  constructor(userModel) {
+    this.userModel = userModel;
+  }
+
+  async loginUser(req, res) {
     // check request is valid
     if (!req.params.username || (!req.body.password)) {
       res.status(400);
@@ -25,13 +28,13 @@ class LoginController {
     }
     data.password = req.body.password;
     // validate user info
-    if (!(await User.validate(data.username, data.password))) {
+    if (!(await this.userModel.validate(data.username, data.password))) {
       res.status(404);
       res.json({ message: 'Incorrect username/password' });
       return;
     }
-
-    const token = JWT.generateToken(data.username);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const token = jwt.generateToken(data.username);
 
     res.status(200);
     res.json({ message: 'OK', token });
@@ -40,7 +43,7 @@ class LoginController {
   /**
    * Update user online status
    */
-  static async updateOnlineStatus(req, res) {
+  async updateOnlineStatus(req, res) {
     // if no token -> 403 error
     if (!req.headers.authorization) {
       res.status(403);
@@ -49,7 +52,13 @@ class LoginController {
     }
 
     const token = req.headers.authorization.split(' ')[1];
-    const payload = JWT.verifyToken(token);
+    const jwt = new JWT(process.env.JWTSECRET);
+    const payload = jwt.verifyToken(token);
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
     // check username
     if (!req.params.username) {
       res.status(400);
@@ -64,12 +73,13 @@ class LoginController {
       res.json({ message: 'Unauthorized Request' }); // maybe some other message
       return;
     }
-
+    let status;
     try {
       // update database user status
-      const user = await User.getOne({ username });
+      const user = await this.userModel.getOne({ username });
       await user.setOnline();
       onlineList[username] = true;
+      status = user.status;
     } catch (error) {
       console.error('Error setting user online:', error);
       res.status(500);
@@ -78,11 +88,13 @@ class LoginController {
     }
     // socket broadcast
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('userOnlineStatus', { username, isOnline: true });
+    socketServer.publishEvent('userOnlineStatus', { username, isOnline: true, status });
+
+    res.status(200).json({ message: 'OK' });
   }
 
   // update user offline status
-  static async logoutUser(req, res) {
+  async logoutUser(req, res) {
     if (!req.params.username) {
       res.status(400);
       res.json({ message: 'Invalid request' });
@@ -91,7 +103,7 @@ class LoginController {
     const username = req.params.username.toLowerCase();
 
     try {
-      const user = await User.getOne({ username });
+      const user = await this.userModel.getOne({ username });
 
       if (!user) {
         res.status(404).json({ message: 'User not found' });

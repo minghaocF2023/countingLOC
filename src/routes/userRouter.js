@@ -82,10 +82,10 @@
  *     schema:
  *       type: string
  *     example: testUser
- *   statusCode:
- *     name: statusCode
+ *   status:
+ *     name: status
  *     in: path
- *     description: current statusCode
+ *     description: current status
  *     required: true
  *     schema:
  *       type: string
@@ -95,10 +95,36 @@
 import express from 'express';
 import UserController from '../controllers/userController.js';
 import LoginController from '../controllers/loginController.js';
-import privateChatController from '../controllers/privateChatController.js';
+import PrivateChatController from '../controllers/privateChatController.js';
+import StatusController from '../controllers/statusController.js';
+import userFactory from '../models/userModel.js';
+import PrivateMessageFactory from '../models/privateMessageModel.js';
+import ChatroomFactory from '../models/chatroomModel.js';
+import { realConnection, testConnection } from '../services/db.js';
 
 const router = express.Router();
-
+// const userModel = userFactory(realConnection);
+// const privateChatModel = PrivateMessageFactory(realConnection);
+// const chatroomModel = ChatroomFactory(realConnection);
+const userModel = userFactory(realConnection);
+const testUserModel = userFactory(testConnection);
+const testPrivateChatModel = PrivateMessageFactory(testConnection);
+const testChatroomModel = ChatroomFactory(testConnection);
+const privateChatModel = PrivateMessageFactory(realConnection);
+const chatroomModel = ChatroomFactory(realConnection);
+const userController = new UserController(userModel);
+const loginController = new LoginController(userModel);
+const statusController = new StatusController(userModel);
+const privateChatController = new PrivateChatController(
+  privateChatModel,
+  chatroomModel,
+  userModel,
+);
+const testPrivateChatController = new PrivateChatController(
+  testPrivateChatModel,
+  testChatroomModel,
+  testUserModel,
+);
 /**
  * @swagger
  * /users:
@@ -130,7 +156,15 @@ const router = express.Router();
  *               ]
  *               banned_users: [bannedUser1, bannedUser2]
  */
-router.get('/', UserController.getAllUsers);
+router.get('/', (req, res) => {
+  // userController.getAllUsers(req, res);
+  if (req.query.istest === 'true') {
+    const testUserController = new UserController(testUserModel);
+    testUserController.getAllUsers(req, res);
+  } else {
+    userController.getAllUsers(req, res);
+  }
+});
 
 /**
  * @swagger
@@ -167,7 +201,15 @@ router.get('/', UserController.getAllUsers);
  *                 value:
  *                   message: Banned username
  */
-router.get('/:username', UserController.getUserByUsername);
+router.get('/:username', (req, res) => {
+  // userController.getUserByUsername(req, res);
+  if (req.query.istest === 'true') {
+    const testUserController = new UserController(testUserModel);
+    testUserController.getUserByUsername(req, res);
+  } else {
+    userController.getUserByUsername(req, res);
+  }
+});
 
 /**
  * @swagger
@@ -211,7 +253,24 @@ router.get('/:username', UserController.getUserByUsername);
  *             example:
  *               message: Duplicated username
  */
-router.post('/', UserController.createUser);
+router.post('/', (req, res) => {
+  // userController.createUser(req, res);
+  if (req.query.istest === 'true') {
+    const testUserController = new UserController(testUserModel);
+    testUserController.createUser(req, res);
+  } else {
+    userController.createUser(req, res);
+  }
+});
+
+router.delete('/', (req, res) => {
+  if (req.query.istest === 'true') {
+    const testUserController = new UserController(testUserModel);
+    testUserController.deleteUser(req, res);
+  } else {
+    userController.deleteUser(req, res);
+  }
+});
 
 /**
  * @swagger
@@ -262,9 +321,26 @@ router.post('/', UserController.createUser);
  *             example:
  *               message: Incorrect username/password
  */
-router.put('/:username/online', LoginController.updateOnlineStatus);
+router.put('/:username/online', (req, res) => {
+  // loginController.updateOnlineStatus(req, res);
+  if (req.query.istest === 'true') {
+    const testLoginController = new LoginController(testUserModel);
+    testLoginController.updateOnlineStatus(req, res);
+  } else {
+    loginController.updateOnlineStatus(req, res);
+  }
+});
 
-router.post('/:username', LoginController.loginUser);
+router.post('/:username', (req, res) => {
+  // loginController.loginUser(req, res);
+  if (req.query.istest === 'true') {
+    const testLoginController = new LoginController(testUserModel);
+    testLoginController.loginUser(req, res);
+  } else {
+    loginController.loginUser(req, res);
+  }
+});
+
 /**
  * @swagger
  * /users/{username}/offline:
@@ -311,7 +387,16 @@ router.post('/:username', LoginController.loginUser);
  *             example:
  *               message: User not logged in
  */
-router.put('/:username/offline', LoginController.logoutUser);
+router.put('/:username/offline', (req, res) => {
+  // loginController.logoutUser(req, res);
+  if (req.query.istest === 'true') {
+    const testLoginController = new LoginController(testUserModel);
+    testLoginController.logoutUser(req, res);
+  } else {
+    loginController.logoutUser(req, res);
+  }
+});
+
 /**
  * @swagger
  * /users/{username}/private:
@@ -360,64 +445,24 @@ router.put('/:username/offline', LoginController.logoutUser);
  *             example:
  *               message: User not logged in
  */
-router.get('/:username/private', privateChatController.getChattedUsers);
+// privateChatController.getAllPri
 
+router.get('/:username/private', (req, res) => {
+  if (req.query.istest === 'true') {
+    testPrivateChatController.getAllPrivate(req, res);
+  } else {
+    privateChatController.getAllPrivate(req, res);
+  }
+});
 /**
  * @swagger
- * /users/{username}/status/{statusCode}:
- *   post:
+ * /users/:username/status:
+ *   get:
  *     tags: [Users]
- *     summary: Update user status
- *     description: Update user status
- *     parameters:
- *       - $ref: '#/parameters/username'
- *       - $ref: '#/parameters/statusCode'
+ *     summary: Get one use's' status history.
+ *     description: Get one use's' status history.
  *     responses:
  *       200:
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/Response'
- *                 - type: object
-  *       400:
- *         description: Invalid request
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: Invalid request
- *       404:
- *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: User not found
- *       401:
- *         description: User not logged in
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: User not logged in
- */
-router.post(':username/status/:statusCode', UserController.updateStatus);
-/**
- * @swagger
-* /users/{username}/statuscrumbs:
-*   get:
-*     tags: [Users]
-*     summary: Get user status history.
-*     description: Get user status history.
-*     parameters:
-*       - $ref: '#/parameters/username'
-*     responses:
-*       200:
  *         description: Success
  *         content:
  *           application/json:
@@ -454,8 +499,75 @@ router.post(':username/status/:statusCode', UserController.updateStatus);
  *               $ref: '#/components/schemas/Response'
  *             example:
  *               message: User not logged in
-*/
-router.get(':username/statuscrumbs', UserController.getStatusHistory);
+ */
+router.get('/:username/status', (req, res) => {
+  // if (req.query.istest === 'true') {
+  //   const testStatusController = new StatusController(testUserModel);
+  //   testStatusController.getStatus(req, res);
+  // } else {
+  //   statusController.getStatus(req, res);
+  // }
+  // statusController.getStatus(req, res);
+  if (req.query.istest === 'true') {
+    const testStatusController = new StatusController(testUserModel);
+    testStatusController.getStatus(req, res);
+  } else {
+    statusController.getStatus(req, res);
+  }
+});
+
+/**
+ * @swagger
+ * /users/{username}/status/{status}:
+ *   post:
+ *     tags: [Users]
+ *     summary: Update user status
+ *     description: Update user status
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *       - $ref: '#/parameters/status'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+  *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.post('/:username/status/:status', (req, res) => {
+  if (req.query.istest === 'true') {
+    const testStatusController = new StatusController(testUserModel);
+    testStatusController.updateStatus(req, res);
+  } else {
+    statusController.updateStatus(req, res);
+  }
+});
 
 // /**
 //   * @swagger
