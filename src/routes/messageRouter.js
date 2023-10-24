@@ -110,14 +110,17 @@ import PublicMessageFactory from '../models/publicMessageModel.js';
 import PrivateMessageFactory from '../models/privateMessageModel.js';
 import UserFactory from '../models/userModel.js';
 import ChatroomFactory from '../models/chatroomModel.js';
-import { realConnection } from '../services/db.js';
+import { realConnection, testConnection } from '../services/db.js';
 
 const router = express.Router();
 const userModel = UserFactory(realConnection);
+const testUserModel = UserFactory(testConnection);
+const testChatroomModel = ChatroomFactory(testConnection);
+const testPrivateChatModel = PrivateMessageFactory(testConnection);
+const testPublicChatModel = PrivateMessageFactory(testConnection);
 const publicMessageModel = PublicMessageFactory(realConnection);
 const privateMessageModel = PrivateMessageFactory(realConnection);
 const chatroomModel = ChatroomFactory(realConnection);
-
 const publicChatController = new PublicChatController(publicMessageModel, userModel);
 const privateChatController = new PrivateChatController(
   privateMessageModel,
@@ -149,7 +152,13 @@ const privateChatController = new PrivateChatController(
  */
 // router.get('/public', PublicChatController.getLatestMessages);
 router.get('/public', (req, res) => {
-  publicChatController.getLatestMessages(req, res);
+  if (req.query.istest === 'true') {
+    const testPublicChatController = new PublicChatController(testPrivateChatModel, testUserModel);
+    testPublicChatController.getLatestMessages(req, res);
+  } else {
+    publicChatController.getLatestMessages(req, res);
+  }
+  // publicChatController.getLatestMessages(req, res);
 });
 
 // /**
@@ -216,7 +225,16 @@ router.get('/public', (req, res) => {
  */
 // router.post('/public', PublicChatController.postNew);
 router.post('/public', (req, res) => {
-  publicChatController.postNew(req, res);
+  if (req.query.istest === 'true') {
+    const testPublicChatController = new PublicChatController(
+      testPublicChatModel,
+      testUserModel,
+    );
+    testPublicChatController.postNew(req, res);
+  } else {
+    publicChatController.postNew(req, res);
+  }
+  // publicChatController.postNew(req, res);
 });
 
 /**
@@ -273,7 +291,16 @@ router.post('/public', (req, res) => {
  */
 // router.post('/private', privateChatController.postNewPrivate);
 router.post('/private', (req, res) => {
-  privateChatController.postNewPrivate(req, res);
+  if (req.query.istest === 'true') {
+    const testPrivateChatController = new PrivateChatController(
+      testPrivateChatModel,
+      testChatroomModel,
+      testUserModel,
+    );
+    testPrivateChatController.postNewPrivate(req, res);
+  } else {
+    privateChatController.postNewPrivate(req, res);
+  }
 });
 
 /**
@@ -328,7 +355,13 @@ router.post('/private', (req, res) => {
  */
 // router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
 router.get('/private/:userA/:userB', (req, res) => {
-  privateChatController.getLatestMessageBetweenUsers(req, res);
+  if (req.query.istest === 'true') {
+    const testPrivateChatController = new PrivateChatController(testUserModel);
+    testPrivateChatController.getLatestMessageBetweenUsers(req, res);
+  } else {
+    privateChatController.getLatestMessageBetweenUsers(req, res);
+  }
+  // privateChatController.getLatestMessageBetweenUsers(req, res);
 });
 
 export default router;

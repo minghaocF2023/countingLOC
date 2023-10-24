@@ -4,6 +4,7 @@ import axios from 'axios';
 import app from '../app.js';
 import userFactory from '../src/models/userModel.js';
 import JWT from '../src/utils/jwt.js';
+import { setTestMode } from '../src/utils/testMode.js';
 
 let mongod;
 const PORT = 3000;
@@ -13,6 +14,7 @@ let User;
 let mockToken;
 
 beforeAll(async () => {
+  setTestMode(true);
   mongod = await MongoMemoryServer.create();
   const uri = mongod.getUri();
 
@@ -38,7 +40,7 @@ beforeAll(async () => {
   await User.create(mockUser);
   mockToken = jwt.generateToken('leo');
 
-  server = app; // This assumes you're exporting the express app from app.js, not the server.
+  server = app;
 });
 
 afterEach((done) => {
@@ -48,22 +50,19 @@ afterEach((done) => {
 });
 
 afterAll(async () => {
-  // mongoose.connection.close();
-  // mongod.stop();
-  // server.close();
   await mongoose.disconnect();
-  // await mongoose.connection.close();
   await mongod.stop();
   server.close();
 });
 
 test('Fetch user status successfully', async () => {
   const testUser = 'leo';
-  // console.log(mockToken);
-
   const response = await axios.get(`${HOST}/users/${testUser}/status`, {
     headers: {
       Authorization: `Bearer ${mockToken}`,
+    },
+    params: {
+      istest: 'true',
     },
   });
 
@@ -74,11 +73,14 @@ test('Fetch user status successfully', async () => {
 
 test('Update user status', async () => {
   const testUser = 'leo';
-  const newStatus = 'OK';
+  const newStatus = 'Emergency';
 
   const response = await axios.post(`${HOST}/users/${testUser}/status/${newStatus}`, null, {
     headers: {
       Authorization: `Bearer ${mockToken}`,
+    },
+    params: {
+      istest: 'true',
     },
   });
 

@@ -113,7 +113,8 @@ class privateChatController {
       // if not found, create a new chatroom
       let targetChatroom = chatroom;
       if (!targetChatroom) {
-        const newChatroom = this.chatroomModel({
+        // eslint-disable-next-line new-cap
+        const newChatroom = new this.chatroomModel({
           senderName,
           receiverName,
         });

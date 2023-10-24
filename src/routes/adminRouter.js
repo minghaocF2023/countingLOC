@@ -60,18 +60,12 @@ const router = express.Router();
 
 /**
  * @swagger
- * /admin/speedtest:
+ * /admin/stopspeedtest:
  *   post:
  *     tags: [Admin]
  *     summary: suspend system, and start performance test
  *     description: call a api for {duration} and with {interval} between every api call,
  *      will broadcast {startspeedtest} & {finishspeedtest} socket when test begin and finish
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/SpeedTestReq'
  *     responses:
  *       200:
  *         description: Success
@@ -85,20 +79,7 @@ const router = express.Router();
  *                     message:
  *                       type: string
  *                       desciption: test result message
- *                       example: test finish
- *                     POSTs:
- *                       type: int
- *                       description: number of post api finished
- *                       example: 4
- *                     GETs:
- *                       type: int
- *                       description: number of post api finished
- *                       example: 6
- *                     errors:
- *                       type: array
- *                       description: error lists that the test apis reported
- *
- *
+ *                       example: set istest to false
  *       400:
  *         description: Invalid request
  *         content:
@@ -124,10 +105,57 @@ const router = express.Router();
  *             example:
  *               message: User not logged in
  */
-router.post('/speedtest', (req, res) => {
+router.post('/stopspeedtest', (req, res) => {
   speedTestController.startSpeedTest(req, res);
 });
 
+/**
+ * @swagger
+ * /admin/startspeedtest:
+ *   post:
+ *     tags: [Admin]
+ *     summary: suspend system, and start performance test
+ *     description: call a api for {duration} and with {interval} between every api call,
+ *      will broadcast {startspeedtest} & {finishspeedtest} socket when test begin and finish
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       desciption: test result message
+ *                       example: set speedtest to true
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       403:
+ *         description: User Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User unauthorized
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
 router.post('/startspeedtest', (req, res) => {
   speedTestController.startSpeedTest(req, res);
 });

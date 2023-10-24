@@ -100,12 +100,17 @@ import StatusController from '../controllers/statusController.js';
 import userFactory from '../models/userModel.js';
 import PrivateMessageFactory from '../models/privateMessageModel.js';
 import ChatroomFactory from '../models/chatroomModel.js';
-import { realConnection } from '../services/db.js';
+import { getTestMode } from '../utils/testMode.js';
+import { realConnection, testConnection } from '../services/db.js';
 
 const router = express.Router();
-const userModel = userFactory(realConnection);
-const privateChatModel = PrivateMessageFactory(realConnection);
-const chatroomModel = ChatroomFactory(realConnection);
+// const userModel = userFactory(realConnection);
+// const privateChatModel = PrivateMessageFactory(realConnection);
+// const chatroomModel = ChatroomFactory(realConnection);
+const userModel = userFactory(getTestMode() ? testConnection : realConnection);
+const testUserModel = userFactory(testConnection);
+const privateChatModel = PrivateMessageFactory(getTestMode() ? testConnection : realConnection);
+const chatroomModel = ChatroomFactory(getTestMode() ? testConnection : realConnection);
 const userController = new UserController(userModel);
 const loginController = new LoginController(userModel);
 const statusController = new StatusController(userModel);
@@ -142,7 +147,13 @@ const privateChatController = new PrivateChatController(privateChatModel, chatro
  *               banned_users: [bannedUser1, bannedUser2]
  */
 router.get('/', (req, res) => {
-  userController.getAllUsers(req, res);
+  // userController.getAllUsers(req, res);
+  if (req.query.istest === 'true') {
+    const testUserController = new StatusController(testUserModel);
+    testUserController.getAllUsers(req, res);
+  } else {
+    userController.getAllUsers(req, res);
+  }
 });
 
 /**
@@ -181,7 +192,13 @@ router.get('/', (req, res) => {
  *                   message: Banned username
  */
 router.get('/:username', (req, res) => {
-  userController.getUserByUsername(req, res);
+  // userController.getUserByUsername(req, res);
+  if (req.query.istest === 'true') {
+    const testUserController = new StatusController(testUserModel);
+    testUserController.getByUsername(req, res);
+  } else {
+    statusController.getByUsername(req, res);
+  }
 });
 
 /**
@@ -227,7 +244,13 @@ router.get('/:username', (req, res) => {
  *               message: Duplicated username
  */
 router.post('/', (req, res) => {
-  userController.createUser(req, res);
+  // userController.createUser(req, res);
+  if (req.query.istest === 'true') {
+    const testUserController = new StatusController(testUserModel);
+    testUserController.createUser(req, res);
+  } else {
+    userController.createUser(req, res);
+  }
 });
 
 /**
@@ -280,11 +303,23 @@ router.post('/', (req, res) => {
  *               message: Incorrect username/password
  */
 router.put('/:username/online', (req, res) => {
-  loginController.updateOnlineStatus(req, res);
+  // loginController.updateOnlineStatus(req, res);
+  if (req.query.istest === 'true') {
+    const testLoginController = new StatusController(testUserModel);
+    testLoginController.updateOnlineStatus(req, res);
+  } else {
+    loginController.updateOnlineStatus(req, res);
+  }
 });
 
 router.post('/:username', (req, res) => {
-  loginController.loginUser(req, res);
+  // loginController.loginUser(req, res);
+  if (req.query.istest === 'true') {
+    const testLoginController = new StatusController(testUserModel);
+    testLoginController.loginUser(req, res);
+  } else {
+    loginController.loginuser(req, res);
+  }
 });
 /**
  * @swagger
@@ -333,7 +368,13 @@ router.post('/:username', (req, res) => {
  *               message: User not logged in
  */
 router.put('/:username/offline', (req, res) => {
-  loginController.logoutUser(req, res);
+  // loginController.logoutUser(req, res);
+  if (req.query.istest === 'true') {
+    const testLoginController = new StatusController(testUserModel);
+    testLoginController.logoutUser(req, res);
+  } else {
+    loginController.logoutUser(req, res);
+  }
 });
 /**
  * @swagger
@@ -384,7 +425,13 @@ router.put('/:username/offline', (req, res) => {
  *               message: User not logged in
  */
 router.get('/:username/private', (req, res) => {
-  privateChatController.getAllPrivate(req, res);
+  // privateChatController.getAllPrivate(req, res);
+  if (req.query.istest === 'true') {
+    const testPrivateChatController = new StatusController(testUserModel);
+    testPrivateChatController.getAllPrivate(req, res);
+  } else {
+    privateChatController.getAllPrivate(req, res);
+  }
 });
 
 /**
@@ -434,7 +481,19 @@ router.get('/:username/private', (req, res) => {
  *               message: User not logged in
 */
 router.get('/:username/status', (req, res) => {
-  statusController.getStatus(req, res);
+  // if (req.query.istest === 'true') {
+  //   const testStatusController = new StatusController(testUserModel);
+  //   testStatusController.getStatus(req, res);
+  // } else {
+  //   statusController.getStatus(req, res);
+  // }
+  // statusController.getStatus(req, res);
+  if (req.query.istest === 'true') {
+    const testStatusController = new StatusController(testUserModel);
+    testStatusController.getStatus(req, res);
+  } else {
+    statusController.getStatus(req, res);
+  }
 });
 
 /**
@@ -482,7 +541,12 @@ router.get('/:username/status', (req, res) => {
  *               message: User not logged in
  */
 router.post('/:username/status/:status', (req, res) => {
-  statusController.updateStatus(req, res);
+  if (req.query.istest === 'true') {
+    const testStatusController = new StatusController(testUserModel);
+    testStatusController.updateStatus(req, res);
+  } else {
+    statusController.updateStatus(req, res);
+  }
 });
 
 // /**
