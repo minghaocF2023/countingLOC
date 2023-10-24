@@ -8,7 +8,8 @@ class StatusController {
 
   async getStatus(req, res) {
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      return res.status(401).json({ message: 'User not logged in' });
+      res.status(401).json({ message: 'User not logged in' });
+      return;
     }
 
     const token = req.headers.authorization.split(' ')[1];
@@ -16,27 +17,41 @@ class StatusController {
     const payload = jwt.verifyToken(token);
 
     if (payload === null) {
-      return res.status(401).json({ message: 'User not logged in' });
+      res.status(401).json({ message: 'User not logged in' });
+      return;
+    }
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
     }
 
     const { username } = payload;
     const user = await this.userModel.getOne({ username });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found!' });
+      res.status(404).json({ message: 'User not found!' });
+      return;
     }
-    return res.status(200).json({ message: 'OK', status: user.status, statusTimestamp: user.statusTimestamp });
+    res.status(200).json({ message: 'OK', status: user.status, statusTimestamp: user.statusTimestamp });
   }
 
   async updateStatus(req, res) {
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      return res.status(401).json({ message: 'User not logged in' });
+      res.status(401).json({ message: 'User not logged in' });
+      return;
     }
 
     const jwt = new JWT(process.env.JWTSECRET);
     const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
     if (payload === null) {
-      return res.status(401).json({ message: 'User not logged in' });
+      res.status(401).json({ message: 'User not logged in' });
+      return;
+    }
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
     }
 
     const { username } = payload;
@@ -44,7 +59,8 @@ class StatusController {
 
     const user = await this.userModel.getOne({ username });
     if (!user) {
-      return res.status(404).json({ message: 'User not found!' });
+      res.status(404).json({ message: 'User not found!' });
+      return;
     }
 
     user.status = status;
@@ -54,7 +70,7 @@ class StatusController {
     const socketServer = req.app.get('socketServer');
     socketServer.publishEvent('newStatus', user);
 
-    return res.status(200).json({ message: 'Status updated successfully!', status: user.status, statusTimestamp: user.statusTimestamp });
+    res.status(200).json({ message: 'Status updated successfully!', status: user.status, statusTimestamp: user.statusTimestamp });
   }
 }
 

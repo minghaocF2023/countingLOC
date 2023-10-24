@@ -120,6 +120,11 @@ class privateChatController {
       return;
     }
 
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
+
     // search the chatroom belongs to the sender and receiver
     const senderName = payload.username;
     const query = {
@@ -133,6 +138,7 @@ class privateChatController {
       // if not found, create a new chatroom
       let targetChatroom = chatroom;
       if (!targetChatroom) {
+        // eslint-disable-next-line new-cap
         const newChatroom = new this.chatroomModel({
           senderName,
           receiverName,
@@ -190,6 +196,11 @@ class privateChatController {
       res.json({ message: 'User not logged in' });
       return;
     }
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
+
     const { username } = payload;
     // user -> getChatroom -> another user -> append to result array
     const userQuery = { username };

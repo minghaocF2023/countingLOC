@@ -1,212 +1,162 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import axios from 'axios';
-import app from '../app.js';
-import {
-  createUserModel, createPublicMessageModel, createPrivateMessageModel, createChatroomModel,
-} from '../src/models/models.js';
+import userFactory from '../src/models/userModel.js';
+import privateMessageFactory from '../src/models/privateMessageModel.js';
+import app from '../app.js'; // Import your express app
+import JWT from '../src/utils/jwt.js';
 
 let mongod;
 const PORT = 3000;
 const HOST = `http://localhost:${PORT}`;
-
 let server;
+let User;
+let PrivateMessageModel;
+
+let mockTokenA;
+let mockTokenB;
 
 beforeAll(async () => {
-  server = app;
   mongod = await MongoMemoryServer.create();
   const uri = mongod.getUri();
-  const client = new mongoose.mongo.MongoClient(
-    uri,
-    { useNewUrlParser: true, useUnifiedTopology: true },
-  );
-  await client.connect();
-  const User = createUserModel(client);
-  await User.create([
-    {
-      username: 'alice',
-      password: 'passwordForAlice',
-      salt: 'randomSalt1',
-      isOnline: false,
-      status: 'OK',
-      statusTimestamp: new Date(),
-      chatrooms: ['chatroom1Id', 'chatroom2Id'],
-    },
-    {
-      username: 'bob',
-      password: 'passwordForBob',
-      salt: 'randomSalt2',
-      isOnline: true,
-      status: 'Busy',
-      statusTimestamp: new Date(),
-      chatrooms: ['chatroom1Id'],
-    },
-  ]);
-  // const db = client.db(await mongod.getDbName());
-  // const usersCollection = db.collection('users');
-  // await usersCollection.insertMany([
-  //   {
-  //     username: 'laura',
-  //     password: '1Lx/QVILgewLzDXIqEHhPV4QaFd17JPOLcAwrUlvu1I=',
-  //     salt: '0FGO+omn90n25YG9i2QRDA==',
-  //     __v: 53,
-  //     isOnline: false,
-  //     statusTimestamp: {
-  //       $date: '2023-10-22T17:29:15.032Z',
-  //     },
-  //     chatrooms: [
-  //       {
-  //         $oid: '652e2e6e56ba26faf1227a9b',
-  //       },
-  //       {
-  //         $oid: '652e2f1d56ba26faf1227aa9',
-  //       },
-  //     ],
-  //     status: 'Emergency',
-  //   },
-  //   {
-  //     username: 'leo',
-  //     password: 'hE8Ybe5ZITcFO9Rqr5bvwJpbcuTQ6veHaZuVDmQwqUE=',
-  //     salt: '6SyEFGea1GxqojfP82BC9Q==',
-  //     __v: 96,
-  //     isOnline: false,
-  //     chatrooms: [
-  //       {
-  //         $oid: '652e2e6e56ba26faf1227a9b',
-  //       },
-  //       {
-  //         $oid: '65356d7daafe46f9eb09eba5',
-  //       },
-  //     ],
-  //     status: 'OK',
-  //     statusTimestamp: {
-  //       $date: '2023-10-22T19:05:35.368Z',
-  //     },
-  //   },
-  // ]);
-  if (server && server.listening) {
-    await server.close();
-  }
+
+  console.log(`&&&${uri}`);
+
+  await mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
+  User = userFactory(mongoose);
+  PrivateMessageModel = privateMessageFactory(mongoose);
+
+  server = app;
+
+  const jwt = new JWT('Some secret keys');
+  const salt = 'some-salt';
+  const password = await User.hashPassword('password', salt);
+
+  mockTokenA = jwt.generateToken('userA');
+  mockTokenB = jwt.generateToken('userB');
+
+  // new PrivateMessageModel = PrivateMessageFactory(mongoose.connection);
+
+  // Create mock users
+  const user1 = {
+    username: 'userA',
+    password,
+    salt,
+    chatrooms: [],
+    isOnline: false,
+    status: 'Undefined',
+    statusTimestamp: new Date(),
+  };
+
+  const user2 = {
+    username: 'userB',
+    password,
+    salt,
+    chatrooms: [],
+    isOnline: false,
+    status: 'OK',
+    statusTimestamp: new Date(),
+  };
+
+  await User.create(user1);
+  await User.create(user2);
+
+  // Create mock private messages
+  const privateMessage = new PrivateMessageModel({
+    chatroomId: new mongoose.Types.ObjectId(),
+    content: 'Hello, userB!',
+    senderName: 'userA',
+    receiverName: 'userB',
+    timestamp: Date.now(),
+    status: 'OK',
+    isViewed: false,
+  });
+
+  // await privateMessage.save();
+  await PrivateMessageModel.create(privateMessage);
 });
 
-afterEach(async () => {
-  await mongoose.connection.dropDatabase();
+afterEach((done) => {
+  mongoose.connection.dropDatabase().then(() => {
+    done();
+  });
 });
 
 afterAll(async () => {
-  await mongoose.connection.close();
+  // mongoose.connection.close();
+  // mongod.stop();
+  // server.close();
+  await mongoose.disconnect();
+  // await mongoose.connection.close();
   await mongod.stop();
-  if (server && server.listening) {
-    await server.close();
-  }
+  server.close();
 });
 
-// Query-type test 1: get all private chat users
-test('Get all private chat users', async () => {
-  const testUser = 'leo';
-  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxlbyIsImlhdCI6MTY5Nzk5Mzg5NX0.ez2Jzh97hTCwLi14FW1m8QM1FQkUiI6OmhY10r5Hybs';
-  const response = await axios.get(`${HOST}/users/${testUser}/private`, {
-    headers: {
-      Authorization: `Bearer ${mockToken}`,
-    },
-  });
-  const expectResponse = {
-    users: [
-      'laura',
-    ],
-  };
-  expect(response.status).toBe(200);
-  expect(response).toBe(expectResponse);
-});
+describe('Private Chat Integration Tests', () => {
+  // it('should retrieve the latest private messages between two users', async () => {
+  //   const messageSent = 'Hello!';
+  //   axios.post(
+  //     `${HOST}/messages/private`,
+  //     { receiverName: 'laura', content: messageSent },
+  //     { headers: { Authorization: `Bearer ${mockTokenLeo}` } },
+  //   ).then(async () => {
+  //     axios.get(`${HOST}/messages/private/leo/laura`, {
+  //       params: { isInChat: true },
+  //       headers: { Authorization: `Bearer ${mockTokenLeo}` },
+  //     }).then(async (response) => {
+  //       expect(response.status).toBe(200);
+  //       console.log(`-------${response.data.messages}`);
+  //       expect(response.data.messages.length).toBe(1);
+  //       const msg = response.data.messages[0];
+  //       expect(msg.senderName).toBe('leo');
+  //       expect(msg.content).toBe(messageSent);
+  //     });
+  //   });
+  // });
+  it('should retrieve the latest private messages between two users', async () => {
+    const messageSent = 'Hello!';
+    await axios.post(
+      `${HOST}/messages/private`,
+      { content: messageSent, receiverName: 'userB' },
+      { headers: { Authorization: `Bearer ${mockTokenA}` } },
+    );
 
-// Query-type test 2: get latest private message between two users
-test('Get latest private message between two users', async () => {
-  const testUser = 'leo';
-  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxlbyIsImlhdCI6MTY5Nzk5Mzg5NX0.ez2Jzh97hTCwLi14FW1m8QM1FQkUiI6OmhY10r5Hybs';
-  const response = await axios.get(`${HOST}/users/${testUser}/private`, {
-    headers: {
-      Authorization: `Bearer ${mockToken}`,
-    },
-  });
-  const expectResponse = {
-    users: [
-      'jerr',
-      'laura',
-    ],
-  };
-  expect(response.status).toBe(200);
-  expect(response).toBe(expectResponse);
-});
+    const response = await axios.get(`${HOST}/messages/private/userA/userB`, {
+      params: { isInChat: true },
+      headers: { Authorization: `Bearer ${mockTokenA}` },
+    });
 
-// State-updating test: Updating a user's status
-test('Update user status', async () => {
-  const testUser = 'leo';
-  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxlbyIsImlhdCI6MTY5Nzk5Mzg5NX0.ez2Jzh97hTCwLi14FW1m8QM1FQkUiI6OmhY10r5Hybs';
-  const newStatus = 'OK'; // The new status you want to set
+    console.log(response.data); // Print the entire response data
 
-  const response = await axios.post(`${HOST}/users/${testUser}/status/${newStatus}`, null, {
-    headers: {
-      Authorization: `Bearer ${mockToken}`,
-    },
-    timeout: 10000,
+    expect(response.status).toBe(200);
+
+    if (response.data && response.data.messages) { // Add null and undefined check
+      console.log(response.data.messages);
+      expect(response.data.messages.length).toBe(1);
+      const msg = response.data.messages[0];
+      expect(msg.senderName).toBe('userA');
+      expect(msg.content).toBe(messageSent);
+    } else {
+      throw new Error('Messages are undefined');
+    }
   });
 
-  expect(response.status).toBe(200);
-  // expect(response.data.message).toBe('Status updated successfully!');
-  expect(response.data.status).toBe(newStatus);
+  it('should post a new private message', async () => {
+    const messageData = {
+      content: 'how are you laura',
+      receiverName: 'userB',
+    };
+
+    const response = await axios.post(`${HOST}/messages/private`, messageData, {
+      headers: {
+        Authorization: `Bearer ${mockTokenB}`,
+      },
+    });
+
+    expect(response.status).toBe(201);
+  }, 10000);
 });
-
-// import privateChatController from '../src/controllers/privateChatController.js';
-// import { PrivateMessage } from '../src/models/models.js';
-// // import JWT from '../src/utils/jwt.js';
-
-// jest.mock('../src/models/models.js', () => ({
-//   PrivateMessage: {
-//     save: jest.fn(),
-//     get: jest.fn(),
-//     markedAsViewed: jest.fn(),
-//   },
-// }));
-
-// describe('getLatestMessageBetweenUsers', () => {
-//   const mockRequest = (params, query) => ({
-//     params,
-//     query,
-//   });
-
-//   const mockResponse = () => {
-//     const res = {};
-//     res.status = jest.fn().mockReturnValue(res);
-//     res.json = jest.fn().mockReturnValue(res);
-//     return res;
-//   };
-
-//   it('returns messages between users', async () => {
-//     const req = mockRequest({ userA: 'Alice', userB: 'Bob' }, { isInChat: 'true' });
-//     const res = mockResponse();
-
-//     // Mock the returned messages from the database
-//     PrivateMessage.get.mockResolvedValue([
-//       {
-//         getChatroomID: jest.fn().mockReturnValue('1'),
-//         getText: jest.fn().mockReturnValue('Hello'),
-//         getSenderName: jest.fn().mockReturnValue('Alice'),
-//         getReceiverName: jest.fn().mockReturnValue('Bob'),
-//         getStatus: jest.fn().mockReturnValue('sent'),
-//         getTimestamp: jest.fn().mockReturnValue(new Date()),
-//         getIsViewed: jest.fn().mockReturnValue(false),
-//       },
-//     ]);
-
-//     PrivateMessage.markedAsViewed.mockResolvedValue(true);
-
-//     await privateChatController.getLatestMessageBetweenUsers(req, res);
-
-//     // expect(res.status).toBe(200);
-//     expect(res.json).toHaveBeenCalledWith(
-//       expect.objectContaining({
-//         message: 'OK',
-//       }),
-//     );
-//   });
-// });

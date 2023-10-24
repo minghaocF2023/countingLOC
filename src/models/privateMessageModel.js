@@ -121,7 +121,7 @@ const PrivateMessageFactory = (connection) => {
       if (message) {
         message.isViewed = true;
         await message.save().then(() => {
-          console.log('updated to viewed');
+          // console.log('updated to viewed');
         });
       }
     }

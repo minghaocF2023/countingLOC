@@ -82,7 +82,8 @@ class UserController {
     data.password = hashedPassword;
     data.salt = salt.toString('base64');
 
-    const newUser = this.userModel.createUser(data);
+    // eslint-disable-next-line new-cap
+    const newUser = new this.userModel(data);
 
     // save to database
     await newUser.save().then(() => {
@@ -93,6 +94,12 @@ class UserController {
       console.error(e);
       res.status(500);
       res.json({ message: 'Database error' });
+    });
+  }
+
+  async deleteUser(req, res) {
+    this.userModel.findOneAndDelete({ username: req.body.username }).then(() => {
+      res.status(200).json({ message: 'deleted' });
     });
   }
 }
