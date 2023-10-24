@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const TEST_CONTENT = 'a' * 20;
+const TEST_CONTENT = 'test'.repeat(5);
 let postSent = 0; // should not exceed 1000
 let postCount = 0;
 let getCount = 0;
@@ -27,7 +27,6 @@ const testPost = (interval) => setInterval(() => {
 const testGet = (interval) => setInterval(() => {
   axios.get(
     '/messages/public?isTest=true',
-    null,
     { headers: { Authorization: `Bearer ${authToken}` } },
   ).then(() => {
     getCount += 1;
@@ -63,7 +62,7 @@ $('form').on('submit', async (e) => {
   postSent = 0; // should not exceed 1000
   postCount = 0;
   getCount = 0;
-  const duration = $('#duration').val() * (1000 / 2);
+  const duration = $('#duration').val() / 2;
   const interval = $('#interval').val();
   // initiate speed test
   startTest();
@@ -72,18 +71,18 @@ $('form').on('submit', async (e) => {
   if (!stop) {
     console.log('start test post');
     testId = testPost(interval);
-    setTimeout(() => clearInterval(testId), duration);
-    setTimeout(() => $('#post-performance').html(postCount / duration), duration);
+    setTimeout(() => clearInterval(testId), duration * 1000);
+    setTimeout(() => $('#post-performance').html(postCount / duration), duration * 1000);
   }
   // test get
   setTimeout(() => {
     if (!stop) {
       console.log('start test get');
       getId = testGet(interval);
-      setTimeout(() => clearInterval(getId), duration);
-      setTimeout(() => $('#get-performance').html(getCount / duration), duration);
+      setTimeout(() => clearInterval(getId), duration * 1000);
+      setTimeout(() => $('#get-performance').html(getCount / duration), duration * 1000);
     }
-  }, duration);
+  }, duration * 1000);
 
   // stop speed test
   setTimeout(() => {
@@ -91,7 +90,7 @@ $('form').on('submit', async (e) => {
       stopTest();
       stop = true;
     }
-  }, duration * 2);
+  }, duration * 2 * 1000);
 });
 
 /**
