@@ -30,6 +30,10 @@ router.get('/speedtest', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'speedtest');
 });
 
+router.get('/503page', (req, res) => {
+  res.render('503page');
+});
+
 // router.get('/messages/public', (req, res) => {
 //   res.render('chatwall');
 // });

@@ -102,3 +102,21 @@ $('#stopButton').on('click', () => {
   clearInterval(getId);
   stopTest();
 });
+
+const connectSocket = (username) => {
+  // const socket = io();
+  // eslint-disable-next-line no-undef
+  const socket = io(undefined, { autoConnect: false });
+  socket.auth = { username };
+  socket.connect();
+  socket.on('startspeedtest', (msg) => {
+    if (localStorage.getItem('username') !== msg.username) {
+      window.history.pushState({ page: 'originalPage' }, 'Original Page', window.location.href);
+      window.location = '/503page';
+    }
+  });
+};
+// eslint-disable-next-line no-undef
+$(window).on('load', () => {
+  connectSocket(localStorage.getItem('username'));
+});

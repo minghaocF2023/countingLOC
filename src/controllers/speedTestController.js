@@ -122,7 +122,8 @@ class speedTestController {
     const { username } = payload;
     global.isTest = true;
     global.testUser = username;
-
+    const socketServer = req.app.get('socketServer');
+    socketServer.publishEvent('startspeedtest', { username: payload.username });
     res.status(200).json({ message: `set isTest to ${global.isTest}` });
   }
 
@@ -145,7 +146,9 @@ class speedTestController {
     }
     global.isTest = false;
     global.testUser = null;
-
+    const socketServer = req.app.get('socketServer');
+    socketServer.publishEvent('stopspeedtest', { username: payload.username });
+    console.log('publish socket');
     res.status(200).json({ message: `set isTest to ${global.isTest}` });
   }
 }

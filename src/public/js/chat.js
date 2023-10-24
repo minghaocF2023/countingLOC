@@ -37,6 +37,11 @@ const connectSocket = (username) => {
     scrollToBottom();
   });
   socket.on('privatemessage', (msg) => notify(msg));
+  socket.on('startspeedtest', (user) => {
+    if (localStorage.getItem('username') !== user) {
+      window.location = '/503page';
+    }
+  });
 };
 
 // const startSpeedTest = () => {
