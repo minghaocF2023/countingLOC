@@ -18,11 +18,16 @@ class SocketServer {
 
     socket.on('disconnect', () => {
       console.log(`a user disconnected ${socket.id}`);
+      userToSocket.set(username, null);
     });
 
     // socket.on('privatemessage', ({ content, to }) => {
     //   console.log(`Private message from ${socket.id} to ${to}: ${content}`);
     // });
+  }
+
+  static isConnected(username) {
+    return this.userToSocket.get(username) !== null;
   }
 
   publishEvent(event, data) {

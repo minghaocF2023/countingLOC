@@ -177,16 +177,14 @@ const userFactory = (connection) => {
      * Set user online status
      */
     async setOnline() {
-      this.isOnline = true;
-      await this.save();
+      await this.updateOne({ isOnline: true });
     }
 
     /**
      * Set user offline status
      */
     async setOffline() {
-      this.isOnline = false;
-      await this.save();
+      await this.updateOne({ isOnline: false });
     }
 
     /**

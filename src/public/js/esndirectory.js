@@ -75,9 +75,9 @@ const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 //   });
 // });
 
-$(window).on('DOMContentLoaded', () => {
+$(window).on('DOMContentLoaded', async () => {
   // if unauthorized -> it is okay to stay at esndirectory (currently)
-  axios.put(
+  await axios.put(
     `users/${localStorage.getItem('username')}/online`,
     null,
     { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
