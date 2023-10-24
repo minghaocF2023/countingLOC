@@ -53,7 +53,9 @@ import express from 'express';
 import SpeedTestController from '../controllers/speedTestController.js';
 import { testConnection } from '../services/db.js';
 import PublicMessageFactory from '../models/publicMessageModel.js';
+import ChatroomFactory from '../models/chatroomModel.js';
 
+const testChatroomModel = ChatroomFactory(testConnection);
 const testPublicChatModel = PublicMessageFactory(testConnection);
 const speedTestController = new SpeedTestController(testPublicChatModel);
 const router = express.Router();
@@ -161,5 +163,16 @@ router.post('/startspeedtest', (req, res) => {
 });
 router.get('/istest', (req, res) => {
   speedTestController.getIsTestState(req, res);
+});
+
+router.delete('/chatroom', (req, res) => {
+  if (req.query.istest === 'true') {
+    testChatroomModel.findOneAndRemove({
+      senderName: req.body.senderName,
+      receiverName: req.body.receiverName,
+    }).then(() => {
+      res.status(200).json({ message: 'delete successful' });
+    });
+  }
 });
 export default router;

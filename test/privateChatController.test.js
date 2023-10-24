@@ -1,49 +1,28 @@
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import axios from 'axios';
+import app from '../app.js';
 import userFactory from '../src/models/userModel.js';
-import privateMessageFactory from '../src/models/privateMessageModel.js';
-import app from '../app.js'; // Import your express app
 import JWT from '../src/utils/jwt.js';
+import { setTestMode } from '../src/utils/testMode.js';
 
-let mongod;
 const PORT = 3000;
 const HOST = `http://localhost:${PORT}`;
 let server;
 let User;
-let PrivateMessageModel;
-
-let mockTokenA;
-let mockTokenB;
+let mockToken1;
+let mockToken2;
+let mockUser1;
+let mockUser2;
 
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
-  const uri = mongod.getUri();
-
-  console.log(`&&&${uri}`);
-
-  await mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
+  setTestMode(true);
   User = userFactory(mongoose);
-  PrivateMessageModel = privateMessageFactory(mongoose);
-
-  server = app;
 
   const jwt = new JWT('Some secret keys');
   const salt = 'some-salt';
   const password = await User.hashPassword('password', salt);
-
-  mockTokenA = jwt.generateToken('userA');
-  mockTokenB = jwt.generateToken('userB');
-
-  // new PrivateMessageModel = PrivateMessageFactory(mongoose.connection);
-
-  // Create mock users
-  const user1 = {
-    username: 'userA',
+  mockUser1 = {
+    username: 'user1',
     password,
     salt,
     chatrooms: [],
@@ -52,111 +31,111 @@ beforeAll(async () => {
     statusTimestamp: new Date(),
   };
 
-  const user2 = {
-    username: 'userB',
+  mockUser2 = {
+    username: 'user2',
     password,
     salt,
     chatrooms: [],
     isOnline: false,
-    status: 'OK',
+    status: 'Undefined',
     statusTimestamp: new Date(),
   };
 
-  await User.create(user1);
-  await User.create(user2);
+  await axios.post(`${HOST}/users`, { username: mockUser1.username, password: mockUser1.password }, { params: { istest: 'true' } });
+  await axios.post(`${HOST}/users`, { username: mockUser2.username, password: mockUser1.password }, { params: { istest: 'true' } });
+  mockToken1 = jwt.generateToken(mockUser1.username);
+  mockToken2 = jwt.generateToken(mockUser2.username);
 
-  // Create mock private messages
-  const privateMessage = new PrivateMessageModel({
-    chatroomId: new mongoose.Types.ObjectId(),
-    content: 'Hello, userB!',
-    senderName: 'userA',
-    receiverName: 'userB',
-    timestamp: Date.now(),
-    status: 'OK',
-    isViewed: false,
-  });
-
-  // await privateMessage.save();
-  await PrivateMessageModel.create(privateMessage);
-});
-
-afterEach((done) => {
-  mongoose.connection.dropDatabase().then(() => {
-    done();
-  });
+  server = app;
 });
 
 afterAll(async () => {
-  // mongoose.connection.close();
-  // mongod.stop();
-  // server.close();
-  await mongoose.disconnect();
-  // await mongoose.connection.close();
-  await mongod.stop();
-  server.close();
+  await axios.delete(`${HOST}/users`, { data: { username: mockUser1.username }, params: { istest: 'true' } });
+  await axios.delete(`${HOST}/users`, { data: { username: mockUser2.username }, params: { istest: 'true' } });
+  await axios.delete(`${HOST}/messages/private`, { data: { senderName: mockUser1.username, receiverName: mockUser2.username }, params: { istest: 'true' } });
+  await axios.delete(`${HOST}/admin/chatroom`, { data: { senderName: mockUser1.username, receiverName: mockUser2.username }, params: { istest: 'true' } });
+  await mongoose.disconnect().then(() => {
+    server.close();
+  });
 });
 
 describe('Private Chat Integration Tests', () => {
-  // it('should retrieve the latest private messages between two users', async () => {
-  //   const messageSent = 'Hello!';
-  //   axios.post(
-  //     `${HOST}/messages/private`,
-  //     { receiverName: 'laura', content: messageSent },
-  //     { headers: { Authorization: `Bearer ${mockTokenLeo}` } },
-  //   ).then(async () => {
-  //     axios.get(`${HOST}/messages/private/leo/laura`, {
-  //       params: { isInChat: true },
-  //       headers: { Authorization: `Bearer ${mockTokenLeo}` },
-  //     }).then(async (response) => {
-  //       expect(response.status).toBe(200);
-  //       console.log(`-------${response.data.messages}`);
-  //       expect(response.data.messages.length).toBe(1);
-  //       const msg = response.data.messages[0];
-  //       expect(msg.senderName).toBe('leo');
-  //       expect(msg.content).toBe(messageSent);
-  //     });
-  //   });
-  // });
+  // Query Type 1:
   it('should retrieve the latest private messages between two users', async () => {
     const messageSent = 'Hello!';
-    await axios.post(
+
+    // send the message
+    const postResponse = await axios.post(
       `${HOST}/messages/private`,
-      { content: messageSent, receiverName: 'userB' },
-      { headers: { Authorization: `Bearer ${mockTokenA}` } },
+      { receiverName: mockUser2.username, content: messageSent },
+      {
+        headers: { Authorization: `Bearer ${mockToken1}` },
+        params: { istest: 'true' },
+      },
     );
 
-    const response = await axios.get(`${HOST}/messages/private/userA/userB`, {
-      params: { isInChat: true },
-      headers: { Authorization: `Bearer ${mockTokenA}` },
+    // ensure the message was successfully sent before proceeding
+    expect(postResponse.status).toBe(201);
+
+    // retrieve the message
+    const getResponse = await axios.get(`${HOST}/messages/private/user1/user2`, {
+      params: { isInChat: true, istest: 'true' },
+      headers: { Authorization: `Bearer ${mockToken1}` },
     });
 
-    console.log(response.data); // Print the entire response data
-
-    expect(response.status).toBe(200);
-
-    if (response.data && response.data.messages) { // Add null and undefined check
-      console.log(response.data.messages);
-      expect(response.data.messages.length).toBe(1);
-      const msg = response.data.messages[0];
-      expect(msg.senderName).toBe('userA');
-      expect(msg.content).toBe(messageSent);
-    } else {
-      throw new Error('Messages are undefined');
-    }
+    expect(getResponse.status).toBe(200);
+    const msg = getResponse.data.data[0];
+    expect(msg.senderName).toBe('user1');
+    expect(msg.content).toBe(messageSent);
   });
 
+  // Query Type 2:
+  it('should get all users who have chatted with user 2', async () => {
+    const messageSent = 'Hello!';
+
+    // send the message
+    const postResponse = await axios.post(
+      `${HOST}/messages/private`,
+      { receiverName: mockUser2.username, content: messageSent },
+      {
+        headers: { Authorization: `Bearer ${mockToken1}` },
+        params: { istest: 'true' },
+      },
+    );
+
+    // message successfully sent
+    expect(postResponse.status).toBe(201);
+    // get resonse
+    const response = await axios.get(`${HOST}/users/user1/private`, {
+      headers: {
+        Authorization: `Bearer ${mockToken1}`,
+      },
+      params: {
+        istest: 'true',
+      },
+    });
+    expect(response.status).toBe(200);
+    expect(response.data.users).toContain('user2');
+  });
+
+  // State-Updating 1:
   it('should post a new private message', async () => {
     const messageData = {
-      content: 'how are you laura',
-      receiverName: 'userB',
+      content: 'How ru',
+      receiverName: 'user2',
     };
 
     const response = await axios.post(`${HOST}/messages/private`, messageData, {
       headers: {
-        Authorization: `Bearer ${mockTokenB}`,
+        Authorization: `Bearer ${mockToken1}`,
+      },
+      params: {
+        istest: 'true',
       },
     });
 
     expect(response.status).toBe(201);
-  }, 10000);
+    expect(response.data.data.receiverName).toBe('user2');
+    expect(response.data.data.content).toBe(messageData.content);
+  }, 20000);
 });

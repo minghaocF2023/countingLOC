@@ -115,7 +115,11 @@ const chatroomModel = ChatroomFactory(realConnection);
 const userController = new UserController(userModel);
 const loginController = new LoginController(userModel);
 const statusController = new StatusController(userModel);
-const privateChatController = new PrivateChatController(privateChatModel, chatroomModel, userModel);
+const privateChatController = new PrivateChatController(
+  privateChatModel,
+  chatroomModel,
+  userModel,
+);
 const testPrivateChatController = new PrivateChatController(
   testPrivateChatModel,
   testChatroomModel,

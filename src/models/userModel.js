@@ -145,7 +145,7 @@ const userFactory = (connection) => {
     // }
 
     static createUser(data) {
-      const user = new User(data);
+      const user = new this(data);
       return user;
     }
 

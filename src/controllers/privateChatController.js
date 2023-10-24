@@ -209,7 +209,9 @@ class privateChatController {
     // eslint-disable-next-line prefer-const
 
     this.userModel.getOne(userQuery).then(async (user) => {
+      // eslint-disable-next-line new-cap
       const chatrooms = user.getChatrooms();
+
       // eslint-disable-next-line prefer-const
       const otherUsers = [];
       const taskList = [];
@@ -232,6 +234,15 @@ class privateChatController {
       Promise.all(taskList).then(() => {
         res.status(200).json({ users: otherUsers });
       });
+    });
+  }
+
+  async deletePrivateMessage(req, res) {
+    this.privateChatModel.deleteMany({
+      senderName: req.body.senderName,
+      receiverName: req.body.receiverName,
+    }).then(() => {
+      res.status(200).json({ message: 'deleted' });
     });
   }
 }
