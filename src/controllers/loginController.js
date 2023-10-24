@@ -54,6 +54,11 @@ class LoginController {
     const token = req.headers.authorization.split(' ')[1];
     const jwt = new JWT(process.env.JWTSECRET);
     const payload = jwt.verifyToken(token);
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
     // check username
     if (!req.params.username) {
       res.status(400);
@@ -68,11 +73,13 @@ class LoginController {
       res.json({ message: 'Unauthorized Request' }); // maybe some other message
       return;
     }
+    let status;
     try {
       // update database user status
       const user = await this.userModel.getOne({ username });
       await user.setOnline();
       onlineList[username] = true;
+      status = user.status;
     } catch (error) {
       console.error('Error setting user online:', error);
       res.status(500);
@@ -81,7 +88,7 @@ class LoginController {
     }
     // socket broadcast
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('userOnlineStatus', { username, isOnline: true });
+    socketServer.publishEvent('userOnlineStatus', { username, isOnline: true, status });
 
     res.status(200).json({ message: 'OK' });
   }

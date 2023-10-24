@@ -15,6 +15,9 @@ import adminRouter from './src/routes/adminRouter.js';
 import SocketServer from './src/services/socket.js';
 import PrivateSocketServer from './src/services/privateSocket.js';
 
+global.isTest = false;
+global.testUser = null;
+
 const PORT = 3000;
 // console.log('is import.meta.url a string?', typeof import.meta.url);
 const filename = fileURLToPath(import.meta.url);
@@ -93,3 +96,5 @@ app.use(
 );
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
+
+export default server;

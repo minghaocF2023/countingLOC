@@ -31,6 +31,11 @@ class publicChatController {
       res.json({ message: 'User not logged in' });
       return;
     }
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
+      return;
+    }
     // sort messages by timestamp
     // const messages = await PublicMessage.find().sort({ timeStamp: -1 });
     // const messages = this.publicChatModel.find().sort({ timeStamp: -1 });
@@ -50,6 +55,11 @@ class publicChatController {
     if (payload === null) {
       res.status(401);
       res.json({ message: 'User not logged in' });
+      return;
+    }
+
+    if (global.isTest === true && global.testUser !== payload.username) {
+      res.status(503).json({ message: 'under speed test' });
       return;
     }
     if (!req.body.content) {

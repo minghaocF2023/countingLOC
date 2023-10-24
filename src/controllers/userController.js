@@ -12,7 +12,7 @@ class UserController {
       res.status(200);
       res.json({
         message: 'OK',
-        users: users.map(({ username, isOnline }) => ({ username, isOnline })),
+        users: users.map(({ username, isOnline, status }) => ({ username, isOnline, status })),
         banned_users: this.userModel.BANNED_USERNAMES,
       });
     }).catch((e) => {
@@ -30,7 +30,7 @@ class UserController {
         res.json({ message: isBannedUsername(username) ? 'Banned username' : 'User not found' });
       } else {
         res.status(200);
-        res.json({ message: 'OK', user: { username: user.username, isOnline: user.isOnline } });
+        res.json({ message: 'OK', user: { username: user.username, isOnline: user.isOnline, status: user.status } });
       }
     }).catch((e) => {
       console.error(e);
@@ -82,7 +82,8 @@ class UserController {
     data.password = hashedPassword;
     data.salt = salt.toString('base64');
 
-    const newUser = this.userModel.createUser(data);
+    // eslint-disable-next-line new-cap
+    const newUser = new this.userModel(data);
 
     // save to database
     await newUser.save().then(() => {
@@ -93,6 +94,12 @@ class UserController {
       console.error(e);
       res.status(500);
       res.json({ message: 'Database error' });
+    });
+  }
+
+  async deleteUser(req, res) {
+    this.userModel.findOneAndDelete({ username: req.body.username }).then(() => {
+      res.status(200).json({ message: 'deleted' });
     });
   }
 }

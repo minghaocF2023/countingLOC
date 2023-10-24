@@ -12,13 +12,17 @@ const HOST = `http://localhost:${PORT}`;
 let server;
 let User;
 let mockToken;
+const TEST_DB_URI = 'mongodb://localhost/esndbtest';
 
 beforeAll(async () => {
   setTestMode(true);
-  mongod = await MongoMemoryServer.create();
-  const uri = mongod.getUri();
 
-  await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  try {
+    await mongoose.connect(TEST_DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    console.log('Connected to the database successfully');
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
 
   User = userFactory(mongoose);
 
@@ -28,7 +32,7 @@ beforeAll(async () => {
   const password = await User.hashPassword('password', salt);
 
   const mockUser = {
-    username: 'leo',
+    username: 'never',
     password,
     salt,
     chatrooms: [],
@@ -38,7 +42,8 @@ beforeAll(async () => {
   };
 
   await User.create(mockUser);
-  mockToken = jwt.generateToken('leo');
+  mockToken = jwt.generateToken('never');
+  console.log(mockToken);
 
   server = app;
 });
@@ -56,7 +61,7 @@ afterAll(async () => {
 });
 
 test('Fetch user status successfully', async () => {
-  const testUser = 'leo';
+  const testUser = 'never';
   const response = await axios.get(`${HOST}/users/${testUser}/status`, {
     headers: {
       Authorization: `Bearer ${mockToken}`,
@@ -72,7 +77,7 @@ test('Fetch user status successfully', async () => {
 });
 
 test('Update user status', async () => {
-  const testUser = 'leo';
+  const testUser = 'never';
   const newStatus = 'Emergency';
 
   const response = await axios.post(`${HOST}/users/${testUser}/status/${newStatus}`, null, {

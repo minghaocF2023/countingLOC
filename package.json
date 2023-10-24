@@ -7,7 +7,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "eslint": "eslint .",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "jest",
     "coverage": "jest --coverage"
   },
   "repository": {
@@ -22,7 +22,9 @@
   "homepage": "https://github.com/cmusv-fse/18652-fse-f23-group-project-sb-5#readme",
   "devDependencies": {
     "@babel/core": "^7.23.2",
+    "@babel/plugin-transform-runtime": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
+    "@babel/runtime": "^7.23.2",
     "babel-jest": "^29.7.0",
     "babel-plugin-transform-import-meta": "^2.2.1",
     "body-parser": "^1.20.2",
