@@ -29,8 +29,8 @@ const setStatusIcon = (status) => {
   $('#username+span.dropdown>.dropdown-toggle').html(STATUS[status]);
 };
 
-const getStatus = async () => axios.get(
-  `users/${localStorage.getItem('username')}/status`,
+const getStatus = async (username = null) => axios.get(
+  `users/${username || localStorage.getItem('username')}/status`,
   { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
 ).then(
   (res) => res.data.status,

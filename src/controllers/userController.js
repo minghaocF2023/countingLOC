@@ -12,7 +12,7 @@ class UserController {
       res.status(200);
       res.json({
         message: 'OK',
-        users: users.map(({ username, isOnline }) => ({ username, isOnline })),
+        users: users.map(({ username, isOnline, status }) => ({ username, isOnline, status })),
         banned_users: this.userModel.BANNED_USERNAMES,
       });
     }).catch((e) => {
