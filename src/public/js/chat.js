@@ -39,13 +39,13 @@ const connectSocket = (username) => {
   socket.on('privatemessage', (msg) => notify(msg));
 };
 
-const startSpeedTest = () => {
-  alert('start speed test');
-};
+// const startSpeedTest = () => {
+//   alert('start speed test');
+// };
 
-$('.speed-test').on('click', () => {
-  startSpeedTest();
-});
+// $('.speed-test').on('click', () => {
+//   startSpeedTest();
+// });
 // $(document).ready(() => {
 //   $('#speedTestSwitch').on('change', function () {
 //     if ($(this).prop('checked')) {
