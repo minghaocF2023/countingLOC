@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const TEST_CONTENT = 'a' * 20;
 let postSent = 0; // should not exceed 1000
 let postCount = 0;
@@ -11,14 +12,12 @@ const authToken = localStorage.getItem('token');
 
 const testPost = (interval) => setInterval(() => {
   axios.post(
-    '/messages/public',
+    '/messages/public?isTest=true',
     { content: TEST_CONTENT },
     { headers: { Authorization: `Bearer ${authToken}` } },
   ).then(() => {
-    console.log('post');
     postCount += 1;
     postSent += 1;
-    console.log(postSent);
     if (postSent >= 1000) {
       clearInterval(testId);
     }
@@ -27,14 +26,33 @@ const testPost = (interval) => setInterval(() => {
 
 const testGet = (interval) => setInterval(() => {
   axios.get(
-    '/messages/public',
+    '/messages/public?isTest=true',
     null,
     { headers: { Authorization: `Bearer ${authToken}` } },
   ).then(() => {
-    console.log('get');
     getCount += 1;
   });
 }, interval);
+
+const startTest = async () => axios.post(
+  '/admin/startspeedtest',
+  null,
+  { headers: { Authorization: `Bearer ${authToken}` } },
+).then(() => {
+  console.log('speed test initiated');
+}).catch((err) => {
+  console.warn(err.response.data);
+});
+
+const stopTest = async () => axios.post(
+  '/admin/stopspeedtest',
+  null,
+  { headers: { Authorization: `Bearer ${authToken}` } },
+).then(() => {
+  console.log('speed test stopped');
+}).catch((err) => {
+  console.warn(err.response.data);
+});
 
 /**
  * Start speed test
@@ -48,15 +66,7 @@ $('form').on('submit', async (e) => {
   const duration = $('#duration').val() * (1000 / 2);
   const interval = $('#interval').val();
   // initiate speed test
-  // await axios.post(
-  //   '/admin/speedtest',
-  //   { duration, interval },
-  //   { headers: { Authorization: `Bearer ${authToken}` } },
-  // ).then(() => {
-  //   console.log('speed test initiated');
-  // }).catch((err) => {
-  //   console.warn(err.response.data);
-  // });
+  startTest();
 
   // test post
   if (!stop) {
@@ -74,13 +84,22 @@ $('form').on('submit', async (e) => {
       setTimeout(() => $('#get-performance').html(getCount / duration), duration);
     }
   }, duration);
+
+  // stop speed test
+  setTimeout(() => {
+    if (!stop) {
+      stopTest();
+      stop = true;
+    }
+  }, duration * 2);
 });
 
 /**
- * Stop speed test
+ * Stop speed test manually
  */
 $('#stopButton').on('click', () => {
   stop = true;
   clearInterval(testId);
   clearInterval(getId);
+  stopTest();
 });
