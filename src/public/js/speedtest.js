@@ -14,7 +14,7 @@ const testPost = (interval) => setInterval(() => {
   axios.post(
     '/messages/public',
     { content: TEST_CONTENT },
-    { headers: { Authorization: `Bearer ${authToken}` }, params: { istest: 'true' } },
+    { headers: { Authorization: `Bearer ${authToken}` }, params: { isspeedtest: 'true' } },
   ).then(() => {
     postCount += 1;
     postSent += 1;
@@ -27,7 +27,7 @@ const testPost = (interval) => setInterval(() => {
 const testGet = (interval) => setInterval(() => {
   axios.get(
     '/messages/public',
-    { headers: { Authorization: `Bearer ${authToken}` }, params: { istest: 'true' } },
+    { headers: { Authorization: `Bearer ${authToken}` }, params: { isspeedtest: 'true' } },
   ).then(() => {
     getCount += 1;
   });
