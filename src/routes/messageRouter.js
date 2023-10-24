@@ -131,6 +131,10 @@ const testPublicChatController = new PublicChatController(
   testPublicChatModel,
   testUserModel,
 );
+const speedTestPublicChatController = new PublicChatController(
+  testPublicChatModel,
+  userModel,
+);
 const testPrivateChatController = new PrivateChatController(
   testPrivateChatModel,
   testChatroomModel,
@@ -163,6 +167,8 @@ const testPrivateChatController = new PrivateChatController(
 router.get('/public', (req, res) => {
   if (req.query.istest === 'true') {
     testPublicChatController.getLatestMessages(req, res);
+  } else if (req.query.isspeedtest === 'true') {
+    speedTestPublicChatController.getLatestMessages(req, res);
   } else {
     publicChatController.getLatestMessages(req, res);
   }
@@ -235,6 +241,8 @@ router.get('/public', (req, res) => {
 router.post('/public', (req, res) => {
   if (req.query.istest === 'true') {
     testPublicChatController.postNew(req, res);
+  } else if (req.query.isspeedtest === 'true') {
+    speedTestPublicChatController.postNew(req, res);
   } else {
     publicChatController.postNew(req, res);
   }
