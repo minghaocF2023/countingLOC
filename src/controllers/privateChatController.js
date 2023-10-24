@@ -138,10 +138,7 @@ class privateChatController {
       // if not found, create a new chatroom
       let targetChatroom = chatroom;
       if (!targetChatroom) {
-<<<<<<< HEAD
         // eslint-disable-next-line new-cap
-=======
->>>>>>> 334844f (Add online notifications)
         const newChatroom = new this.chatroomModel({
           senderName,
           receiverName,
