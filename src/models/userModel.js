@@ -145,7 +145,11 @@ const userFactory = (connection) => {
     // }
 
     static createUser(data) {
+<<<<<<< HEAD
       const user = new this(data);
+=======
+      const user = new User(data);
+>>>>>>> 334844f (Add online notifications)
       return user;
     }
 
