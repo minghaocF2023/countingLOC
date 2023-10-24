@@ -54,6 +54,12 @@ const connectSocket = (username) => {
     );
   });
 
+  socket.on('startspeedtest', (user) => {
+    if (localStorage.getItem('username') !== user) {
+      window.location = '503page';
+    }
+  });
+
   socket.on('newStatus', (msg) => {
     console.log(msg);
     console.log(` someone change status:${msg.username} ${msg.status}`);

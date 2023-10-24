@@ -49,6 +49,18 @@ const connectSocket = (username) => {
       notify(msg);
     }
   });
+  socket.on('startspeedtest', (user) => {
+    if (localStorage.getItem('username') !== user) {
+      window.history.pushState({ page: 'originalPage' }, 'Original Page', window.location.href);
+      window.location = '/503page';
+    }
+  });
+  socket.on('stopspeedtest', (user) => {
+    console.log('stop');
+    if (localStorage.getItem('username') !== user) {
+      window.history.back();
+    }
+  });
 };
 
 const username = localStorage.getItem('username');
