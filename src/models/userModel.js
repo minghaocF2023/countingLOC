@@ -125,7 +125,7 @@ const userFactory = (connection) => {
      * @param {string} username in lowercase
      * @returns {Promise<boolean>} true if username is taken
      */
-    async isUsernameTaken(username) {
+    static async isUsernameTaken(username) {
       return this.exists({ username });
     }
 
@@ -144,8 +144,8 @@ const userFactory = (connection) => {
     //   );
     // }
 
-    async createUser(data) {
-      const user = new this(data);
+    static createUser(data) {
+      const user = new User(data);
       return user;
     }
 
@@ -177,16 +177,14 @@ const userFactory = (connection) => {
      * Set user online status
      */
     async setOnline() {
-      this.isOnline = true;
-      await this.save();
+      await this.updateOne({ isOnline: true });
     }
 
     /**
      * Set user offline status
      */
     async setOffline() {
-      this.isOnline = false;
-      await this.save();
+      await this.updateOne({ isOnline: false });
     }
 
     /**

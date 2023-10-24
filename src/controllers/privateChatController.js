@@ -27,6 +27,8 @@ class privateChatController {
     };
     // assume userB = receiver
     let anyMessageUnread = false;
+    let anyMessageNotNotified = false;
+    const messageToBeNotified = [];
     const messageToBeViewed = [];
 
     // PrivateMessage.get(query).then((privateMessages) => {
@@ -41,8 +43,17 @@ class privateChatController {
           receiverName: pm.getReceiverName(),
           status: pm.getStatus(),
           timestamp: pm.getTimestamp(),
+          isNotified: pm.getIsNotified(),
           isViewed: pm.getIsViewed(),
         };
+        if (element.isNotified === false && element.receiverName === userB) {
+          // eslint-disable-next-line no-underscore-dangle
+          messageToBeNotified.push(pm._id);
+          element.isNotified = true;
+          anyMessageNotNotified = true;
+        }
+
+        // if already in private chatroom, and if any message is not viewed, update as viewed
         if (isInChat && element.isViewed === false && element.receiverName === userB) {
           // eslint-disable-next-line no-underscore-dangle
           messageToBeViewed.push(pm._id);
@@ -50,13 +61,23 @@ class privateChatController {
         }
         resData.push(element);
 
-        // if already in private chatroom, and if any message is not viewed, update as viewed
-
         // if any messages is not viewed yet, set anyMessageUnread as true
         if (element.receiverName === userB && element.isViewed === false) {
           anyMessageUnread = true;
         }
       });
+
+      // update message isNotified status
+      const changeToNotifiedTaskList = [];
+      messageToBeNotified.forEach((messageId) => {
+        const task = new Promise((resolve) => {
+          this.privateChatModel.markedAsNotified(messageId).then(() => {
+            resolve();
+          });
+        });
+        changeToNotifiedTaskList.push(task);
+      });
+
       const changeToViewedTaskList = [];
       messageToBeViewed.forEach((messageId) => {
         const task = new Promise((resolve) => {
@@ -67,15 +88,14 @@ class privateChatController {
         changeToViewedTaskList.push(task);
       });
 
-      Promise.all(changeToViewedTaskList).then(() => {
+      Promise.all(changeToViewedTaskList.concat(changeToNotifiedTaskList)).then(() => {
         // if user is not in chatroom, messageUnread = false
-        const response = { message: 'OK', data: resData, messageUnread: false };
-
-        if (!isInChat) {
-          if (anyMessageUnread) {
-            response.messageUnread = true;
-          }
-        }
+        const response = {
+          message: 'OK',
+          data: resData,
+          messageUnread: !isInChat && anyMessageUnread,
+          messageToBeNotified: anyMessageNotNotified,
+        };
 
         // success
         res.status(200).json(response);
@@ -149,6 +169,7 @@ class privateChatController {
         timestamp: Date.now(),
         status: (await this.userModel.getOne({ username: payload.username })).status,
         isViewed: false,
+        isNotified: false,
       };
       // const newPrivateMessage = new PrivateMessage(data);
       // eslint-disable-next-line new-cap
@@ -158,6 +179,7 @@ class privateChatController {
       // broadcast to receiver
       const socketServer = req.app.get('socketServer');
       socketServer.sendToPrivate('privatemessage', receiverName, data);
+      await newPrivateMessage.updateOne({ isNotified: socketServer.isConnected(receiverName) });
 
       res.status(201).json({ success: true, data: newPrivateMessage });
     });

@@ -27,6 +27,11 @@ const PrivateMessageFactory = (connection) => {
       type: String,
       required: true,
     },
+    isNotified: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     isViewed: {
       type: Boolean,
       required: true,
@@ -91,8 +96,23 @@ const PrivateMessageFactory = (connection) => {
       return this.status;
     }
 
+    getIsNotified() {
+      return this.isNotified;
+    }
+
     getIsViewed() {
       return this.isViewed;
+    }
+
+    // update message isViewed status
+    static async markedAsNotified(messageId) {
+      const message = await PrivateMessage.findById(messageId);
+      if (message) {
+        message.isNotified = true;
+        await message.save().then(() => {
+          console.log('updated to notified');
+        });
+      }
     }
 
     // update message isViewed status

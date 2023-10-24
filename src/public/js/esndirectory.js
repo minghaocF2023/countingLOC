@@ -59,6 +59,8 @@ const connectSocket = (username) => {
     console.log(` someone change status:${msg.username} ${msg.status}`);
     $(`#${msg.username} h5`).html(`${msg.username} ${STATUS[msg.status]}`);
   });
+
+  socket.on('privatemessage', (msg) => notify(msg));
 };
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
@@ -73,9 +75,9 @@ const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 //   });
 // });
 
-$(window).on('DOMContentLoaded', () => {
+$(window).on('DOMContentLoaded', async () => {
   // if unauthorized -> it is okay to stay at esndirectory (currently)
-  axios.put(
+  await axios.put(
     `users/${localStorage.getItem('username')}/online`,
     null,
     { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
