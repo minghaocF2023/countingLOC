@@ -65,7 +65,7 @@ $('form').on('submit', async (e) => {
   const duration = $('#duration').val() / 2;
   const interval = $('#interval').val();
   // initiate speed test
-  startTest();
+  await startTest();
 
   // test post
   if (!stop) {
@@ -82,7 +82,7 @@ $('form').on('submit', async (e) => {
       setTimeout(() => clearInterval(getId), duration * 1000);
       setTimeout(() => $('#get-performance').html(getCount / duration), duration * 1000);
     }
-  }, duration * 1000);
+  }, duration * 1000 + 2000);
 
   // stop speed test
   setTimeout(() => {
