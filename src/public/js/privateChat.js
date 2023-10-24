@@ -27,7 +27,7 @@ const scrollToBottom = () => {
 const fetchMessages = async (username) => axios.get(
   `/messages/private/${receiver}/${username}?isInChat=true`,
   { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
-)
+);
 
 const connectSocket = (username) => {
   const socket = io(undefined, { autoConnect: false });

@@ -138,7 +138,10 @@ class privateChatController {
       // if not found, create a new chatroom
       let targetChatroom = chatroom;
       if (!targetChatroom) {
+<<<<<<< HEAD
         // eslint-disable-next-line new-cap
+=======
+>>>>>>> 334844f (Add online notifications)
         const newChatroom = new this.chatroomModel({
           senderName,
           receiverName,
@@ -169,7 +172,6 @@ class privateChatController {
         timestamp: Date.now(),
         status: (await this.userModel.getOne({ username: payload.username })).status,
         isViewed: false,
-        isNotified: false,
       };
       // const newPrivateMessage = new PrivateMessage(data);
       // eslint-disable-next-line new-cap
@@ -179,7 +181,6 @@ class privateChatController {
       // broadcast to receiver
       const socketServer = req.app.get('socketServer');
       socketServer.sendToPrivate('privatemessage', receiverName, data);
-      await newPrivateMessage.updateOne({ isNotified: socketServer.isConnected(receiverName) });
 
       res.status(201).json({ success: true, data: newPrivateMessage });
     });
@@ -209,7 +210,9 @@ class privateChatController {
     // eslint-disable-next-line prefer-const
 
     this.userModel.getOne(userQuery).then(async (user) => {
+      // eslint-disable-next-line new-cap
       const chatrooms = user.getChatrooms();
+
       // eslint-disable-next-line prefer-const
       const otherUsers = [];
       const taskList = [];
@@ -232,6 +235,15 @@ class privateChatController {
       Promise.all(taskList).then(() => {
         res.status(200).json({ users: otherUsers });
       });
+    });
+  }
+
+  async deletePrivateMessage(req, res) {
+    this.privateChatModel.deleteMany({
+      senderName: req.body.senderName,
+      receiverName: req.body.receiverName,
+    }).then(() => {
+      res.status(200).json({ message: 'deleted' });
     });
   }
 }

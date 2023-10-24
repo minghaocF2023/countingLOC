@@ -127,6 +127,15 @@ const privateChatController = new PrivateChatController(
   chatroomModel,
   userModel,
 );
+const testPublicChatController = new PublicChatController(
+  testPublicChatModel,
+  testUserModel,
+);
+const testPrivateChatController = new PrivateChatController(
+  testPrivateChatModel,
+  testChatroomModel,
+  testUserModel,
+);
 
 /**
  * @swagger
@@ -153,7 +162,6 @@ const privateChatController = new PrivateChatController(
 // router.get('/public', PublicChatController.getLatestMessages);
 router.get('/public', (req, res) => {
   if (req.query.istest === 'true') {
-    const testPublicChatController = new PublicChatController(testPrivateChatModel, testUserModel);
     testPublicChatController.getLatestMessages(req, res);
   } else {
     publicChatController.getLatestMessages(req, res);
@@ -226,10 +234,6 @@ router.get('/public', (req, res) => {
 // router.post('/public', PublicChatController.postNew);
 router.post('/public', (req, res) => {
   if (req.query.istest === 'true') {
-    const testPublicChatController = new PublicChatController(
-      testPublicChatModel,
-      testUserModel,
-    );
     testPublicChatController.postNew(req, res);
   } else {
     publicChatController.postNew(req, res);
@@ -292,11 +296,6 @@ router.post('/public', (req, res) => {
 // router.post('/private', privateChatController.postNewPrivate);
 router.post('/private', (req, res) => {
   if (req.query.istest === 'true') {
-    const testPrivateChatController = new PrivateChatController(
-      testPrivateChatModel,
-      testChatroomModel,
-      testUserModel,
-    );
     testPrivateChatController.postNewPrivate(req, res);
   } else {
     privateChatController.postNewPrivate(req, res);
@@ -356,12 +355,19 @@ router.post('/private', (req, res) => {
 // router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
 router.get('/private/:userA/:userB', (req, res) => {
   if (req.query.istest === 'true') {
-    const testPrivateChatController = new PrivateChatController(testUserModel);
     testPrivateChatController.getLatestMessageBetweenUsers(req, res);
   } else {
     privateChatController.getLatestMessageBetweenUsers(req, res);
   }
   // privateChatController.getLatestMessageBetweenUsers(req, res);
+});
+
+router.delete('/private', (req, res) => {
+  if (req.query.istest === 'true') {
+    testPrivateChatController.deletePrivateMessage(req, res);
+  } else {
+    privateChatController.deletePrivateMessage(req, res);
+  }
 });
 
 export default router;
