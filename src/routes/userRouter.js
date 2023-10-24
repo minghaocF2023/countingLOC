@@ -255,6 +255,7 @@ router.get('/:username', (req, res) => {
  */
 router.post('/', (req, res) => {
   // userController.createUser(req, res);
+  // hahaha
   if (req.query.istest === 'true') {
     const testUserController = new UserController(testUserModel);
     testUserController.createUser(req, res);
