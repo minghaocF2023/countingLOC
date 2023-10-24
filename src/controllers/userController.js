@@ -30,7 +30,7 @@ class UserController {
         res.json({ message: isBannedUsername(username) ? 'Banned username' : 'User not found' });
       } else {
         res.status(200);
-        res.json({ message: 'OK', user: { username: user.username, isOnline: user.isOnline } });
+        res.json({ message: 'OK', user: { username: user.username, isOnline: user.isOnline, status: user.status } });
       }
     }).catch((e) => {
       console.error(e);

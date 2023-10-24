@@ -68,11 +68,13 @@ class LoginController {
       res.json({ message: 'Unauthorized Request' }); // maybe some other message
       return;
     }
+    let status;
     try {
       // update database user status
       const user = await this.userModel.getOne({ username });
       await user.setOnline();
       onlineList[username] = true;
+      status = user.status;
     } catch (error) {
       console.error('Error setting user online:', error);
       res.status(500);
@@ -81,7 +83,7 @@ class LoginController {
     }
     // socket broadcast
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('userOnlineStatus', { username, isOnline: true });
+    socketServer.publishEvent('userOnlineStatus', { username, isOnline: true, status });
 
     res.status(200).json({ message: 'OK' });
   }

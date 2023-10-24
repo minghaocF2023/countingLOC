@@ -52,5 +52,7 @@ Object.keys(STATUS).forEach((key) => {
   });
 });
 
-export default STATUS;
-export { setStatus, setStatusIcon, getStatus };
+window.STATUS = STATUS;
+window.setStatus = setStatus;
+window.setStatusIcon = setStatusIcon;
+window.getStatus = getStatus;

@@ -1,13 +1,12 @@
 /* eslint-disable no-undef */
-const newBlock = (username, status) => {
-  const statusStr = status ? 'online' : 'offline';
-
+const newBlock = (username, onlineStatus, emergencyStatus) => {
+  const onlineStatusStr = onlineStatus ? 'online' : 'offline';
   const div = document.createElement('div');
   div.id = username;
   div.className = 'card mb-3 user-card';
   div.innerHTML = '<div class="card-body">'
-    + `<h5 class="card-title">${username}</h5>`
-    + `<p class="card-text"><span class="status ${statusStr}">${statusStr}</span></p>`
+    + `<h5 class="card-title">${username} ${STATUS[emergencyStatus]}</h5>`
+    + `<p class="card-text"><span class="status ${onlineStatusStr}">${onlineStatusStr}</span></p>`
     + '</div>'
     + '</div>';
   div.onclick = () => {
@@ -18,7 +17,7 @@ const newBlock = (username, status) => {
 
 const compareString = (a, b) => a.localeCompare(b);
 
-const appendNewUser = (div, username, isOnline) => {
+const appendNewUser = (div, username, isOnline, status) => {
   // user already in div
   if (div.children(`#${username}`).length > 0) {
     return;
@@ -27,7 +26,7 @@ const appendNewUser = (div, username, isOnline) => {
   $(`#${username}`).remove();
   // add new online block
   const newList = div.children();
-  const newUser = newBlock(username, isOnline);
+  const newUser = newBlock(username, isOnline, status);
   newList.push(newUser);
   // sort
   newList.sort((a, b) => compareString(a.id, b.id));
@@ -41,31 +40,29 @@ const connectSocket = (username) => {
   socket.auth = { username };
   socket.connect();
   socket.on('userOnlineStatus', (msg) => {
-    console.log(`someone login:${msg.username} ${msg.isOnline}`);
+    console.log(msg);
+    console.log(` someone login:${msg.username} ${msg.isOnline} ${msg.status}`);
 
     const onlineListDiv = $('#online-user-list');
     const offlineListDiv = $('#offline-user-list');
 
-    appendNewUser(msg.isOnline ? onlineListDiv : offlineListDiv, msg.username, msg.isOnline);
+    appendNewUser(
+      msg.isOnline ? onlineListDiv : offlineListDiv,
+      msg.username,
+      msg.isOnline,
+      msg.status,
+    );
   });
-  // speed test sockets
-  socket.on('startspeedtest', () => {
-    alert('should go to 503 page');
-  });
-  socket.on('finishspeedtest', () => {
-    alert('should back to previous page');
+
+  socket.on('newStatus', (msg) => {
+    console.log(msg);
+    console.log(` someone change status:${msg.username} ${msg.status}`);
+    $(`#${msg.username} h5`).html(`${msg.username} ${STATUS[msg.status]}`);
   });
 };
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
-const startSpeedTest = () => {
-  alert('start speed test');
-};
-
-$('.speed-test').on('click', () => {
-  startSpeedTest();
-});
 // $(document).ready(() => {
 //   $('#speedTestSwitch').on('change', function () {
 //     if ($(this).prop('checked')) {
@@ -76,7 +73,7 @@ $('.speed-test').on('click', () => {
 //   });
 // });
 
-$(window).on('load', () => {
+$(window).on('DOMContentLoaded', () => {
   // if unauthorized -> it is okay to stay at esndirectory (currently)
   axios.put(
     `users/${localStorage.getItem('username')}/online`,
@@ -90,14 +87,14 @@ $(window).on('load', () => {
 
   // get esn directory info
   axios.get('/users').then((res) => {
-    const userStatus = res.data.users.sort(compareByUsername);
+    const userOnlineStatus = res.data.users.sort(compareByUsername);
     const onlineList = [];
     const offlineList = [];
-    userStatus.forEach((element) => {
-      if (element.isOnline === true) {
-        onlineList.push(newBlock(element.username, element.isOnline));
+    userOnlineStatus.forEach((element) => {
+      if (element.isOnline) {
+        onlineList.push(newBlock(element.username, element.isOnline, element.status));
       } else {
-        offlineList.push(newBlock(element.username, element.isOnline));
+        offlineList.push(newBlock(element.username, element.isOnline, element.status));
       }
     });
 

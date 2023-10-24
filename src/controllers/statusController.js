@@ -52,7 +52,7 @@ class StatusController {
     await user.save();
 
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('newStatus', user.status);
+    socketServer.publishEvent('newStatus', user);
 
     return res.status(200).json({ message: 'Status updated successfully!', status: user.status, statusTimestamp: user.statusTimestamp });
   }

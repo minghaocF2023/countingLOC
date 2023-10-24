@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
 // console log queries after url
-import STATUS, { getStatus } from './status.js';
-
 const queries = new URLSearchParams(window.location.search);
 const receiver = queries.get('username');
 
