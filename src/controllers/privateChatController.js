@@ -113,7 +113,7 @@ class privateChatController {
       // if not found, create a new chatroom
       let targetChatroom = chatroom;
       if (!targetChatroom) {
-        const newChatroom = this.chatroomModel({
+        const newChatroom = new this.chatroomModel({
           senderName,
           receiverName,
         });

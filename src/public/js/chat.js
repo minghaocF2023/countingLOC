@@ -36,14 +36,7 @@ const connectSocket = (username) => {
     $('#chat-list').append(newMsg);
     scrollToBottom();
   });
-
-  // speed test sockets
-  socket.on('startspeedtest', () => {
-    alert('should go to 503 page');
-  });
-  socket.on('finishspeedtest', () => {
-    alert('should back to previous page');
-  });
+  socket.on('privatemessage', (msg) => notify(msg));
 };
 
 const startSpeedTest = () => {
@@ -101,6 +94,9 @@ $(window).on('load', () => {
 
 $('#send').on('click', () => {
   const msg = $('#message').val();
+  if (msg === '') {
+    return;
+  }
   axios.post('/messages/public', { content: msg }, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,

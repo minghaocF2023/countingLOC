@@ -59,6 +59,8 @@ const connectSocket = (username) => {
     console.log(` someone change status:${msg.username} ${msg.status}`);
     $(`#${msg.username} h5`).html(`${msg.username} ${STATUS[msg.status]}`);
   });
+
+  socket.on('privatemessage', (msg) => notify(msg));
 };
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
