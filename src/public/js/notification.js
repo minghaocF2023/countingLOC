@@ -45,11 +45,11 @@ const hasUnreadMsg = async (user) => axios.get(
   return messageToBeNotified;
 });
 
+window.notify = notify;
+window.getChattedUsers = getChattedUsers;
+
 (await getChattedUsers()).forEach(async (user) => {
   if (await hasUnreadMsg(user)) {
     alertMsgDuringOffline(user);
   }
 });
-
-window.notify = notify;
-window.getChattedUsers = getChattedUsers;
