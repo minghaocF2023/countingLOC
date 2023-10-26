@@ -222,8 +222,10 @@ class privateChatController {
               if (!otherUsers.includes(otherUser)) {
                 otherUsers.push(otherUser);
               }
-              resolve();
+            } else {
+              console.error(`chatroom ${chatroomId} not found for user ${username}`);
             }
+            resolve();
           });
         });
         taskList.push(task);
