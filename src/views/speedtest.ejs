@@ -13,6 +13,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
     <style>
         .nav-link.active {
             font-weight: bold;
@@ -112,8 +114,8 @@
                     <input type="number" class="form-control" name="interval" id="interval" placeholder="Enter interval in milliseconds" required>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary mb-2"><i class="fas fa-play"></i> Start</button>
-                    <button type="button" class="btn btn-danger mb-2 ml-2" id="stopButton"><i class="fas fa-stop"></i> Stop</button>
+                    <button type="submit" class="btn btn-primary mb-2" disabled><i class="fas fa-play"></i> Start</button>
+                    <button type="button" class="btn btn-danger mb-2 ml-2" id="stopButton" disabled><i class="fas fa-stop"></i> Stop</button>
                 </div>
             </form>
         </div>
@@ -121,8 +123,8 @@
 
     <div class="mt-4">
         <h2><i class="fas fa-chart-bar mr-2"></i>Performance</h2>
-        <p><strong>POST Performance:</strong> <span id="post-performance">0</span> requests/second</p>
-        <p><strong>GET Performance:</strong> <span id="get-performance">0</span> requests/second</p>
+        <p><strong>POST Performance:</strong> <span id="post-performance">-</span> requests/second</p>
+        <p><strong>GET Performance:</strong> <span id="get-performance">-</span> requests/second</p>
     </div>
 </div>
 
