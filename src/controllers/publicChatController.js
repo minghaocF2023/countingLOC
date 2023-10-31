@@ -75,6 +75,7 @@ class publicChatController {
       timestamp: Date.now(),
       status: (await this.userModel.getOne({ username: payload.username })).status,
     };
+    // random comment
     // const newMessage = new PublicMessage(data);
     // eslint-disable-next-line new-cap
     const newMessage = new this.publicChatModel(data);
