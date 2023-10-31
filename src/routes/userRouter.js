@@ -129,7 +129,7 @@ const testPrivateChatController = new PrivateChatController(
  * @swagger
  * /users:
  *   get:
- *     tags: [Users]
+ *     tags: [Users, Search]
  *     summary: Get all users
  *     description: Get a list of all registered usernames and a list of banned usernames
  *     responses:

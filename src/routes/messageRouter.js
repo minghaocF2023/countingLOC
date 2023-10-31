@@ -145,7 +145,7 @@ const testPrivateChatController = new PrivateChatController(
  * @swagger
  * /messages/public:
  *   get:
- *     tags: [Messages]
+ *     tags: [Messages, Search]
  *     summary: Get all public messages
  *     description: Get all messages published on the public wall
  *     responses:
@@ -314,7 +314,7 @@ router.post('/private', (req, res) => {
  * @swagger
  * /messages/private/{userA}/{userB}:
  *   get:
- *     tags: [Messages]
+ *     tags: [Messages, Search]
  *     summary: Get all private messages between sender and receiver
  *     description: Get all messages published on the public wall
  *     parameters:
@@ -377,5 +377,83 @@ router.delete('/private', (req, res) => {
     privateChatController.deletePrivateMessage(req, res);
   }
 });
+
+/**
+ * @swagger
+ * /messages/announcement:
+ *   get:
+ *     tags: [Messages, Search]
+ *     summary: Get all announcement messages
+ *     description: Get all messages published on the public wall
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+ *                   properties:
+ *                     messages:
+ *                       type: array
+ *                       items:
+ *                        $ref: '#/components/schemas/Message'
+ */
+router.get('/announcement', () => {});
+
+/**
+ * @swagger
+ * /messages/announcement:
+ *   post:
+ *     tags: [Messages]
+ *     summary: Post a new announcement message
+ *     description: Post a new message on the announcement wall
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/NewMessage'
+ *     responses:
+ *       201:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+ *                   properties:
+ *                     mid:
+ *                       type: string
+ *                       description: Message ID
+ *                       example: 650b635c9d39c281eac33bbf
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.post('/announcement', () => {});
 
 export default router;
