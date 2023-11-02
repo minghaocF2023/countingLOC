@@ -15,6 +15,7 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
     <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
     <style>
         .nav-link.active {
             font-weight: bold;
@@ -60,45 +61,7 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-<!-- <nav class="navbar navbar-light bg-light fixed-top"> -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <!-- <span class="navbar-toggler-icon"></span> -->
-        <i class="fas fa-bars"></i> Menu
-    </button>
-    <a class="navbar-brand">ESN</a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item mr-2">
-                <a class="nav-link esn-directory" href="/esndirectory">ESN Directory</a>
-            </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link public-chat" href="/chatwall">Chat Wall</a>
-            </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link speed-test active" href="/speedtest">Speed Test</a>
-            </li>          
-        </ul>
-        <ul class="navbar-nav">
-            <li class="nav-item d-none">
-                <b id="username">{username}</b>
-                <span class="dropdown">
-                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">
-                        Undefined
-                    </button>
-                    <ul class="dropdown-menu mt-3 mb-3">
-                        <li class="ml-1"><a id="OK"><i class="fas fa-check-circle" style="color:green"></i> OK</a></li>
-                        <li class="ml-1"><a id="Help"><i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i> Help</a></li>
-                        <li class="ml-1"><a id="Emergency"><i class="fas fa-exclamation-triangle" style="color:red"></i> Emergency</a></li>
-                    </ul>
-                </span>
-            </li>
-            <li class="nav-item">
-                <a id="logout" class="nav-link btn btn-primary text-white" href="/join">Logout</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+    <%- include('partials/navbar') %>
 
 <div class="container mt-5 pt-5">
     <h1 class="mb-4"><i class="fas fa-tachometer-alt mr-2"></i>ESN Speed Test</h1>
@@ -127,6 +90,7 @@
         <p><strong>GET Performance:</strong> <span id="get-performance">-</span> requests/second</p>
     </div>
 </div>
+<%- include('partials/searchModal') %>
 
 
 <!-- JS scripts remain the same -->
