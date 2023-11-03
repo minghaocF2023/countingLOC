@@ -1,17 +1,21 @@
   <!-- Modal -->
   <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
       <div class="modal-content">
        
         <div class="mb-3 px-3 py-4 ">
             <div class="d-flex justify-content-center mb-3 align-items-start">
-                <label for="Search Bar" class="form-label flex-grow-1"><h4><i class="bi bi-search pe-2"></i>Search</h4></label>
+                <label for="Search Bar" class="form-label flex-grow-1"><h4><i class="bi bi-megaphone-fill pe-2"></i>New Announcement</h4></label>
             <button type="button" class="btn" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
             </div>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Search something..." aria-label="Recipient's username" aria-describedby="button-addon2">
-                    <button class="btn btn-outline-secondary" type="button" id="search-button"><i class="bi bi-search"></i></button>
-                </div>
+            <div class="mb-3">
+              <label for="exampleFormControlTextarea1" class="form-label">Content</label>
+              <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary text-white">Submit</button>
           </div>
         
       </div>

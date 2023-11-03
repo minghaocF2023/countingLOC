@@ -52,7 +52,7 @@
         <div id="chat-container" class="messages" style="margin-top: 75px; margin-bottom: 115px;">
             <div class="d-flex align-items-end mb-3">
                 <h3 class="flex-grow-1">Announcement</h3>
-                <button class="btn btn-primary text-white"><i class="bi bi-plus-circle-fill me-2 text-white"></i>New</button>
+                <button class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-plus-circle-fill me-2 text-white"></i>New</button>
             </div>
             
             <!-- Message Cards -->
@@ -90,6 +90,7 @@
             </div>
         </div>
     </div>
+    <%- include('partials/searchModal') %>
     <script type="module" src="js/logout.js"></script>
     <script type="module" src="js/notification.js"></script>
     <script type="module" src="js/status.js"></script>
