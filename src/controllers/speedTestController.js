@@ -1,4 +1,5 @@
 import authChecker from '../utils/authChecker.js';
+import testChecker from '../utils/testChecker.js';
 
 class speedTestController {
   constructor(publicChatModel) {
@@ -26,14 +27,13 @@ class speedTestController {
     // user authentication
     const payload = authChecker(req, res);
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
+
     const { username } = payload;
     global.isTest = true;
     global.testUser = username;
@@ -46,14 +46,13 @@ class speedTestController {
   async stopSpeedTest(req, res) {
     const payload = authChecker(req, res);
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
+
     global.isTest = false;
     global.testUser = null;
     const socketServer = req.app.get('socketServer');

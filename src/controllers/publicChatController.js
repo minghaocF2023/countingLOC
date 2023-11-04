@@ -1,4 +1,5 @@
 import authChecker from '../utils/authChecker.js';
+import testChecker from '../utils/testChecker.js';
 
 /**
  * @typedef {{
@@ -26,13 +27,10 @@ class publicChatController {
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
     // sort messages by timestamp
-    // const messages = await PublicMessage.find().sort({ timeStamp: -1 });
-    // const messages = this.publicChatModel.find().sort({ timeStamp: -1 });
     const messages = await this.publicChatModel.find({}).sort({ timeStamp: -1 });
     res.status(200).json({ success: true, data: messages });
   }
@@ -45,10 +43,10 @@ class publicChatController {
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
+
     if (!req.body.content) {
       res.status(400);
       res.json({ message: 'Invalid request' });

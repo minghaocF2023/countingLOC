@@ -3,7 +3,6 @@ import axios from 'axios';
 import app from '../app.js';
 import userFactory from '../src/models/userModel.js';
 import JWT from '../src/utils/jwt.js';
-import { setTestMode } from '../src/utils/testMode.js';
 
 const PORT = 3000;
 const HOST = `http://localhost:${PORT}`;
@@ -13,7 +12,6 @@ let mockToken;
 let mockUser;
 
 beforeAll(async () => {
-  setTestMode(true);
   User = userFactory(mongoose);
 
   // Create a user in MongoDB

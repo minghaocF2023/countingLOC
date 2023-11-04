@@ -1,5 +1,6 @@
 import authChecker from '../utils/authChecker.js';
 import 'dotenv/config';
+import testChecker from '../utils/testChecker.js';
 
 class StatusController {
   constructor(userModel) {
@@ -9,12 +10,10 @@ class StatusController {
   async getStatus(req, res) {
     const payload = authChecker(req, res);
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 
@@ -31,12 +30,10 @@ class StatusController {
   async updateStatus(req, res) {
     const payload = authChecker(req, res);
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 

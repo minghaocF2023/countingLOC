@@ -1,4 +1,5 @@
 import authChecker from '../utils/authChecker.js';
+import testChecker from '../utils/testChecker.js';
 
 // helper functions
 const getPrivateMessageData = (pm) => {
@@ -55,6 +56,10 @@ class privateChatController {
     const payload = authChecker(req, res);
     if (!payload) {
       console.error('authorization error');
+      return;
+    }
+
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 
@@ -143,8 +148,7 @@ class privateChatController {
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 
@@ -214,8 +218,8 @@ class privateChatController {
       console.error('authorization error');
       return;
     }
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 
