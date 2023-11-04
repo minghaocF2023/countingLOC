@@ -71,21 +71,21 @@
  * @swagger
  * parameters:
  *   userA:
- *     name: userA
+ *     name: targetUser
  *     in: path
  *     description: Username of a userA
  *     required: true
  *     schema:
  *       type: string
- *     example: userA
+ *     example: targetUser
  *   userB:
- *     name: userB
+ *     name: currentUser
  *     in: path
- *     description: Username of a userB
+ *     description: Username of a currentUser
  *     required: true
  *     schema:
  *       type: string
- *     example: userB
+ *     example: currentUser
  *   receiver:
  *     name: receiver
  *     in: path
@@ -361,7 +361,7 @@ router.post('/private', (req, res) => {
  *               message: User not logged in
  */
 // router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
-router.get('/private/:userA/:userB', (req, res) => {
+router.get('/private/:targetUser/:currentUser', (req, res) => {
   if (req.query.istest === 'true') {
     testPrivateChatController.getLatestMessageBetweenUsers(req, res);
   } else {

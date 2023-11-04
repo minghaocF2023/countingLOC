@@ -56,7 +56,6 @@ const connectSocket = (username) => {
     }
   });
   socket.on('stopspeedtest', (user) => {
-    console.log('stop');
     if (localStorage.getItem('username') !== user) {
       window.history.back();
     }

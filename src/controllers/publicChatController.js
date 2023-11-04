@@ -1,4 +1,4 @@
-import JWT from '../utils/jwt.js';
+import authChecker from '../utils/authChecker.js';
 
 /**
  * @typedef {{
@@ -20,15 +20,9 @@ class publicChatController {
    * Get all history messages
    */
   async getLatestMessages(req, res) {
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
-      return;
-    }
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
-    if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
+    const payload = authChecker(req, res);
+    if (!payload) {
+      console.error('authorization error');
       return;
     }
 
@@ -45,16 +39,9 @@ class publicChatController {
 
   // post new messages
   async postNew(req, res) {
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
-      return;
-    }
-
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
-    if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
+    const payload = authChecker(req, res);
+    if (!payload) {
+      console.error('authorization error');
       return;
     }
 
