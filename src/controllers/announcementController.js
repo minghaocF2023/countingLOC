@@ -73,5 +73,14 @@ class announcementController {
 
     res.status(201).json({ success: true, data: newAnnouncement });
   }
+
+  // async deleteAnnouncement(req, res) {
+  //   this.announcementModel.deleteMany({
+  //     senderName: req.body.senderName,
+  //   }).then(() => {
+  //     res.status(200).json({ message: 'deleted' });
+  //   });
+  // }
 }
+
 export default announcementController;

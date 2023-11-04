@@ -484,4 +484,12 @@ router.post('/announcement', (req, res) => {
   }
 });
 
+// router.delete('/announcement', (req, res) => {
+//   if (req.query.istest === 'true') {
+//     testAnnouncementController.deleteAnnouncement(req, res);
+//   } else {
+//     announcementController.deleteAnnouncement(req, res);
+//   }
+// });
+
 export default router;

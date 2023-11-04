@@ -44,39 +44,38 @@ afterEach(async () => {
 
 afterAll(async () => {
   await axios.delete(`${HOST}/users`, { data: { username: mockUser.username }, params: { istest: 'true' } });
+  // await axios.delete(`${HOST}/messages/announcement`, { data: { username: mockUser.username } });
   await mongoose.disconnect().then(() => {
     server.close();
   });
 });
 
-// // Query Type 1:
-// test('get latest announcement', async () => {
-//     const announcemen;
+// Query Type 1:
+test('get latest announcement', async () => {
+  const announcement = 'Latest Announcement';
 
-//     // send the message
-//     const postResponse = await axios.post(
-//       `${HOST}/messages/private`,
-//       { receiverName: mockUser2.username, content: messageSent },
-//       {
-//         headers: { Authorization: `Bearer ${mockToken1}` },
-//         params: { istest: 'true' },
-//       },
-//     );
+  // send the message
+  const postResponse = await axios.post(
+    `${HOST}/messages/announcement`,
+    { content: announcement },
+    {
+      headers: { Authorization: `Bearer ${mockToken}` },
+      params: { istest: 'true' },
+    },
+  );
 
-//     // ensure the message was successfully sent before proceeding
-//     expect(postResponse.status).toBe(201);
+  // ensure the message was successfully sent before proceeding
+  expect(postResponse.status).toBe(201);
 
-//     // retrieve the message
-//     const getResponse = await axios.get(`${HOST}/messages/private/user1/user2`, {
-//       params: { isInChat: true, istest: 'true' },
-//       headers: { Authorization: `Bearer ${mockToken1}` },
-//     });
+  // retrieve the announcement
+  const getResponse = await axios.get(`${HOST}/messages/announcement`, {
+    params: { istest: 'true' },
+    headers: { Authorization: `Bearer ${mockToken}` },
+  });
 
-//     expect(getResponse.status).toBe(200);
-//     const msg = getResponse.data.data[0];
-//     expect(msg.senderName).toBe('user1');
-//     expect(msg.content).toBe(messageSent);
-//   });
+  expect(getResponse.status).toBe(200);
+  expect(getResponse.data.data[0].content).toBe('Latest Announcement');
+}, 30000);
 
 test('Post announcement', async () => {
   const data = {
