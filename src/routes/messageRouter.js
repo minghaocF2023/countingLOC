@@ -120,6 +120,7 @@ const testUserModel = UserFactory(testConnection);
 const testChatroomModel = ChatroomFactory(testConnection);
 const testPrivateChatModel = PrivateMessageFactory(testConnection);
 const testPublicChatModel = PublicMessageFactory(testConnection);
+const testAnnouncementModel = AnnouncementFactory(testConnection);
 const publicMessageModel = PublicMessageFactory(realConnection);
 const privateMessageModel = PrivateMessageFactory(realConnection);
 const announcementModel = AnnouncementFactory(realConnection);
@@ -143,6 +144,10 @@ const speedTestPublicChatController = new PublicChatController(
 const testPrivateChatController = new PrivateChatController(
   testPrivateChatModel,
   testChatroomModel,
+  testUserModel,
+);
+const testAnnouncementController = new AnnouncementController(
+  testAnnouncementModel,
   testUserModel,
 );
 
@@ -407,8 +412,7 @@ router.delete('/private', (req, res) => {
  */
 router.get('/announcement', (req, res) => {
   if (req.query.istest === 'true') {
-    // TODO
-    res.status(500).json({ message: 'test' });
+    testAnnouncementController.getLatestAnnouncements(req, res);
   } else if (req.query.isspeedtest === 'true') {
     // TODO
     res.status(500).json({ message: 'speedtest' });
@@ -471,8 +475,7 @@ router.get('/announcement', (req, res) => {
  */
 router.post('/announcement', (req, res) => {
   if (req.query.istest === 'true') {
-    // TODO
-    res.status(500).json({ message: 'test' });
+    testAnnouncementController.postNew(req, res);
   } else if (req.query.isspeedtest === 'true') {
     // TODO
     res.status(500).json({ message: 'speedtest' });
