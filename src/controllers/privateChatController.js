@@ -54,8 +54,8 @@ class privateChatController {
 
     // check auth
     const payload = authChecker(req, res);
+
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 
@@ -144,7 +144,6 @@ class privateChatController {
     const { content, receiverName } = req.body;
     const payload = authChecker(req, res);
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 
@@ -215,7 +214,6 @@ class privateChatController {
   async getAllPrivate(req, res) {
     const payload = authChecker(req, res);
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 

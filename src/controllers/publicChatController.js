@@ -23,7 +23,6 @@ class publicChatController {
   async getLatestMessages(req, res) {
     const payload = authChecker(req, res);
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 
@@ -38,8 +37,8 @@ class publicChatController {
   // post new messages
   async postNew(req, res) {
     const payload = authChecker(req, res);
+
     if (!payload) {
-      console.error('authorization error');
       return;
     }
 
