@@ -106,8 +106,10 @@
 import express from 'express';
 import PublicChatController from '../controllers/publicChatController.js';
 import PrivateChatController from '../controllers/privateChatController.js';
+import AnnouncementController from '../controllers/announcementController.js';
 import PublicMessageFactory from '../models/publicMessageModel.js';
 import PrivateMessageFactory from '../models/privateMessageModel.js';
+import AnnouncementFactory from '../models/announcementModel.js';
 import UserFactory from '../models/userModel.js';
 import ChatroomFactory from '../models/chatroomModel.js';
 import { realConnection, testConnection } from '../services/db.js';
@@ -118,15 +120,19 @@ const testUserModel = UserFactory(testConnection);
 const testChatroomModel = ChatroomFactory(testConnection);
 const testPrivateChatModel = PrivateMessageFactory(testConnection);
 const testPublicChatModel = PublicMessageFactory(testConnection);
+const testAnnouncementModel = AnnouncementFactory(testConnection);
 const publicMessageModel = PublicMessageFactory(realConnection);
 const privateMessageModel = PrivateMessageFactory(realConnection);
+const announcementModel = AnnouncementFactory(realConnection);
 const chatroomModel = ChatroomFactory(realConnection);
+
 const publicChatController = new PublicChatController(publicMessageModel, userModel);
 const privateChatController = new PrivateChatController(
   privateMessageModel,
   chatroomModel,
   userModel,
 );
+const announcementController = new AnnouncementController(announcementModel, userModel);
 const testPublicChatController = new PublicChatController(
   testPublicChatModel,
   testUserModel,
@@ -138,6 +144,10 @@ const speedTestPublicChatController = new PublicChatController(
 const testPrivateChatController = new PrivateChatController(
   testPrivateChatModel,
   testChatroomModel,
+  testUserModel,
+);
+const testAnnouncementController = new AnnouncementController(
+  testAnnouncementModel,
   testUserModel,
 );
 
@@ -400,7 +410,16 @@ router.delete('/private', (req, res) => {
  *                       items:
  *                        $ref: '#/components/schemas/Message'
  */
-router.get('/announcement', () => {});
+router.get('/announcement', (req, res) => {
+  if (req.query.istest === 'true') {
+    testAnnouncementController.getLatestAnnouncements(req, res);
+  } else if (req.query.isspeedtest === 'true') {
+    // TODO
+    res.status(500).json({ message: 'speedtest' });
+  } else {
+    announcementController.getLatestAnnouncements(req, res);
+  }
+});
 
 /**
  * @swagger
@@ -454,6 +473,23 @@ router.get('/announcement', () => {});
  *             example:
  *               message: User not logged in
  */
-router.post('/announcement', () => {});
+router.post('/announcement', (req, res) => {
+  if (req.query.istest === 'true') {
+    testAnnouncementController.postNew(req, res);
+  } else if (req.query.isspeedtest === 'true') {
+    // TODO
+    res.status(500).json({ message: 'speedtest' });
+  } else {
+    announcementController.postNew(req, res);
+  }
+});
+
+// router.delete('/announcement', (req, res) => {
+//   if (req.query.istest === 'true') {
+//     testAnnouncementController.deleteAnnouncement(req, res);
+//   } else {
+//     announcementController.deleteAnnouncement(req, res);
+//   }
+// });
 
 export default router;

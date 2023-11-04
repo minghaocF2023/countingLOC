@@ -336,6 +336,7 @@ router.post('/:username', (req, res) => {
   // loginController.loginUser(req, res);
   if (req.query.istest === 'true') {
     const testLoginController = new LoginController(testUserModel);
+    console.log('add test user!!!!!!!!!!!!!!!!!!');
     testLoginController.loginUser(req, res);
   } else {
     loginController.loginUser(req, res);
