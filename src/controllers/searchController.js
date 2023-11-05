@@ -1,4 +1,7 @@
 import JWT from '../utils/jwt.js';
+import {
+  SearchCitizens, SearchPublicMessage, SearchPrivateMessage, SearchAnnouncements,
+} from '../models/searchStrategy.js';
 
 class SearchController {
   constructor(userModel, publicChatModel, privateChatModel, chatroomModel, announcementModel) {
@@ -9,16 +12,18 @@ class SearchController {
     this.announcementModel = announcementModel;
 
     this.searchStrategies = {
-      // user: new UserSearchStrategy(userModel),
+      user: new SearchCitizens(userModel),
+      public: new SearchPublicMessage(publicChatModel),
+      private: new SearchPrivateMessage(privateChatModel),
+      announcement: new SearchAnnouncements(announcementModel),
     };
   }
 
   async search(req, res) {
     const { context, ...otherParams } = req.query;
-    res.status(200).json({ message: 'OK', context, ...otherParams });
-    // const searchStrategy = this.searchStrategies[context];
-    // const result = await searchStrategy.execute(otherParams);
-    // res.status(200).json(result);
+    const searchStrategy = this.searchStrategies[context];
+    const result = await searchStrategy.execute(otherParams);
+    res.status(200).json(result);
   }
 }
 

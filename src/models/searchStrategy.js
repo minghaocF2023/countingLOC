@@ -1,39 +1,33 @@
+/* eslint-disable max-classes-per-file */
 // SearchStrategy interface
 class SearchStrategy {
-  // query methods, table to access, number of entries to display (display methods - can be front end)
   execute(criteria, context) {
     throw new Error('SearchStrategy.execute() must be implemented');
   }
 }
 
 // Concrete strategy for searching citizens by username
-class SearchCitizens extends SearchStrategy {
+export class SearchCitizens extends SearchStrategy {
   constructor(userModel) {
     super();
     this.userModel = userModel;
   }
 
   /**
-   * @param {Object} query
+   * @param {{username: string, status: string}} queryParams
+   * @param {number} pageSize
+   * @param {number} pageNum
    */
-  async execute(queryParams) {
-    // {status: 'help', username: 'joe'}
-  // process query so that understandable by mongoose
+  async execute(queryParams, pageSize = 10, pageNum = 0) {
     const { username, status } = queryParams;
-    const query = {};
-    if (username) {
-      query.username = { $regex: username, $options: 'i' };
-    }
-    if (status) {
-      query.status = status;
-    }
-
-    // let users = await this.userModel.find(query).sort({ isOnline: -1, username: 1 });
-    return await this.userModel.find(query);
+    const query = { username: new RegExp(username, 'i'), status: new RegExp(status, 'i') };
+    return this.userModel.find(query)
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize);
   }
 }
 
-class SearchAnnouncementsByWords extends SearchStrategy {
+export class SearchAnnouncements extends SearchStrategy {
   constructor(announcementModel) {
     super();
     this.announcementModel = announcementModel;
@@ -49,7 +43,7 @@ class SearchAnnouncementsByWords extends SearchStrategy {
   }
 }
 
-class SearchPublicMessageByWords extends SearchStrategy {
+export class SearchPublicMessage extends SearchStrategy {
   constructor(publicMessageModel) {
     super();
     this.publicMessageModel = publicMessageModel;
@@ -65,7 +59,7 @@ class SearchPublicMessageByWords extends SearchStrategy {
   }
 }
 
-class SearchPrivateMessageByWords extends SearchStrategy {
+export class SearchPrivateMessage extends SearchStrategy {
   constructor(privateMessageModel) {
     super();
     this.privateMessageModel = privateMessageModel;
