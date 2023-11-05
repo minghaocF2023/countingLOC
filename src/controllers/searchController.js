@@ -1,14 +1,24 @@
-import JWT from "../utils/jwt";
+import JWT from "../utils/jwt.js";
 
 class SearchController {
-    constructor() {
+    constructor(userModel, publicChatModel, privateChatModel, chatroomModel, announcementModel) {
+        this.userModel = userModel;
+        this.publicChatModel = publicChatModel;
+        this.privateChatModel = privateChatModel;
+        this.chatroomModel = chatroomModel;
+        this.announcementModel = announcementModel;
+        
         this.searchStrategies = {
-            'citizenByUsername': new SearchCitizensByUsername(),
-            'citizenByStatus': new SearchCitizensByStatus(),
-            'announcementByWords': new SearchAnnouncementsByWords(),
-            'publicMessageByWords': new SearchPublicMessageByWords(),
-            'privateMessageByWords': new SearchPrivateMessageByWords(),
+            // user: new UserSearchStrategy(userModel),
         }
+    }
+
+    async search(req, res) {
+        const { context, ...otherParams } = req.query;
+        res.status(200).json({ message: 'OK', context, ...otherParams });
+        // const searchStrategy = this.searchStrategies[context];
+        // const result = await searchStrategy.execute(otherParams);
+        // res.status(200).json(result);
     }
 }
 

@@ -12,6 +12,7 @@ import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
 import adminRouter from './src/routes/adminRouter.js';
+import searchRouter from './src/routes/searchRouter.js';
 import SocketServer from './src/services/socket.js';
 import PrivateSocketServer from './src/services/privateSocket.js';
 
@@ -83,12 +84,13 @@ const options = {
   },
   apis: ['./src/routes/*.js'],
 };
+const specs = swaggerJSDoc(options);
 
 app.use('/', indexRouter);
 app.use('/users/', userRouter);
 app.use('/messages/', messageRouter);
 app.use('/admin/', adminRouter);
-const specs = swaggerJSDoc(options);
+app.use('/search/', searchRouter);
 app.use(
   '/docs',
   swaggerUi.serve,
