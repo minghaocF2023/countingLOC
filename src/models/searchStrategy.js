@@ -12,7 +12,7 @@ class SearchCitizens extends SearchStrategy {
     super();
     this.userModel = userModel;
   }
-  
+
   /**
    * @param {Object} query
    */
@@ -20,12 +20,12 @@ class SearchCitizens extends SearchStrategy {
     // {status: 'help', username: 'joe'}
   // process query so that understandable by mongoose
     const { username, status } = queryParams;
-    let query = {};
+    const query = {};
     if (username) {
-        query.username = { $regex: username, $options: 'i'};
+      query.username = { $regex: username, $options: 'i' };
     }
-    if (status){
-        query.status = status;
+    if (status) {
+      query.status = status;
     }
 
     // let users = await this.userModel.find(query).sort({ isOnline: -1, username: 1 });
@@ -34,49 +34,51 @@ class SearchCitizens extends SearchStrategy {
 }
 
 class SearchAnnouncementsByWords extends SearchStrategy {
-    constructor(announcementModel) {
-        super();
-        this.announcementModel = announcementModel;
-    }
-    async execute(queryParams) {
-      // Logic to search announcements by key word(s)
-      const { keywords } = queryParams;
-      const searchQuery = { $text: { $search: keywords }};
+  constructor(announcementModel) {
+    super();
+    this.announcementModel = announcementModel;
+  }
 
-      let announcementRes = await this.announcementModel.find(searchQuery).limit(10);
-      return announcementRes;
-    }
+  async execute(queryParams) {
+    // Logic to search announcements by key word(s)
+    const { keywords } = queryParams;
+    const searchQuery = { $text: { $search: keywords } };
+
+    const announcementRes = await this.announcementModel.find(searchQuery).limit(10);
+    return announcementRes;
+  }
 }
 
 class SearchPublicMessageByWords extends SearchStrategy {
-    constructor(publicMessageModel) {
-        super();
-        this.publicMessageModel = publicMessageModel;
-    }
-    async execute(queryParams) {
-      // Logic to search public messages by key word(s)
-      const { keywords } = queryParams;
-      const searchQuery = { $text: { $search: keywords } };
+  constructor(publicMessageModel) {
+    super();
+    this.publicMessageModel = publicMessageModel;
+  }
 
-      let publicMsgRes = await this.publicMessageModel.find(searchQuery);
-      return publicMsgRes;
-    }
+  async execute(queryParams) {
+    // Logic to search public messages by key word(s)
+    const { keywords } = queryParams;
+    const searchQuery = { $text: { $search: keywords } };
+
+    const publicMsgRes = await this.publicMessageModel.find(searchQuery);
+    return publicMsgRes;
+  }
 }
 
 class SearchPrivateMessageByWords extends SearchStrategy {
-    constructor(privateMessageModel) {
-        super();
-        this.privateMessageModel = privateMessageModel;
-    }
-    async execute(queryParams) {
-      // Logic to search private messages by key word(s)
-      const { keywords } = queryParams;
-      const searchQuery = { $text: { $search: keywords } };
+  constructor(privateMessageModel) {
+    super();
+    this.privateMessageModel = privateMessageModel;
+  }
 
-      let privateMsgRes = await this.privateMessageModel.find(searchQuery);
-      return publicMsgRes;
-      return 'Results for private messages by key word(s)';
-    }
+  async execute(queryParams) {
+    // Logic to search private messages by key word(s)
+    const { keywords } = queryParams;
+    const searchQuery = { $text: { $search: keywords } };
+
+    const privateMsgRes = await this.privateMessageModel.find(searchQuery);
+    return publicMsgRes;
+    return 'Results for private messages by key word(s)';
+  }
 }
 // Add additional concrete strategies for other search contexts...
-  
