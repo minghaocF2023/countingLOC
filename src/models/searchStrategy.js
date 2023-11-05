@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 // SearchStrategy interface
 class SearchStrategy {
-  execute(criteria, context) {
+  execute(queryParams, pageSize, pageNum) {
     throw new Error('SearchStrategy.execute() must be implemented');
   }
 }
@@ -18,7 +18,7 @@ export class SearchCitizens extends SearchStrategy {
    * @param {number} pageSize
    * @param {number} pageNum
    */
-  async execute(queryParams, pageSize = 10, pageNum = 0) {
+  async execute(queryParams, pageSize = 0, pageNum = 1) {
     const { username, status } = queryParams;
     const query = { username: new RegExp(username, 'i'), status: new RegExp(status, 'i') };
     return this.userModel.find(query)
@@ -33,13 +33,14 @@ export class SearchAnnouncements extends SearchStrategy {
     this.announcementModel = announcementModel;
   }
 
-  async execute(queryParams) {
+  async execute(queryParams, pageSize = 10, pageNum = 1) {
     // Logic to search announcements by key word(s)
     const { keywords } = queryParams;
     const searchQuery = { $text: { $search: keywords } };
 
-    const announcementRes = await this.announcementModel.find(searchQuery).limit(10);
-    return announcementRes;
+    return this.announcementModel.find(searchQuery).limit(10)
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize);
   }
 }
 
@@ -49,13 +50,14 @@ export class SearchPublicMessage extends SearchStrategy {
     this.publicMessageModel = publicMessageModel;
   }
 
-  async execute(queryParams) {
+  async execute(queryParams, pageSize = 10, pageNum = 1) {
     // Logic to search public messages by key word(s)
     const { keywords } = queryParams;
     const searchQuery = { $text: { $search: keywords } };
 
-    const publicMsgRes = await this.publicMessageModel.find(searchQuery);
-    return publicMsgRes;
+    return this.publicMessageModel.find(searchQuery)
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize);
   }
 }
 
@@ -65,14 +67,14 @@ export class SearchPrivateMessage extends SearchStrategy {
     this.privateMessageModel = privateMessageModel;
   }
 
-  async execute(queryParams) {
+  async execute(queryParams, pageSize = 10, pageNum = 1) {
     // Logic to search private messages by key word(s)
     const { keywords } = queryParams;
     const searchQuery = { $text: { $search: keywords } };
 
-    const privateMsgRes = await this.privateMessageModel.find(searchQuery);
-    return publicMsgRes;
-    return 'Results for private messages by key word(s)';
+    return this.privateMessageModel.find(searchQuery)
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize);
   }
 }
 // Add additional concrete strategies for other search contexts...

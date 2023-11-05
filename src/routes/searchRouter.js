@@ -52,10 +52,17 @@ const testSearchController = new SearchController(
  *           enum: [user, public, private, announcement]
  *         example: user
  *       - in: query
- *         name: userB
+ *         name: pageSize
  *         schema:
- *           type: string
- *         example: Jerry
+ *           type: number
+ *         default: 10
+ *         example: 10
+ *       - in: query
+ *         name: pageNum
+ *         schema:
+ *           type: number
+ *         default: 1
+ *         example: 1
  *       - in: query
  *         name: username
  *         description: Search users with the given (partial) username

@@ -20,9 +20,11 @@ class SearchController {
   }
 
   async search(req, res) {
-    const { context, ...otherParams } = req.query;
+    const {
+      context, pageSize, pageNum, ...otherParams
+    } = req.query;
     const searchStrategy = this.searchStrategies[context];
-    const result = await searchStrategy.execute(otherParams);
+    const result = await searchStrategy.execute(otherParams, pageSize, pageNum);
     res.status(200).json(result);
   }
 }
