@@ -2,10 +2,6 @@
  * @swagger
  * components:
  *   schemas:
- *     user:
- *       type: string
- *       description: user's username
- *       example: username
  *     NewMessage:
  *       type: object
  *       description: New message
@@ -16,7 +12,7 @@
  *           type: string
  *           description: Message content
  *           example: Hello World!
- *     PrivateMessage:
+ *     NewPrivateMessage:
  *       type: object
  *       description: New private message
  *       required:
@@ -46,9 +42,9 @@
  *               type: string
  *               description: Message creation time
  *               example: 1970-01-01 00:00:00
- *     PrivateMessageList:
+ *     PrivateMessage:
  *       allOf:
- *         - $ref: '#/components/schemas/PrivateMessage'
+ *         - $ref: '#/components/schemas/NewPrivateMessage'
  *         - type: object
  *           properties:
  *             senderName:
@@ -155,7 +151,7 @@ const testAnnouncementController = new AnnouncementController(
  * @swagger
  * /messages/public:
  *   get:
- *     tags: [Messages, Search]
+ *     tags: [Messages]
  *     summary: Get all public messages
  *     description: Get all messages published on the public wall
  *     responses:
@@ -271,7 +267,7 @@ router.post('/public', (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PrivateMessage'
+ *             $ref: '#/components/schemas/NewPrivateMessage'
  *     responses:
  *       201:
  *         description: Success
@@ -324,7 +320,7 @@ router.post('/private', (req, res) => {
  * @swagger
  * /messages/private/{userA}/{userB}:
  *   get:
- *     tags: [Messages, Search]
+ *     tags: [Messages]
  *     summary: Get all private messages between sender and receiver
  *     description: Get all messages published on the public wall
  *     parameters:
@@ -344,7 +340,7 @@ router.post('/private', (req, res) => {
  *                     messages:
  *                       type: array
  *                       items:
- *                        $ref: '#/components/schemas/PrivateMessageList'
+ *                        $ref: '#/components/schemas/PrivateMessage'
  *       400:
  *         description: Invalid request
  *         content:
@@ -392,7 +388,7 @@ router.delete('/private', (req, res) => {
  * @swagger
  * /messages/announcement:
  *   get:
- *     tags: [Messages, Search]
+ *     tags: [Messages]
  *     summary: Get all announcement messages
  *     description: Get all messages published on the public wall
  *     responses:

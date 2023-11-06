@@ -29,6 +29,9 @@
  *     UserOnlineStatus:
  *       type: boolean
  *       example: false
+ *     UserStatus:
+ *       type: string
+ *       example: "Help"
  *     User:
  *       type: object
  *       description: User entries for frontend
@@ -37,6 +40,8 @@
  *           $ref: '#/components/schemas/Username'
  *         isOnline:
  *           $ref: '#/components/schemas/UserOnlineStatus'
+ *         status:
+ *           $ref: '#/components/schemas/UserStatus'
  *     UserList:
  *       type: array
  *       items:
@@ -129,7 +134,7 @@ const testPrivateChatController = new PrivateChatController(
  * @swagger
  * /users:
  *   get:
- *     tags: [Users, Search]
+ *     tags: [Users]
  *     summary: Get all users
  *     description: Get a list of all registered usernames and a list of banned usernames
  *     responses:
