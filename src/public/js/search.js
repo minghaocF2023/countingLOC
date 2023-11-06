@@ -26,6 +26,24 @@ const createChatMessage = (senderName, status, content, timestamp) => {
   return code;
 };
 
+const compareByUsername = (a, b) => a.username.localeCompare(b.username);
+
+const createUserBlock = (username, onlineStatus, emergencyStatus) => {
+  const onlineStatusStr = onlineStatus ? 'online' : 'offline';
+  const div = document.createElement('div');
+  div.id = username;
+  div.className = 'card mb-3 user-card';
+  div.innerHTML = '<div class="card-body">'
+      + `<h5 class="card-title">${username} ${STATUS[emergencyStatus]}</h5>`
+      + `<p class="card-text"><span class="status ${onlineStatusStr}">${onlineStatusStr}</span></p>`
+      + '</div>'
+      + '</div>';
+  div.onclick = () => {
+    window.location.href = `/privateChat?username=${username}`;
+  };
+  return div;
+};
+
 function updateUI(searchContext, data) {
   if (searchContext === 'public') {
     const resultsContainer = $('#chat-container');
@@ -56,17 +74,51 @@ function updateUI(searchContext, data) {
       performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
     });
   }
+  if (searchContext === 'user') {
+    $('#online-user-list').empty();
+    $('#offline-user-list').empty();
+    // console.log(data.sort(compareByUsername));
+    const userOnlineStatus = data.sort(compareByUsername);
+    const onlineList = [];
+    const offlineList = [];
+    userOnlineStatus.forEach((user) => {
+      if (user.isOnline) {
+        onlineList.push(createUserBlock(user.username, user.isOnline, user.status));
+      } else {
+        offlineList.push(createUserBlock(user.username, user.isOnline, user.status));
+      }
+    });
+    $('#online-user-list').append(onlineList);
+    $('#offline-user-list').append(offlineList);
+  }
 }
 
 function performSearch(searchInput, searchContext, pageNum = 1) {
   // Construct the query parameters based on the context
   let queryParams = `context=${searchContext}&pageSize=10&pageNum=${pageNum}`;
+  let searchedStatus = '';
   if (searchContext === 'user') {
-    queryParams += `&username=${encodeURIComponent(searchInput)}`;
-  } else {
+    console.log(searchInput.toLowerCase());
+    if (searchInput.toLowerCase() === 'ok') {
+      searchedStatus = 'OK';
+      queryParams += `&status=${encodeURIComponent(searchedStatus)}`;
+    }
+    if (searchInput.toLowerCase() === 'help') {
+      searchedStatus = 'Help';
+      queryParams += `&status=${encodeURIComponent(searchedStatus)}`;
+    }
+    if (searchInput.toLowerCase() === 'emergency') {
+      searchedStatus = 'Emergency';
+      queryParams += `&status=${encodeURIComponent(searchedStatus)}`;
+    }
+    if (searchInput.toLowerCase() !== 'ok' && searchInput.toLowerCase() !== 'help' && searchInput.toLowerCase() !== 'emergency') {
+      queryParams += `&username=${encodeURIComponent(searchInput)}`;
+    }
+  }
+  if (searchContext === 'public') {
     queryParams += `&words=${encodeURIComponent(searchInput)}`;
   }
-
+  console.log(queryParams);
   // Make an AJAX call to the backend
   $.ajax({
     url: `/search?${queryParams}`,
@@ -74,6 +126,7 @@ function performSearch(searchInput, searchContext, pageNum = 1) {
     dataType: 'json',
     success(data) {
       console.log('Searched successfully');
+      console.log(data);
       if (data.length === 0) {
         alert('No results found');
       } else {

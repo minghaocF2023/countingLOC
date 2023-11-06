@@ -67,19 +67,15 @@
         </div>
     </nav>
     <script>
-        $(document).ready(function() {
-            $("#search-btn").on("click", function() {
-                // Toggle the cancel icon visibility
-                $("#cancel-icon").toggleClass("d-none");
-                
-                // Toggle the search icon visibility
-                $("#search-icon").toggleClass("d-none");
-            });
-    
-            // When the cancel icon is clicked, go back to the previous page
-            $("#cancel-icon").on("click", function() {
-                window.history.back();
-            });
-        });
+        $("#search-btn").on("click",()=>{
+            if(!$("#search-navbar").hasClass("show")){
+            $("#search-icon").addClass("d-none");
+            $("#cancel-icon").removeClass("d-none");
+        }else{
+            $("#cancel-icon").addClass("d-none");
+            $("#search-icon").removeClass("d-none");
+            window.location.reload();
+        }
+        })
     </script>
     
