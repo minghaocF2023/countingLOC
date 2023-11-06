@@ -1,0 +1,77 @@
+<style>
+    .logo {
+        width: 6rem;
+    }
+    .nav-button{
+        border: none;
+        outline: none;
+    }
+
+</style>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top p-2">
+    <!-- <nav class="navbar navbar-light bg-light fixed-top"> -->
+        <button class="navbar-toggler nav-button" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- <span class="navbar-toggler-icon"></span> -->
+            <i class="fas fa-bars"></i> Menu
+        </button>
+        <a class="navbar-brand" href="/"><img src="/images/logo.svg" class="logo" alt=""></a>
+        <button id="search-btn" class="navbar-toggler nav-button" type="button" data-toggle="collapse" data-target="#search-navbar" aria-controls="search-navbar" aria-expanded="false" aria-label="Toggle navigation">
+            <i id="search-icon"  class="bi bi-search"></i>
+            <i id="cancel-icon" class="bi bi-x-lg d-none">Cancel</i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item mr-2">
+                    <a class="nav-link esn-directory btn btn-outline-secondary" href="/esndirectory">ESN Directory</a>
+                </li>
+                <li class="nav-item mr-2">
+                    <a class="nav-link public-chat btn btn-outline-secondary" href="/chatwall">Chat Wall</a>
+                </li>
+                <li class="nav-item mr-2">
+                    <a class="nav-link speed-test btn btn-outline-secondary" href="/speedtest">Speed Test</a>
+                </li>          
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item d-none">
+                    <b id="username">{username}</b>
+                    <span class="dropdown">
+                        <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">
+                            Undefined
+                        </button>
+                        <ul class="dropdown-menu mt-3 mb-3">
+                            <li class="ml-1"><a id="OK"><i class="fas fa-check-circle" style="color:green"></i> OK</a></li>
+                            <li class="ml-1"><a id="Help"><i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i> Help</a></li>
+                            <li class="ml-1"><a id="Emergency"><i class="fas fa-exclamation-triangle" style="color:red"></i> Emergency</a></li>
+                        </ul>
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a id="logout" class="nav-link btn btn-primary text-white active" href="/join">Logout</a>
+                </li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse" id="search-navbar">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item mr-2">
+                    <div class="input-group my-2">
+                        <input type="text" class="form-control" placeholder="Search something..." aria-label="Recipient's username" aria-describedby="button-addon2">
+                        <button class="btn btn-outline-secondary" type="button" id="search-button"><i class="bi bi-search"></i></button>
+                    </div>
+                </li>      
+            </ul>
+           
+        </div>
+    </nav>
+    <script>
+        $("#search-btn").on("click",()=>{
+            if(!$("#search-navbar").hasClass("show")){
+            $("#search-icon").addClass("d-none");
+            $("#cancel-icon").removeClass("d-none");
+        }else{
+            $("#cancel-icon").addClass("d-none");
+            $("#search-icon").removeClass("d-none");
+        }
+        })
+       
+        
+    </script>
