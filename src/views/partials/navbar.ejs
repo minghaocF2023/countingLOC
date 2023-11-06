@@ -15,8 +15,12 @@
             <i class="fas fa-bars"></i> Menu
         </button>
         <a class="navbar-brand" href="/"><img src="/images/logo.svg" class="logo" alt=""></a>
-        <button id="search-btn" class="navbar-toggler nav-button" type="button" data-toggle="collapse" data-target="#search-navbar" aria-controls="search-navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <!-- <button id="search-btn" class="navbar-toggler nav-button" type="button" data-toggle="collapse" data-target="#search-navbar" aria-controls="search-navbar" aria-expanded="false" aria-label="Toggle navigation">
             <i id="search-icon"  class="bi bi-search"></i>
+            <i id="cancel-icon" class="bi bi-x-lg d-none">Cancel</i>
+        </button> -->
+        <button id="search-btn" class="navbar-toggler nav-button" type="button" data-toggle="collapse" data-target="#search-navbar" aria-controls="search-navbar" aria-expanded="false" aria-label="Toggle navigation">
+            <i id="search-icon" class="bi bi-search"></i>
             <i id="cancel-icon" class="bi bi-x-lg d-none">Cancel</i>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -54,7 +58,7 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item mr-2">
                     <div class="input-group my-2">
-                        <input type="text" class="form-control" placeholder="Search something..." aria-label="Recipient's username" aria-describedby="button-addon2">
+                        <input type="text" class="form-control" id = "search-content" placeholder="Search something..." aria-label="Recipient's username" aria-describedby="button-addon2">
                         <button class="btn btn-outline-secondary" type="button" id="search-button"><i class="bi bi-search"></i></button>
                     </div>
                 </li>      
@@ -63,15 +67,19 @@
         </div>
     </nav>
     <script>
-        $("#search-btn").on("click",()=>{
-            if(!$("#search-navbar").hasClass("show")){
-            $("#search-icon").addClass("d-none");
-            $("#cancel-icon").removeClass("d-none");
-        }else{
-            $("#cancel-icon").addClass("d-none");
-            $("#search-icon").removeClass("d-none");
-        }
-        })
-       
-        
+        $(document).ready(function() {
+            $("#search-btn").on("click", function() {
+                // Toggle the cancel icon visibility
+                $("#cancel-icon").toggleClass("d-none");
+                
+                // Toggle the search icon visibility
+                $("#search-icon").toggleClass("d-none");
+            });
+    
+            // When the cancel icon is clicked, go back to the previous page
+            $("#cancel-icon").on("click", function() {
+                window.history.back();
+            });
+        });
     </script>
+    

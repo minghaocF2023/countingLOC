@@ -23,6 +23,7 @@ class SearchController {
     const {
       context, pageSize, pageNum, ...otherParams
     } = req.query;
+    console.log(req.query);
     const searchStrategy = this.searchStrategies[context];
     const result = await searchStrategy.execute(otherParams, pageSize, pageNum);
     res.status(200).json(result);
