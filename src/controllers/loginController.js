@@ -1,6 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import dotenv from 'dotenv';
 import JWT from '../utils/jwt.js';
+import testChecker from '../utils/testChecker.js';
+import authChecker from '../utils/authChecker.js';
 
 dotenv.config();
 
@@ -45,18 +47,12 @@ class LoginController {
    */
   async updateOnlineStatus(req, res) {
     // if no token -> 403 error
-    if (!req.headers.authorization) {
-      res.status(403);
-      res.json({ message: 'Unauthorized Request' });
+    const payload = authChecker(req, res);
+    if (!payload) {
       return;
     }
 
-    const token = req.headers.authorization.split(' ')[1];
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(token);
-
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
     // check username

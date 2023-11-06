@@ -1,5 +1,40 @@
-import JWT from '../utils/jwt.js';
-import 'dotenv/config';
+import authChecker from '../utils/authChecker.js';
+import testChecker from '../utils/testChecker.js';
+
+// helper functions
+const getPrivateMessageData = (pm) => {
+  if (pm) {
+    return {
+      chatroomId: pm.getChatroomID(),
+      content: pm.getText(),
+      senderName: pm.getSenderName(),
+      receiverName: pm.getReceiverName(),
+      status: pm.getStatus(),
+      timestamp: pm.getTimestamp(),
+      isNotified: pm.getIsNotified(),
+      isViewed: pm.getIsViewed(),
+    };
+  }
+  return null;
+};
+
+const notViewedByCurrentUser = (msg, currentUser) => msg.isViewed === false
+ && msg.receiverName === currentUser;
+
+const notNotifiedToCurrentUser = (msg, currentUser) => msg.isNotified === false
+ && msg.receiverName === currentUser;
+
+// eslint-disable-next-line max-len
+const createNewPrivateMessage = async (targetChatroom, payload, userModel, content, receiverName) => ({
+  chatroomId: targetChatroom.getChatroomId(),
+  content,
+  senderName: payload.username,
+  receiverName,
+  timestamp: Date.now(),
+  status: (await userModel.getOne({ username: payload.username })).status,
+  isViewed: false,
+  isNotified: false,
+});
 
 class privateChatController {
   // constructor
@@ -10,59 +45,58 @@ class privateChatController {
   }
 
   async getLatestMessageBetweenUsers(req, res) {
-    // get all messages between userA and userB
-    const { userA, userB } = req.params;
+    const { targetUser, currentUser } = req.params;
     const isInChat = req.query.isInChat === 'true';
-    // hardcode
-    // const { isInChat } = req.body;
-    if (!userA || !userB) {
-      res.status(400).json({ message: 'Both userA and userB are required' });
+    if (!targetUser || !currentUser) {
+      res.status(400).json({ message: 'Both targetUser and currentUser are required' });
+      return;
+    }
+
+    // check auth
+    const payload = authChecker(req, res);
+
+    if (!payload) {
+      return;
+    }
+
+    if (testChecker.isTest(res, payload)) {
+      return;
     }
 
     const query = {
       $or: [
-        { senderName: userA, receiverName: userB },
-        { senderName: userB, receiverName: userA },
+        { senderName: targetUser, receiverName: currentUser },
+        { senderName: currentUser, receiverName: targetUser },
       ],
     };
-    // assume userB = receiver
+
     let anyMessageUnread = false;
     let anyMessageNotNotified = false;
     const messageToBeNotified = [];
     const messageToBeViewed = [];
 
-    // PrivateMessage.get(query).then((privateMessages) => {
     this.privateChatModel.find(query).then((privateMessages) => {
       const resData = [];
       // organize response data
       privateMessages.forEach(async (pm) => {
-        const element = {
-          chatroomId: pm.getChatroomID(),
-          content: pm.getText(),
-          senderName: pm.getSenderName(),
-          receiverName: pm.getReceiverName(),
-          status: pm.getStatus(),
-          timestamp: pm.getTimestamp(),
-          isNotified: pm.getIsNotified(),
-          isViewed: pm.getIsViewed(),
-        };
-        if (element.isNotified === false && element.receiverName === userB) {
+        const message = getPrivateMessageData(pm);
+        if (notNotifiedToCurrentUser(message, currentUser)) {
           // eslint-disable-next-line no-underscore-dangle
           messageToBeNotified.push(pm._id);
-          element.isNotified = true;
+          message.isNotified = true;
           anyMessageNotNotified = true;
         }
 
         // if already in private chatroom, and if any message is not viewed, update as viewed
-        if (isInChat && element.isViewed === false && element.receiverName === userB) {
+        if (isInChat && notViewedByCurrentUser(message, currentUser)) {
           // eslint-disable-next-line no-underscore-dangle
           messageToBeViewed.push(pm._id);
-          element.isViewed = true;
+          message.isViewed = true;
         }
-        resData.push(element);
+        resData.push(message);
 
         // if any messages is not viewed yet, set anyMessageUnread as true
-        if (element.receiverName === userB && element.isViewed === false) {
+        if (notViewedByCurrentUser(message, currentUser)) {
           anyMessageUnread = true;
         }
       });
@@ -108,20 +142,12 @@ class privateChatController {
    */
   async postNewPrivate(req, res) {
     const { content, receiverName } = req.body;
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
-      return;
-    }
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
-    if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
+    const payload = authChecker(req, res);
+    if (!payload) {
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 
@@ -133,7 +159,7 @@ class privateChatController {
         { senderName: receiverName, receiverName: senderName },
       ],
     };
-    // Chatroom.getOne(query).then(async (chatroom) => {
+
     this.chatroomModel.getOne(query).then(async (chatroom) => {
       // if not found, create a new chatroom
       let targetChatroom = chatroom;
@@ -161,17 +187,14 @@ class privateChatController {
         targetChatroom = newChatroom;
       }
 
-      const data = {
-        chatroomId: targetChatroom.getChatroomId(),
+      const data = await createNewPrivateMessage(
+        targetChatroom,
+        payload,
+        this.userModel,
         content,
-        senderName: payload.username,
         receiverName,
-        timestamp: Date.now(),
-        status: (await this.userModel.getOne({ username: payload.username })).status,
-        isViewed: false,
-        isNotified: false,
-      };
-      // const newPrivateMessage = new PrivateMessage(data);
+      );
+
       // eslint-disable-next-line new-cap
       const newPrivateMessage = new this.privateChatModel(data);
       await newPrivateMessage.save();
@@ -189,17 +212,12 @@ class privateChatController {
    * get all private users that have chatted with ME
    */
   async getAllPrivate(req, res) {
-    // for private wall
-    // get list of users who have chatted before
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
-    if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
+    const payload = authChecker(req, res);
+    if (!payload) {
       return;
     }
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 
