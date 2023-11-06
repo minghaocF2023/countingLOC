@@ -1,5 +1,6 @@
-import JWT from '../utils/jwt.js';
+import authChecker from '../utils/authChecker.js';
 import 'dotenv/config';
+import testChecker from '../utils/testChecker.js';
 
 class StatusController {
   constructor(userModel) {
@@ -7,22 +8,12 @@ class StatusController {
   }
 
   async getStatus(req, res) {
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
+    const payload = authChecker(req, res);
+    if (!payload) {
       return;
     }
 
-    const token = req.headers.authorization.split(' ')[1];
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(token);
-
-    if (payload === null) {
-      res.status(401).json({ message: 'User not logged in' });
-      return;
-    }
-
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 
@@ -37,20 +28,12 @@ class StatusController {
   }
 
   async updateStatus(req, res) {
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
+    const payload = authChecker(req, res);
+    if (!payload) {
       return;
     }
 
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
-    if (payload === null) {
-      res.status(401).json({ message: 'User not logged in' });
-      return;
-    }
-
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 

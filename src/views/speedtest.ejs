@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Test</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -64,28 +63,28 @@
     <%- include('partials/navbar') %>
 
 <div class="container mt-5 pt-5">
-    <h1 class="mb-4"><i class="fas fa-tachometer-alt mr-2"></i>ESN Speed Test</h1>
+    <h1 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>ESN Speed Test</h1>
     <div class="card">
         <div class="card-body">
             <form action="/admin/speedtest" method="post" id="speedTestForm">
                 <div class="form-group mb-2">
-                    <label for="duration" class="mr-2">Duration:</label><br>
+                    <label for="duration" class="me-2">Duration:</label><br>
                     <input type="number" class="form-control" name="duration" id="duration" placeholder="Enter duration in seconds" required>
                 </div>
                 <div class="form-group mb-2">
-                    <label for="interval" class="mr-2">Interval:</label><br>
+                    <label for="interval" class="me-2">Interval:</label><br>
                     <input type="number" class="form-control" name="interval" id="interval" placeholder="Enter interval in milliseconds" required>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary mb-2" disabled><i class="fas fa-play"></i> Start</button>
-                    <button type="button" class="btn btn-danger mb-2 ml-2" id="stopButton" disabled><i class="fas fa-stop"></i> Stop</button>
+                    <button type="submit" class="btn btn-primary mb-2 text-white" disabled><i class="fas fa-play"></i> Start</button>
+                    <button type="button" class="btn btn-secondary mb-2 ms-2" id="stopButton" disabled><i class="fas fa-stop"></i> Stop</button>
                 </div>
             </form>
         </div>
     </div>
 
     <div class="mt-4">
-        <h2><i class="fas fa-chart-bar mr-2"></i>Performance</h2>
+        <h2><i class="fas fa-chart-bar me-2"></i>Performance</h2>
         <p><strong>POST Performance:</strong> <span id="post-performance">-</span> requests/second</p>
         <p><strong>GET Performance:</strong> <span id="get-performance">-</span> requests/second</p>
     </div>

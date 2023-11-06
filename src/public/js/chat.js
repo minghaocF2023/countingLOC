@@ -36,6 +36,9 @@ const connectSocket = (username) => {
     $('#chat-list').append(newMsg);
     scrollToBottom();
   });
+  socket.on('newAnnouncement', (msg) => {
+    notifyAnnouncement(msg);
+  });
   socket.on('privatemessage', (msg) => notify(msg));
   socket.on('startspeedtest', (user) => {
     if (localStorage.getItem('username') !== user) {

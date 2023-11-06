@@ -33,7 +33,6 @@ const connectSocket = (username) => {
   const socket = io(undefined, { autoConnect: false });
   socket.auth = { username };
   socket.connect();
-  //   socket.emit('username', localStorage.getItem('username'));
   socket.on('privatemessage', (msg) => {
     const {
       senderName, status, content, timestamp,
@@ -49,6 +48,9 @@ const connectSocket = (username) => {
       notify(msg);
     }
   });
+  socket.on('newAnnouncement', (msg) => {
+    notifyAnnouncement(msg);
+  });
   socket.on('startspeedtest', (user) => {
     if (localStorage.getItem('username') !== user) {
       window.history.pushState({ page: 'originalPage' }, 'Original Page', window.location.href);
@@ -56,7 +58,6 @@ const connectSocket = (username) => {
     }
   });
   socket.on('stopspeedtest', (user) => {
-    console.log('stop');
     if (localStorage.getItem('username') !== user) {
       window.history.back();
     }
