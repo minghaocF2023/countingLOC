@@ -106,7 +106,6 @@ export class SearchPublicMessage extends SearchStrategy {
   }
 }
 
-
 export class SearchPrivateMessage extends SearchStrategy {
   constructor(privateMessageModel) {
     super();
@@ -114,13 +113,48 @@ export class SearchPrivateMessage extends SearchStrategy {
   }
 
   async execute(queryParams, pageSize = 10, pageNum = 1) {
-    // Logic to search private messages by key word(s)
-    const { keywords } = queryParams;
-    const searchQuery = { $text: { $search: keywords } };
+    const { words, userA, userB } = queryParams;
+    const splitWords = words.split(/\s+/);
+    const searchWords = splitWords.filter((word) => !this.stopWords.has(word.toLowerCase()));
+    let isSearchingStatus = false;
+    if (searchWords.length === 0) {
+      // If the search words are only stop words, return an empty array.
+      return [];
+    }
+    if (searchWords.length === 1) {
+      if (searchWords[0] === 'status') {
+        isSearchingStatus = true;
+      }
+    }
 
-    return this.privateMessageModel.find(searchQuery)
+    // Construct the regex search query.
+    const searchQuery = isSearchingStatus
+      ? { senderName: userA, receiverName: userB }
+      : {
+        $or: [
+          { senderName: userA, receiverName: userB },
+          { senderName: userB, receiverName: userA },
+        ],
+        content: {
+          $regex: searchWords.join('|'),
+          $options: 'i',
+        },
+      };
+
+    // Execute the query and return the results.
+    const result = await this.privateMessageModel.find(searchQuery)
+      .sort({ timestamp: -1 })
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
+
+    const statusList = [];
+
+    if (isSearchingStatus) {
+      result.forEach((pm) => {
+        statusList.push(pm.status);
+      });
+      return statusList;
+    }
+    return result;
   }
 }
-// Add additional concrete strategies for other search contexts...
