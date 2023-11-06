@@ -19,8 +19,9 @@ class SearchStrategy {
     ]);
   }
 
+  // eslint-disable-next-line no-unused-vars
   execute(queryParams, pageSize, pageNum) {
-    throw new Error('SearchStrategy.execute() must be implemented');
+    throw new Error(`${this.constructor.name}.execute() is not implemented`);
   }
 }
 
