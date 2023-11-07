@@ -203,12 +203,10 @@ function performSearch(searchInput, searchContext, pageNum = 1) {
       if (searchInput.toLowerCase() === 'ok') {
         searchedStatus = 'OK';
         queryParams += `&status=${encodeURIComponent(searchedStatus)}`;
-      }
-      if (searchInput.toLowerCase() === 'help') {
+      } else if (searchInput.toLowerCase() === 'help') {
         searchedStatus = 'Help';
         queryParams += `&status=${encodeURIComponent(searchedStatus)}`;
-      }
-      if (searchInput.toLowerCase() === 'emergency') {
+      } else if (searchInput.toLowerCase() === 'emergency') {
         searchedStatus = 'Emergency';
         queryParams += `&status=${encodeURIComponent(searchedStatus)}`;
       } else {
