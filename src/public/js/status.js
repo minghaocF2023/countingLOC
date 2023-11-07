@@ -1,16 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 
-const STATUS = {
-  OK: '<i class="fas fa-check-circle" style="color:green"></i>',
-  Help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
-  Emergency: '<i class="fas fa-exclamation-triangle" style="color:red"></i>',
-  undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
-  Undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
-};
-
-window.STATUS = STATUS;
-
 const setStatus = async (status) => {
   await axios.post(
     `users/${localStorage.getItem('username')}/status/${status}`,
