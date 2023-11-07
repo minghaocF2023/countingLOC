@@ -5,26 +5,21 @@
 
 let currentPageNum = 1;
 
-const createChatMessage = (senderName, status, content, timestamp) => {
-  const STATUS = {
-    OK: '<i class="fas fa-check-circle" style="color:green"></i>',
-    Help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
-    Emergency: '<i class="fas fa-exclamation-triangle" style="color:red"></i>',
-    Undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
-    undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
-  };
-  const iconHTML = STATUS[status];
-  const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
-  let code = '';
-  code += '<div class="card message-card">';
-  code += '<div class="card-body">';
-  code += `<h5 class="card-title">${renderName} ${iconHTML}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
-  code += `<p class="card-text">${content}</p>`;
-  code += '</div>';
-  code += '</div>';
-  return code;
-};
+const showNoResultFoundAlert = () =>{
+  iziToast.show({
+    title: 'No results found',
+    message: 'Please try a different query.',
+    position: 'center',
+    onClosed() {
+      window.location.reload();
+    },
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+        window.location.reload();
+      }]],
+  });
+}
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
@@ -64,21 +59,8 @@ function updateUI(searchContext, data) {
     if (data.length === 0) {
       // Clear the results container
       resultsContainer.empty();
-
       // Display an alert to the user
-      iziToast.show({
-        title: 'No results found',
-        message: 'Please try a different query.',
-        position: 'center',
-        onClosed() {
-          window.location.reload();
-        },
-        buttons: [
-          ['<button>Close</button>', function (instance, toast) {
-            instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
-            window.location.reload();
-          }]],
-      });
+      showNoResultFoundAlert();
       return;
     }
     // If it's the first page, empty the container
@@ -114,19 +96,7 @@ function updateUI(searchContext, data) {
     // If no results found
     if (data.length === 0) {
       // Display an alert to the user
-      iziToast.show({
-        title: 'No results found',
-        message: 'Please try a different query.',
-        position: 'center',
-        onClosed() {
-          window.location.reload();
-        },
-        buttons: [
-          ['<button>Close</button>', function (instance, toast) {
-            instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
-            window.location.reload();
-          }]],
-      });
+      showNoResultFoundAlert();
       return;
     }
     const userOnlineStatus = data.sort(compareByUsername);
@@ -150,19 +120,7 @@ function updateUI(searchContext, data) {
       resultsContainer.empty();
 
       // Display an alert to the user
-      iziToast.show({
-        title: 'No results found',
-        message: 'Please try a different query.',
-        position: 'center',
-        onClosed() {
-          window.location.reload();
-        },
-        buttons: [
-          ['<button>Close</button>', function (instance, toast) {
-            instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
-            window.location.reload();
-          }]],
-      });
+      showNoResultFoundAlert();
       return;
     }
     // If it's the first page, empty the container
