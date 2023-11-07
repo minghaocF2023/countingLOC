@@ -55,6 +55,32 @@
         .navbar-nav .dropdown-menu a {
             cursor: pointer;
         }
+        .search-margin{
+            margin-top: 1.5rem;
+        }
+        .search-margin-expand{
+            margin-top: 4.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 1.5rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        
+        @keyframes expand-search {
+  0%   {margin-top: 1.5rem;}
+
+  100% {margin-top: 4.5rem;}
+}
+
+@keyframes fold-search {
+  0%   {margin-top: 4.5rem;}
+
+  100% {margin-top: 1.5rem;}
+}
     </style>
 </head>
 
@@ -62,7 +88,7 @@
 
     <%- include('partials/navbar') %>
 
-<div class="container mt-5 pt-5">
+    <div id="container" class="container search-margin pt-5">
     <h1 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>ESN Speed Test</h1>
     <div class="card">
         <div class="card-body">
@@ -89,7 +115,6 @@
         <p><strong>GET Performance:</strong> <span id="get-performance">-</span> requests/second</p>
     </div>
 </div>
-<!-- <%- include('partials/searchModal') %> -->
 
 
 <!-- JS scripts remain the same -->

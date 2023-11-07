@@ -58,6 +58,32 @@
         .search{
             width: max-content;
         }
+        .search-margin{
+            margin-top: 1.5rem;
+        }
+        .search-margin-expand{
+            margin-top: 4.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 1.5rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        
+        @keyframes expand-search {
+  0%   {margin-top: 1.5rem;}
+
+  100% {margin-top: 4.5rem;}
+}
+
+@keyframes fold-search {
+  0%   {margin-top: 4.5rem;}
+
+  100% {margin-top: 1.5rem;}
+}
     </style>
 </head>
 
@@ -66,7 +92,7 @@
 
 
 <!-- Individual User -->
-<div class="container mt-4">
+<div id="container" class="container search-margin">
     <div  class="online-users" style="padding-top:50px">
         <h5  class="mb-3">Click on a user to chat!</h5>
         <h4  class="mb-3">Online Users</h4>
