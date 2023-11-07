@@ -23,6 +23,15 @@ class SearchStrategy {
   execute(queryParams, pageSize, pageNum) {
     throw new Error(`${this.constructor.name}.execute() is not implemented`);
   }
+
+  static escapeRE(string) {
+    if (!string) return string;
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  static createRE(string, ...flags) {
+    return new RegExp(SearchStrategy.escapeRE(string), ...flags);
+  }
 }
 
 // Concrete strategy for searching citizens by username
@@ -39,7 +48,10 @@ export class SearchCitizens extends SearchStrategy {
    */
   async execute(queryParams, pageSize = 0, pageNum = 1) {
     const { username, status } = queryParams;
-    const query = { username: new RegExp(username, 'i'), status: new RegExp(status, 'i') };
+    const query = {
+      username: SearchStrategy.createRE(username, 'i'),
+      status: SearchStrategy.createRE(status, 'i'),
+    };
     return this.userModel.find(query)
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
@@ -62,13 +74,10 @@ export class SearchAnnouncements extends SearchStrategy {
     }
 
     const searchQuery = {
-      content: {
-        $regex: searchWords.join('|'), // This will create a regex pattern to match any of the search words.
-        $options: 'i', // Case-insensitive search.
-      },
+      content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
     };
 
-    return this.announcementModel.find(searchQuery).limit(10)
+    return this.announcementModel.find(searchQuery)
       .sort({ timestamp: -1 })
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
@@ -93,10 +102,7 @@ export class SearchPublicMessage extends SearchStrategy {
 
     // Construct the regex search query.
     const searchQuery = {
-      content: {
-        $regex: searchWords.join('|'), // Create a regex pattern to match any of the search words.
-        $options: 'i', // Case-insensitive search.
-      },
+      content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
     };
 
     // Execute the query and return the results.
@@ -117,15 +123,10 @@ export class SearchPrivateMessage extends SearchStrategy {
     const { words, userA, userB } = queryParams;
     const splitWords = words.split(/\s+/);
     const searchWords = splitWords.filter((word) => !this.stopWords.has(word.toLowerCase()));
-    let isSearchingStatus = false;
+    const isSearchingStatus = searchWords.length === 1 && searchWords[0] === 'status';
     if (searchWords.length === 0) {
       // If the search words are only stop words, return an empty array.
       return [];
-    }
-    if (searchWords.length === 1) {
-      if (searchWords[0] === 'status') {
-        isSearchingStatus = true;
-      }
     }
 
     // Construct the regex search query.
@@ -136,10 +137,7 @@ export class SearchPrivateMessage extends SearchStrategy {
           { senderName: userA, receiverName: userB },
           { senderName: userB, receiverName: userA },
         ],
-        content: {
-          $regex: searchWords.join('|'),
-          $options: 'i',
-        },
+        content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
       };
 
     // Execute the query and return the results.
