@@ -187,4 +187,7 @@ const connectSocket = (username) => {
 $(window).on('load', () => {
   connectSocket(localStorage.getItem('username'));
   $("button[type='submit']").prop('disabled', false);
+  // hide id="search-navbar" in nav bar
+  $('#search-navbar').hide();
+  $('#search-icon').hide();
 });
