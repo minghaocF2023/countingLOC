@@ -212,8 +212,11 @@ function performSearch(searchInput, searchContext, pageNum = 1) {
       } else {
         alert('Invalid status');
       }
-    } else {
+    } else if ($('#search-content').data('search-type') === 'username') {
       queryParams += `&username=${encodeURIComponent(searchInput)}`;
+    } else {
+    // add alert title
+      alert('Invalid search type. Please select if you would like to search for users or status before searching.');
     }
   }
   if (searchContext === 'public' || searchContext === 'announcement') {
