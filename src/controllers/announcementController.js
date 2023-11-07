@@ -1,4 +1,4 @@
-import JWT from '../utils/jwt.js';
+import authChecker from '../utils/authChecker.js';
 
 class announcementController {
   // constructor
@@ -11,15 +11,8 @@ class announcementController {
    * Get all history announcements
    */
   async getLatestAnnouncements(req, res) {
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
-      return;
-    }
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
+    const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
       return;
     }
 
@@ -39,11 +32,8 @@ class announcementController {
       return;
     }
 
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
+    const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
       return;
     }
 
