@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
@@ -10,9 +11,9 @@ const showNoResultFoundAlert = () => {
     title: 'No results found',
     message: 'Please try a different query.',
     position: 'center',
-    onClosed() {
-      window.location.reload();
-    },
+    // onClosed() {
+    // window.location.reload();
+    // },
     buttons: [
       ['<button>Close</button>', function (instance, toast) {
         instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
@@ -211,6 +212,12 @@ const updatePrivate = (searchContext, data) => {
     resultsContainer.append(moreResultsButton);
   }
   data.forEach((result) => {
+    if (result.senderName === undefined) {
+      result.senderName = '';
+    }
+    if (result.content === undefined) {
+      result.content = '';
+    }
     const resultHTML = createChatMessage(
       result.senderName,
       result.status,
