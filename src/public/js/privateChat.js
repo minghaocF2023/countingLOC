@@ -15,10 +15,7 @@ const fetchMessages = async (username) => axios.get(
   { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
 );
 
-const connectSocket = (username) => {
-  const socket = io(undefined, { autoConnect: false });
-  socket.auth = { username };
-  socket.connect();
+const observePrivateMessage = (socket, username) => {
   socket.on('privatemessage', (msg) => {
     const {
       senderName, status, content, timestamp,
@@ -34,20 +31,40 @@ const connectSocket = (username) => {
       notify(msg);
     }
   });
+};
+
+const observeNewAnnouncement = (socket) => {
   socket.on('newAnnouncement', (msg) => {
     notifyAnnouncement(msg);
   });
+};
+
+const observeStartSpeedTest = (socket) => {
   socket.on('startspeedtest', (user) => {
     if (localStorage.getItem('username') !== user) {
       window.history.pushState({ page: 'originalPage' }, 'Original Page', window.location.href);
       window.location = '/503page';
     }
   });
+};
+
+const observeStopSpeedTest = (socket) => {
   socket.on('stopspeedtest', (user) => {
     if (localStorage.getItem('username') !== user) {
       window.history.back();
     }
   });
+};
+
+const connectSocket = (username) => {
+  const socket = io(undefined, { autoConnect: false });
+  socket.auth = { username };
+  socket.connect();
+
+  observePrivateMessage(socket, username);
+  observeNewAnnouncement(socket);
+  observeStartSpeedTest(socket);
+  observeStopSpeedTest(socket);
 };
 
 const username = localStorage.getItem('username');
