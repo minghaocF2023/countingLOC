@@ -25,7 +25,7 @@ class speedTestController {
   // eslint-disable-next-line class-methods-use-this
   async startSpeedTest(req, res) {
     // user authentication
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
     if (!payload) {
       return;
     }
@@ -44,7 +44,7 @@ class speedTestController {
 
   // eslint-disable-next-line class-methods-use-this
   async stopSpeedTest(req, res) {
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
     if (!payload) {
       return;
     }

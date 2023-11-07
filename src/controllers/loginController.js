@@ -47,7 +47,7 @@ class LoginController {
    */
   async updateOnlineStatus(req, res) {
     // if no token -> 403 error
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
     if (!payload) {
       return;
     }

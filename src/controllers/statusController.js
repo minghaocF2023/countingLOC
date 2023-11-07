@@ -8,7 +8,7 @@ class StatusController {
   }
 
   async getStatus(req, res) {
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
     if (!payload) {
       return;
     }
@@ -28,7 +28,7 @@ class StatusController {
   }
 
   async updateStatus(req, res) {
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
     if (!payload) {
       return;
     }

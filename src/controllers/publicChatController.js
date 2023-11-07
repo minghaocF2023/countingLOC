@@ -21,7 +21,7 @@ class publicChatController {
    * Get all history messages
    */
   async getLatestMessages(req, res) {
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
     if (!payload) {
       return;
     }
@@ -36,7 +36,7 @@ class publicChatController {
 
   // post new messages
   async postNew(req, res) {
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
 
     if (!payload) {
       return;
