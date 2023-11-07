@@ -11,6 +11,7 @@ class SearchController {
     this.chatroomModel = chatroomModel;
     this.announcementModel = announcementModel;
 
+    /** @type {[import('../models/searchStrategy.js').SearchStrategy]} */
     this.searchStrategies = {
       user: new SearchCitizens(userModel),
       public: new SearchPublicMessage(publicChatModel),
