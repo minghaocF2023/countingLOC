@@ -23,3 +23,21 @@ const createChatMessage = (senderName, status, content, timestamp) => {
 };
 
 window.createChatMessage = createChatMessage;
+
+const createUserBlock = (username, onlineStatus, emergencyStatus) => {
+  const onlineStatusStr = onlineStatus ? 'online' : 'offline';
+  const div = document.createElement('div');
+  div.id = username;
+  div.className = 'card mb-3 user-card';
+  div.innerHTML = '<div class="card-body">'
+      + `<h5 class="card-title">${username} ${STATUS[emergencyStatus]}</h5>`
+      + `<p class="card-text"><span class="status ${onlineStatusStr}">${onlineStatusStr}</span></p>`
+      + '</div>'
+      + '</div>';
+  div.onclick = () => {
+    window.location.href = `/privateChat?username=${username}`;
+  };
+  return div;
+};
+
+window.createUserBlock = createUserBlock;

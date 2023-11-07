@@ -1,20 +1,4 @@
 /* eslint-disable no-undef */
-const newBlock = (username, onlineStatus, emergencyStatus) => {
-  const onlineStatusStr = onlineStatus ? 'online' : 'offline';
-  const div = document.createElement('div');
-  div.id = username;
-  div.className = 'card mb-3 user-card';
-  div.innerHTML = '<div class="card-body">'
-    + `<h5 class="card-title">${username} ${STATUS[emergencyStatus]}</h5>`
-    + `<p class="card-text"><span class="status ${onlineStatusStr}">${onlineStatusStr}</span></p>`
-    + '</div>'
-    + '</div>';
-  div.onclick = () => {
-    window.location.href = `/privateChat?username=${username}`;
-  };
-  return div;
-};
-
 const compareString = (a, b) => a.localeCompare(b);
 
 const appendNewUser = (div, username, isOnline, status) => {
@@ -26,7 +10,7 @@ const appendNewUser = (div, username, isOnline, status) => {
   $(`#${username}`).remove();
   // add new online block
   const newList = div.children();
-  const newUser = newBlock(username, isOnline, status);
+  const newUser = createUserBlock(username, isOnline, status);
   newList.push(newUser);
   // sort
   newList.sort((a, b) => compareString(a.id, b.id));
@@ -94,9 +78,9 @@ $(window).on('DOMContentLoaded', async () => {
     const offlineList = [];
     userOnlineStatus.forEach((element) => {
       if (element.isOnline) {
-        onlineList.push(newBlock(element.username, element.isOnline, element.status));
+        onlineList.push(createUserBlock(element.username, element.isOnline, element.status));
       } else {
-        offlineList.push(newBlock(element.username, element.isOnline, element.status));
+        offlineList.push(createUserBlock(element.username, element.isOnline, element.status));
       }
     });
 
