@@ -63,20 +63,6 @@ const createAnnouncementMessage = (senderName, content, timestamp) => {
   return code;
 };
 
-const createChatMessage = (senderName, status, content, timestamp) => {
-  const iconHTML = STATUS[status];
-  const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
-  let code = '';
-  code += '<div class="card message-card">';
-  code += '<div class="card-body">';
-  code += `<h5 class="card-title">${renderName} ${iconHTML}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
-  code += `<p class="card-text">${content}</p>`;
-  code += '</div>';
-  code += '</div>';
-  return code;
-};
-
 const updatePublic = (searchContext, data) => {
   const resultsContainer = $('#chat-container');
   // If no results found
