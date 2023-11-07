@@ -1,4 +1,4 @@
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import axios from 'axios';
 import app from '../app.js';
 import userFactory from '../src/models/userModel.js';
@@ -11,9 +11,10 @@ let server;
 let User;
 let mockToken;
 let mockUser;
+let mockUser2;
 
 beforeAll(async () => {
-  User = userFactory(mongoose);
+  User = userFactory(testConnection);
 
   // Create a user in MongoDB
   const jwt = new JWT('Some secret keys');
@@ -30,10 +31,20 @@ beforeAll(async () => {
   };
 
   await axios.post(`${HOST}/users`, { username: mockUser.username, password: mockUser.password }, { params: { istest: 'true' } });
-
   mockToken = jwt.generateToken(mockUser.username);
-  // console.log(mockToken);
 
+  const password2 = await User.hashPassword('password2', salt);
+  mockUser2 = {
+    username: 'laura_test',
+    password2,
+    salt,
+    chatrooms: [],
+    isOnline: false,
+    status: 'Undefined',
+    statusTimestamp: new Date(),
+  };
+
+  await axios.post(`${HOST}/users`, { username: mockUser2.username, password: mockUser2.password2 }, { params: { istest: 'true' } });
   server = app;
 });
 
@@ -43,6 +54,7 @@ afterEach(async () => {
 
 afterAll(async () => {
   await axios.delete(`${HOST}/users`, { data: { username: mockUser.username }, params: { istest: 'true' } });
+  await axios.delete(`${HOST}/users`, { data: { username: mockUser2.username }, params: { istest: 'true' } });
   await mongoose.disconnect().then(() => {
     server.close();
   });
@@ -66,29 +78,35 @@ test('get latest announcement', async () => {
   expect(postResponse.status).toBe(201);
 
   // retrieve the announcement
-  const getResponse = await axios.get(`${HOST}/messages/announcement`, {
+  const getResponse = await axios.get(`${HOST}/search?context=announcement&pageSize=10&pageNum=1&words=unique`, {
     params: { istest: 'true' },
     headers: { Authorization: `Bearer ${mockToken}` },
   });
 
   expect(getResponse.status).toBe(200);
-  expect(getResponse.data.data[0].content).toBe('this is a unique Announcement');
+  expect(getResponse.data[0].content).toBe('this is a unique Announcement');
 }, 30000);
 
-test('Post announcement', async () => {
-  const data = {
-    content: 'Another test announcement',
-  };
-
-  const response = await axios.post(`${HOST}/messages/announcement`, data, {
-    headers: {
-      Authorization: `Bearer ${mockToken}`,
-    },
-    params: {
-      istest: 'true',
-    },
+// Query type 2:
+test('return no announcement with stop words ', async () => {
+  // retrieve the announcement
+  const getResponse = await axios.get(`${HOST}/search?context=announcement&pageSize=10&pageNum=1&words=a`, {
+    params: { istest: 'true' },
+    headers: { Authorization: `Bearer ${mockToken}` },
   });
 
-  expect(response.status).toBe(201);
-  expect(response.data.data.content).toBe('Another test announcement');
+  expect(getResponse.status).toBe(200);
+  expect(getResponse.data.length).toBe(0);
+}, 30000);
+
+// Query type 3:
+test('return user by searching username', async () => {
+  // retrieve the announcement
+  const getResponse = await axios.get(`${HOST}/search?context=user&pageSize=10&pageNum=1&username=laura`, {
+    params: { istest: 'true' },
+    headers: { Authorization: `Bearer ${mockToken}` },
+  });
+
+  expect(getResponse.status).toBe(200);
+  expect(getResponse.data.length).toBe(2);
 }, 30000);
