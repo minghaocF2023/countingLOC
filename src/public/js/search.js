@@ -10,11 +10,8 @@ const showNoResultFoundAlert = () => {
     title: 'No results found',
     message: 'Please try a different query.',
     position: 'center',
-    onClosed() {
-      window.location.reload();
-    },
     buttons: [
-      ['<button>Close</button>', function (instance, toast) {
+      ['<button>Close</button>', (instance, toast) => {
         instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
         window.location.reload();
       }]],
