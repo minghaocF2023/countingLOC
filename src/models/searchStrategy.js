@@ -24,6 +24,10 @@ class SearchStrategy {
     throw new Error(`${this.constructor.name}.execute() is not implemented`);
   }
 
+  isStopWord(word) {
+    return this.stopWords.has(word.toLowerCase());
+  }
+
   static escapeRE(string) {
     if (!string) return string;
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -68,7 +72,7 @@ export class SearchAnnouncements extends SearchStrategy {
     // Check if keywords are not only stop words
     const { words } = queryParams;
     const splitWords = words.split(/\s+/);
-    const searchWords = splitWords.filter((word) => !this.stopWords.has(word.toLowerCase()));
+    const searchWords = splitWords.filter((word) => !this.isStopWord(word));
     if (searchWords.length === 0) {
       return [];
     }
@@ -93,7 +97,7 @@ export class SearchPublicMessage extends SearchStrategy {
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     const { words } = queryParams;
     const splitWords = words.split(/\s+/);
-    const searchWords = splitWords.filter((word) => !this.stopWords.has(word.toLowerCase()));
+    const searchWords = splitWords.filter((word) => !this.isStopWord(word));
 
     if (searchWords.length === 0) {
       // If the search words are only stop words, return an empty array.
@@ -122,7 +126,7 @@ export class SearchPrivateMessage extends SearchStrategy {
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     const { words, userA, userB } = queryParams;
     const splitWords = words.split(/\s+/);
-    const searchWords = splitWords.filter((word) => !this.stopWords.has(word.toLowerCase()));
+    const searchWords = splitWords.filter((word) => !this.isStopWord(word));
     const isSearchingStatus = searchWords.length === 1 && searchWords[0] === 'status';
     if (searchWords.length === 0) {
       // If the search words are only stop words, return an empty array.
