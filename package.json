@@ -7,7 +7,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "eslint": "eslint .",
-    "test": "jest",
+    "test": "jest --runInBand",
     "coverage": "jest --coverage",
     "compile:sass": "node-sass scss/index.scss src/public/css/index.css --output-style compressed"
   },
