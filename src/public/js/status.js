@@ -9,6 +9,8 @@ const STATUS = {
   Undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
 };
 
+window.STATUS = STATUS;
+
 const setStatus = async (status) => {
   await axios.post(
     `users/${localStorage.getItem('username')}/status/${status}`,
