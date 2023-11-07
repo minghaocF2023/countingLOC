@@ -3,18 +3,18 @@ import axios from 'axios';
 import app from '../app.js';
 import userFactory from '../src/models/userModel.js';
 import JWT from '../src/utils/jwt.js';
+import { testConnection } from '../src/services/db.js';
 
 const PORT = 3000;
 const HOST = `http://localhost:${PORT}`;
 let server;
 let User;
 let mockToken;
-let mockToken2;
 let mockUser;
 let mockUser2;
 
 beforeAll(async () => {
-  User = userFactory(mongoose);
+  User = userFactory(testConnection);
 
   // Create a user in MongoDB
   const jwt = new JWT('Some secret keys');
@@ -30,9 +30,13 @@ beforeAll(async () => {
     statusTimestamp: new Date(),
   };
 
+  await axios.post(`${HOST}/users`, { username: mockUser.username, password: mockUser.password }, { params: { istest: 'true' } });
+  mockToken = jwt.generateToken(mockUser.username);
+
+  const password2 = await User.hashPassword('password2', salt);
   mockUser2 = {
-    username: 'laura_bot2',
-    password,
+    username: 'laura_test',
+    password2,
     salt,
     chatrooms: [],
     isOnline: false,
@@ -40,13 +44,7 @@ beforeAll(async () => {
     statusTimestamp: new Date(),
   };
 
-  await axios.post(`${HOST}/users`, { username: mockUser.username, password: mockUser.password }, { params: { istest: 'true' } });
-  await axios.post(`${HOST}/users`, { username: mockUser2.username, password: mockUser2.password }, { params: { istest: 'true' } });
-  await axios.post();
-
-  mockToken = jwt.generateToken(mockUser.username);
-  mockToken2 = jwt.generateToken(mockUser2.username);
-
+  await axios.post(`${HOST}/users`, { username: mockUser2.username, password: mockUser2.password2 }, { params: { istest: 'true' } });
   server = app;
 });
 
@@ -57,15 +55,14 @@ afterEach(async () => {
 afterAll(async () => {
   await axios.delete(`${HOST}/users`, { data: { username: mockUser.username }, params: { istest: 'true' } });
   await axios.delete(`${HOST}/users`, { data: { username: mockUser2.username }, params: { istest: 'true' } });
-  // await axios.delete(`${HOST}/messages/announcement`, { data: { username: mockUser.username } });
   await mongoose.disconnect().then(() => {
     server.close();
   });
 });
 
 // Query Type 1:
-test('get announcement after search', async () => {
-  const announcement = 'test this is a unique announcement';
+test('get latest announcement', async () => {
+  const announcement = 'this is a unique Announcement';
 
   // send the message
   const postResponse = await axios.post(
@@ -87,11 +84,11 @@ test('get announcement after search', async () => {
   });
 
   expect(getResponse.status).toBe(200);
-  expect(getResponse.data[0].content).toBe('test this is a unique announcement');
-});
+  expect(getResponse.data[0].content).toBe('this is a unique Announcement');
+}, 30000);
 
-// Query Type 2:
-test('get empty announcement after search stop words', async () => {
+// Query type 2:
+test('return no announcement with stop words ', async () => {
   // retrieve the announcement
   const getResponse = await axios.get(`${HOST}/search?context=announcement&pageSize=10&pageNum=1&words=a`, {
     params: { istest: 'true' },
@@ -100,24 +97,16 @@ test('get empty announcement after search stop words', async () => {
 
   expect(getResponse.status).toBe(200);
   expect(getResponse.data.length).toBe(0);
-});
+}, 30000);
 
-// // Query Type 3:
-// test('get users by status', async () => {
-// //   const updateStatusResponse = await axios.post(`${HOST}/users/${mockUser2.username}/status/'Emergency'`, {}, {
-// //     headers: { Authorization: `Bearer ${mockToken2}` },
-// //     params: { istest: 'true' },
-// //   });
-// //   expect(updateStatusResponse.status).toBe(200);
-// //   expect(updateStatusResponse.data.status).toBe('Emergency');
-//   // retrieve the announcement
-//   const getUserInfo = await axios.get(`${HOST}/search?context=user&pageSize=10&pageNum=1&status=OK`, {
-//     params: { istest: 'true' },
-//     headers: { Authorization: `Bearer ${mockToken}` },
-//   });
+// Query type 3:
+test('return user by searching username', async () => {
+  // retrieve the announcement
+  const getResponse = await axios.get(`${HOST}/search?context=user&pageSize=10&pageNum=1&username=laura`, {
+    params: { istest: 'true' },
+    headers: { Authorization: `Bearer ${mockToken}` },
+  });
 
-//   expect(getUserInfo.status).toBe(200);
-//   console.log(getUserInfo);
-//   // expect(getUserInfo.data)
-//   // expect(getUserInfo.data.length).toBe(0);
-// }, 30000);
+  expect(getResponse.status).toBe(200);
+  expect(getResponse.data.length).toBe(2);
+}, 30000);
