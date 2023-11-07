@@ -1,4 +1,5 @@
-import JWT from '../utils/jwt.js';
+import authChecker from '../utils/authChecker.js';
+import testChecker from '../utils/testChecker.js';
 
 class announcementController {
   // constructor
@@ -11,20 +12,11 @@ class announcementController {
    * Get all history announcements
    */
   async getLatestAnnouncements(req, res) {
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
-      return;
-    }
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
+    const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
       return;
     }
-
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
     // sort announcements by timestamp
@@ -39,16 +31,12 @@ class announcementController {
       return;
     }
 
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
+    const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
     if (!req.body.content) {
@@ -73,14 +61,6 @@ class announcementController {
 
     res.status(201).json({ success: true, data: newAnnouncement });
   }
-
-  // async deleteAnnouncement(req, res) {
-  //   this.announcementModel.deleteMany({
-  //     senderName: req.body.senderName,
-  //   }).then(() => {
-  //     res.status(200).json({ message: 'deleted' });
-  //   });
-  // }
 }
 
 export default announcementController;

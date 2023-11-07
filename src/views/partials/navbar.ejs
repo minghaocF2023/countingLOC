@@ -6,20 +6,15 @@
         border: none;
         outline: none;
     }
-
 </style>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top p-2">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top p-2 nav-search-open">
     <!-- <nav class="navbar navbar-light bg-light fixed-top"> -->
         <button class="navbar-toggler nav-button" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <!-- <span class="navbar-toggler-icon"></span> -->
             <i class="fas fa-bars"></i> Menu
         </button>
         <a class="navbar-brand" href="/"><img src="/images/logo.svg" class="logo" alt=""></a>
-        <!-- <button id="search-btn" class="navbar-toggler nav-button" type="button" data-toggle="collapse" data-target="#search-navbar" aria-controls="search-navbar" aria-expanded="false" aria-label="Toggle navigation">
-            <i id="search-icon"  class="bi bi-search"></i>
-            <i id="cancel-icon" class="bi bi-x-lg d-none">Cancel</i>
-        </button> -->
         <button id="search-btn" class="navbar-toggler nav-button" type="button" data-toggle="collapse" data-target="#search-navbar" aria-controls="search-navbar" aria-expanded="false" aria-label="Toggle navigation">
             <i id="search-icon" class="bi bi-search"></i>
             <i id="cancel-icon" class="bi bi-x-lg d-none">Cancel</i>
@@ -78,6 +73,21 @@
         }else{
             $("#cancel-icon").addClass("d-none");
             $("#search-icon").removeClass("d-none");
+            window.location.reload();
+        }
+        })
+
+        $("#search-btn").on("click",()=>{
+            if(!$("#search-navbar").hasClass("show")){
+            $("#container").addClass("search-margin-expand");
+            $("#container").removeClass("search-margin");
+            $("#chat-container").addClass("search-margin-expand");
+            $("#chat-container").removeClass("search-margin");
+        }else{
+            $("#container").addClass("search-margin-fold");
+            $("#container").removeClass("search-margin-expand");
+            $("#chat-container").addClass("search-margin-fold");
+            $("#chat-container").removeClass("search-margin-expand");
             window.location.reload();
         }
         })

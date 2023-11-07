@@ -1,5 +1,12 @@
 /* eslint-disable max-classes-per-file */
 // SearchStrategy interface
+
+const filterSearchInput = (words, searchStategy) => {
+  const splitWords = words.split(/\s+/);
+  const searchWords = splitWords.filter((word) => !searchStategy.isStopWord(word));
+  return searchWords;
+};
+
 class SearchStrategy {
   constructor() {
     // Initialize stopWords as a Set
@@ -19,8 +26,27 @@ class SearchStrategy {
     ]);
   }
 
+  // eslint-disable-next-line no-unused-vars
   execute(queryParams, pageSize, pageNum) {
-    throw new Error('SearchStrategy.execute() must be implemented');
+    throw new Error(`${this.constructor.name}.execute() is not implemented`);
+  }
+
+  isStopWord(word) {
+    return this.stopWords.has(word.toLowerCase());
+  }
+
+  filterSearchInput(words) {
+    const splitWords = words.split(/\s+/);
+    return splitWords.filter((word) => !this.isStopWord(word));
+  }
+
+  static escapeRE(string) {
+    if (!string) return string;
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  static createRE(string, ...flags) {
+    return new RegExp(SearchStrategy.escapeRE(string), ...flags);
   }
 }
 
@@ -38,7 +64,10 @@ export class SearchCitizens extends SearchStrategy {
    */
   async execute(queryParams, pageSize = 0, pageNum = 1) {
     const { username, status } = queryParams;
-    const query = { username: new RegExp(username, 'i'), status: new RegExp(status, 'i') };
+    const query = {
+      username: SearchStrategy.createRE(username, 'i'),
+      status: SearchStrategy.createRE(status, 'i'),
+    };
     return this.userModel.find(query)
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
@@ -54,20 +83,15 @@ export class SearchAnnouncements extends SearchStrategy {
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     // Check if keywords are not only stop words
     const { words } = queryParams;
-    const splitWords = words.split(/\s+/);
-    const searchWords = splitWords.filter((word) => !this.stopWords.has(word.toLowerCase()));
+    const searchWords = filterSearchInput(words, this);
     if (searchWords.length === 0) {
       return [];
     }
-
     const searchQuery = {
-      content: {
-        $regex: searchWords.join('|'), // This will create a regex pattern to match any of the search words.
-        $options: 'i', // Case-insensitive search.
-      },
+      content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
     };
 
-    return this.announcementModel.find(searchQuery).limit(10)
+    return this.announcementModel.find(searchQuery)
       .sort({ timestamp: -1 })
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
@@ -82,8 +106,7 @@ export class SearchPublicMessage extends SearchStrategy {
 
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     const { words } = queryParams;
-    const splitWords = words.split(/\s+/);
-    const searchWords = splitWords.filter((word) => !this.stopWords.has(word.toLowerCase()));
+    const searchWords = filterSearchInput(words, this);
 
     if (searchWords.length === 0) {
       // If the search words are only stop words, return an empty array.
@@ -92,10 +115,7 @@ export class SearchPublicMessage extends SearchStrategy {
 
     // Construct the regex search query.
     const searchQuery = {
-      content: {
-        $regex: searchWords.join('|'), // Create a regex pattern to match any of the search words.
-        $options: 'i', // Case-insensitive search.
-      },
+      content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
     };
 
     // Execute the query and return the results.
@@ -114,17 +134,11 @@ export class SearchPrivateMessage extends SearchStrategy {
 
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     const { words, userA, userB } = queryParams;
-    const splitWords = words.split(/\s+/);
-    const searchWords = splitWords.filter((word) => !this.stopWords.has(word.toLowerCase()));
-    let isSearchingStatus = false;
+    const searchWords = filterSearchInput(words, this);
+    const isSearchingStatus = searchWords.length === 1 && searchWords[0] === 'status';
     if (searchWords.length === 0) {
       // If the search words are only stop words, return an empty array.
       return [];
-    }
-    if (searchWords.length === 1) {
-      if (searchWords[0] === 'status') {
-        isSearchingStatus = true;
-      }
     }
 
     // Construct the regex search query.
@@ -135,10 +149,7 @@ export class SearchPrivateMessage extends SearchStrategy {
           { senderName: userA, receiverName: userB },
           { senderName: userB, receiverName: userA },
         ],
-        content: {
-          $regex: searchWords.join('|'),
-          $options: 'i',
-        },
+        content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
       };
 
     // Execute the query and return the results.
@@ -150,8 +161,8 @@ export class SearchPrivateMessage extends SearchStrategy {
     const statusList = [];
 
     if (isSearchingStatus) {
-      result.forEach((pm) => {
-        statusList.push(pm.status);
+      result.forEach(({ status, timestamp }) => {
+        statusList.push({ status, timestamp });
       });
       return statusList;
     }

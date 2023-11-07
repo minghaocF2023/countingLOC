@@ -39,6 +39,29 @@
         .navbar-nav .dropdown-menu a {
             cursor: pointer;
         }
+        .search-margin{
+            margin-top: 4rem;
+        }
+        .search-margin-expand{
+            margin-top: 7.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 4rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        @keyframes expand-search {
+            0% {margin-top: 4rem;}
+            100% {margin-top: 7.5rem;}
+        }
+
+        @keyframes fold-search {
+            0% {margin-top: 7.5rem;}
+            100% {margin-top: 4rem;}
+        }
     </style>
 </head>
 
@@ -48,7 +71,7 @@
 
     <!-- Chat Messages Container -->
     <div id="chat-container-outer" class="container mt-4">
-        <div id="chat-container" class="messages" style="margin-top: 75px; margin-bottom: 115px;">
+        <div id="chat-container" class="messages search-margin" style="margin-bottom: 115px;">
             <!-- Message Cards -->
             <div id="chat-list" style="overflow-y: auto;"></div>
         </div>
@@ -65,7 +88,7 @@
             </div>
         </div>
     </div>
-    <!-- <%- include('partials/searchModal') %> -->
+    <script type="module" src="js/createElement.js"></script>
     <script type="module" src="js/logout.js"></script>
     <script type="module" src="js/notification.js"></script>
     <script type="module" src="js/status.js"></script>
