@@ -6,6 +6,24 @@
 
 let currentPageNum = 1;
 
+const insertResult = (resultHTML, resultsContainer) => {
+  // Change this to append if we want to add new results to the bottom
+  resultsContainer.prepend(resultHTML);
+  if (currentPageNum === 1) {
+    resultsContainer.children().last()[0].scrollIntoView();
+  } else {
+    resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+const addMoreResultListener = (resultsContainer, searchContext) => {
+  // Add an event listener for the "More Results" button
+  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
+    currentPageNum += 1; // Increment the page number
+    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
+  });
+};
+
 const showNoResultFoundAlert = () => {
   iziToast.show({
     title: 'No results found',
@@ -75,19 +93,9 @@ const updatePublic = (searchContext, data) => {
       result.content,
       result.timestamp,
     );
-    // Change this to append if we want to add new results to the bottom
-    resultsContainer.prepend(resultHTML);
-    if (currentPageNum === 1) {
-      resultsContainer.children().last()[0].scrollIntoView();
-    } else {
-      resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    insertResult(resultHTML, resultsContainer);
   });
-  // Add an event listener for the "More Results" button
-  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
-    currentPageNum += 1; // Increment the page number
-    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
-  });
+  addMoreResultListener(resultsContainer, searchContext);
 };
 
 const updateUser = (searchContext, data) => {
@@ -137,19 +145,9 @@ const updateAnnouncement = (searchContext, data) => {
       result.content,
       result.timestamp,
     );
-    // Change this to append if we want to add new results to the bottom
-    resultsContainer.prepend(resultHTML);
-    if (currentPageNum === 1) {
-      resultsContainer.children().last()[0].scrollIntoView();
-    } else {
-      resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    insertResult(resultHTML, resultsContainer);
   });
-  // Add an event listener for the "More Results" button
-  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
-    currentPageNum += 1; // Increment the page number
-    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
-  });
+  addMoreResultListener(resultsContainer, searchContext);
 };
 
 const updatePrivate = (searchContext, data) => {
@@ -181,19 +179,9 @@ const updatePrivate = (searchContext, data) => {
       result.content,
       result.timestamp,
     );
-    // Change this to append if we want to add new results to the bottom
-    resultsContainer.prepend(resultHTML);
-    if (currentPageNum === 1) {
-      resultsContainer.children().last()[0].scrollIntoView();
-    } else {
-      resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    insertResult(resultHTML, resultsContainer);
   });
-  // Add an event listener for the "More Results" button
-  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
-    currentPageNum += 1; // Increment the page number
-    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
-  });
+  addMoreResultListener(resultsContainer, searchContext);
 };
 
 function updateUI(searchContext, data) {
