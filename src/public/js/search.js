@@ -5,7 +5,7 @@
 
 let currentPageNum = 1;
 
-const showNoResultFoundAlert = () =>{
+const showNoResultFoundAlert = () => {
   iziToast.show({
     title: 'No results found',
     message: 'Please try a different query.',
@@ -19,7 +19,7 @@ const showNoResultFoundAlert = () =>{
         window.location.reload();
       }]],
   });
-}
+};
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
