@@ -119,6 +119,7 @@ const testSearchController = new SearchController(
  */
 router.get('/', (req, res) => {
   if (req.query.istest === 'true') {
+    // console.log("======");
     testSearchController.search(req, res);
   } else {
     searchController.search(req, res);
