@@ -53,7 +53,7 @@ class privateChatController {
     }
 
     // check auth
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
 
     if (!payload) {
       return;
@@ -142,7 +142,7 @@ class privateChatController {
    */
   async postNewPrivate(req, res) {
     const { content, receiverName } = req.body;
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
     if (!payload) {
       return;
     }
@@ -212,7 +212,7 @@ class privateChatController {
    * get all private users that have chatted with ME
    */
   async getAllPrivate(req, res) {
-    const payload = authChecker(req, res);
+    const payload = authChecker.checkAuth(req, res);
     if (!payload) {
       return;
     }
