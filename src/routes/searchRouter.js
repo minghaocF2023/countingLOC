@@ -1,36 +1,31 @@
 import express from 'express';
 import SearchController from '../controllers/searchController.js';
-import userFactory from '../models/userModel.js';
-import PublicMessageFactory from '../models/publicMessageModel.js';
-import PrivateMessageFactory from '../models/privateMessageModel.js';
-import ChatroomFactory from '../models/chatroomModel.js';
-import AnnouncementFactory from '../models/announcementModel.js';
-import { realConnection, testConnection } from '../services/db.js';
+import {
+  userModel,
+  testUserModel,
+  chatroomModel,
+  testChatroomModel,
+  privateMessageModel,
+  testPrivateMessageModel,
+  publicMessageModel,
+  testPublicMessageModel,
+  announcementModel,
+  testAnnouncementModel,
+} from '../models/models.js';
 
 const router = express.Router();
 
-const userModel = userFactory(realConnection);
-const testUserModel = userFactory(testConnection);
-const publicChatModel = PublicMessageFactory(realConnection);
-const testPublicChatModel = PublicMessageFactory(testConnection);
-const privateChatModel = PrivateMessageFactory(realConnection);
-const testPrivateChatModel = PrivateMessageFactory(testConnection);
-const chatroomModel = ChatroomFactory(realConnection);
-const testChatroomModel = ChatroomFactory(testConnection);
-const announcementModel = AnnouncementFactory(realConnection);
-const testAnnouncementModel = AnnouncementFactory(testConnection);
-
 const searchController = new SearchController(
   userModel,
-  publicChatModel,
-  privateChatModel,
+  publicMessageModel,
+  privateMessageModel,
   chatroomModel,
   announcementModel,
 );
 const testSearchController = new SearchController(
   testUserModel,
-  testPublicChatModel,
-  testPrivateChatModel,
+  testPublicMessageModel,
+  testPrivateMessageModel,
   testChatroomModel,
   testAnnouncementModel,
 );

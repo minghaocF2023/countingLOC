@@ -51,13 +51,9 @@
  */
 import express from 'express';
 import SpeedTestController from '../controllers/speedTestController.js';
-import { testConnection } from '../services/db.js';
-import PublicMessageFactory from '../models/publicMessageModel.js';
-import ChatroomFactory from '../models/chatroomModel.js';
+import { testChatroomModel, testPublicMessageModel } from '../models/models.js';
 
-const testChatroomModel = ChatroomFactory(testConnection);
-const testPublicChatModel = PublicMessageFactory(testConnection);
-const speedTestController = new SpeedTestController(testPublicChatModel);
+const speedTestController = new SpeedTestController(testPublicMessageModel);
 const router = express.Router();
 
 /**

@@ -102,31 +102,26 @@ import UserController from '../controllers/userController.js';
 import LoginController from '../controllers/loginController.js';
 import PrivateChatController from '../controllers/privateChatController.js';
 import StatusController from '../controllers/statusController.js';
-import userFactory from '../models/userModel.js';
-import PrivateMessageFactory from '../models/privateMessageModel.js';
-import ChatroomFactory from '../models/chatroomModel.js';
-import { realConnection, testConnection } from '../services/db.js';
+import {
+  userModel,
+  testUserModel,
+  chatroomModel,
+  testChatroomModel,
+  privateMessageModel,
+  testPrivateMessageModel,
+} from '../models/models.js';
 
 const router = express.Router();
-// const userModel = userFactory(realConnection);
-// const privateChatModel = PrivateMessageFactory(realConnection);
-// const chatroomModel = ChatroomFactory(realConnection);
-const userModel = userFactory(realConnection);
-const testUserModel = userFactory(testConnection);
-const testPrivateChatModel = PrivateMessageFactory(testConnection);
-const testChatroomModel = ChatroomFactory(testConnection);
-const privateChatModel = PrivateMessageFactory(realConnection);
-const chatroomModel = ChatroomFactory(realConnection);
 const userController = new UserController(userModel);
 const loginController = new LoginController(userModel);
 const statusController = new StatusController(userModel);
 const privateChatController = new PrivateChatController(
-  privateChatModel,
+  privateMessageModel,
   chatroomModel,
   userModel,
 );
 const testPrivateChatController = new PrivateChatController(
-  testPrivateChatModel,
+  testPrivateMessageModel,
   testChatroomModel,
   testUserModel,
 );
