@@ -1,5 +1,12 @@
 /* eslint-disable max-classes-per-file */
 // SearchStrategy interface
+
+const filterSearchInput = (words, searchStategy) => {
+  const splitWords = words.split(/\s+/);
+  const searchWords = splitWords.filter((word) => !searchStategy.isStopWord(word));
+  return searchWords;
+};
+
 class SearchStrategy {
   constructor() {
     // Initialize stopWords as a Set
@@ -30,6 +37,11 @@ class SearchStrategy {
 
   isStopWord(word) {
     return this.stopWords.has(word.toLowerCase());
+  }
+
+  filterSearchInput(words) {
+    const splitWords = words.split(/\s+/);
+    return splitWords.filter((word) => !this.isStopWord(word));
   }
 
   static escapeRE(string) {
@@ -81,13 +93,11 @@ export class SearchAnnouncements extends SearchStrategy {
     // Check if keywords are not only stop words
     console.log(`current queryParams is: ${queryParams} and queryParam's content is ${queryParams.content}`);
     const { words } = queryParams;
-    console.log('current words is:' + words);
     const splitWords = words.split(/\s+/);
     const searchWords = splitWords.filter((word) => !this.isStopWord(word));
     if (searchWords.length === 0) {
       return [];
     }
-
     const searchQuery = {
       content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
     };
@@ -114,8 +124,7 @@ export class SearchPublicMessage extends SearchStrategy {
    */
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     const { words } = queryParams;
-    const splitWords = words.split(/\s+/);
-    const searchWords = splitWords.filter((word) => !this.isStopWord(word));
+    const searchWords = filterSearchInput(words, this);
 
     if (searchWords.length === 0) {
       // If the search words are only stop words, return an empty array.
@@ -148,8 +157,7 @@ export class SearchPrivateMessage extends SearchStrategy {
    */
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     const { words, userA, userB } = queryParams;
-    const splitWords = words.split(/\s+/);
-    const searchWords = splitWords.filter((word) => !this.isStopWord(word));
+    const searchWords = filterSearchInput(words, this);
     const isSearchingStatus = searchWords.length === 1 && searchWords[0] === 'status';
     if (searchWords.length === 0) {
       // If the search words are only stop words, return an empty array.
