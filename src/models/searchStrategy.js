@@ -26,7 +26,11 @@ class SearchStrategy {
     ]);
   }
 
-  // eslint-disable-next-line no-unused-vars
+  /**
+   * @param {Object} queryParams
+   * @param {number} pageSize
+   * @param {number} pageNum
+   */
   execute(queryParams, pageSize, pageNum) {
     throw new Error(`${this.constructor.name}.execute() is not implemented`);
   }
@@ -80,10 +84,17 @@ export class SearchAnnouncements extends SearchStrategy {
     this.announcementModel = announcementModel;
   }
 
+  /**
+   * @param {{words: string}} queryParams
+   * @param {number} pageSize
+   * @param {number} pageNum
+   */
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     // Check if keywords are not only stop words
+    console.log(`current queryParams is: ${queryParams} and queryParam's content is ${queryParams.content}`);
     const { words } = queryParams;
-    const searchWords = filterSearchInput(words, this);
+    const splitWords = words.split(/\s+/);
+    const searchWords = splitWords.filter((word) => !this.isStopWord(word));
     if (searchWords.length === 0) {
       return [];
     }
@@ -91,10 +102,12 @@ export class SearchAnnouncements extends SearchStrategy {
       content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
     };
 
-    return this.announcementModel.find(searchQuery)
+    const result = this.announcementModel.find(searchQuery)
       .sort({ timestamp: -1 })
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
+    
+    return result
   }
 }
 
@@ -104,6 +117,11 @@ export class SearchPublicMessage extends SearchStrategy {
     this.publicMessageModel = publicMessageModel;
   }
 
+  /**
+   * @param {{words: string}} queryParams
+   * @param {number} pageSize
+   * @param {number} pageNum
+   */
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     const { words } = queryParams;
     const searchWords = filterSearchInput(words, this);
@@ -132,6 +150,11 @@ export class SearchPrivateMessage extends SearchStrategy {
     this.privateMessageModel = privateMessageModel;
   }
 
+  /**
+   * @param {{words: string, userA: string, userB: string}} queryParams
+   * @param {number} pageSize
+   * @param {number} pageNum
+   */
   async execute(queryParams, pageSize = 10, pageNum = 1) {
     const { words, userA, userB } = queryParams;
     const searchWords = filterSearchInput(words, this);
