@@ -1,4 +1,5 @@
-import JWT from '../utils/jwt.js';
+import authChecker from '../utils/authChecker.js';
+import testChecker from '../utils/testChecker.js';
 
 /**
  * @typedef {{
@@ -20,48 +21,31 @@ class publicChatController {
    * Get all history messages
    */
   async getLatestMessages(req, res) {
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
-      return;
-    }
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
-    if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
+    const payload = authChecker.checkAuth(req, res);
+    if (!payload) {
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
     // sort messages by timestamp
-    // const messages = await PublicMessage.find().sort({ timeStamp: -1 });
-    // const messages = this.publicChatModel.find().sort({ timeStamp: -1 });
     const messages = await this.publicChatModel.find({}).sort({ timeStamp: -1 });
     res.status(200).json({ success: true, data: messages });
   }
 
   // post new messages
   async postNew(req, res) {
-    if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
-      res.status(401).json({ message: 'User not logged in' });
+    const payload = authChecker.checkAuth(req, res);
+
+    if (!payload) {
       return;
     }
 
-    const jwt = new JWT(process.env.JWTSECRET);
-    const payload = jwt.verifyToken(req.headers.authorization.split(' ')[1]);
-    if (payload === null) {
-      res.status(401);
-      res.json({ message: 'User not logged in' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
-      return;
-    }
     if (!req.body.content) {
       res.status(400);
       res.json({ message: 'Invalid request' });
@@ -75,6 +59,7 @@ class publicChatController {
       timestamp: Date.now(),
       status: (await this.userModel.getOne({ username: payload.username })).status,
     };
+    // random comment
     // const newMessage = new PublicMessage(data);
     // eslint-disable-next-line new-cap
     const newMessage = new this.publicChatModel(data);

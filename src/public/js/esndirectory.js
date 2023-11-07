@@ -66,6 +66,10 @@ const connectSocket = (username) => {
     $(`#${msg.username} h5`).html(`${msg.username} ${STATUS[msg.status]}`);
   });
 
+  socket.on('newAnnouncement', (msg) => {
+    notifyAnnouncement(msg);
+  });
+
   socket.on('privatemessage', (msg) => notify(msg));
 };
 

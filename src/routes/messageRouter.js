@@ -2,10 +2,6 @@
  * @swagger
  * components:
  *   schemas:
- *     user:
- *       type: string
- *       description: user's username
- *       example: username
  *     NewMessage:
  *       type: object
  *       description: New message
@@ -16,7 +12,7 @@
  *           type: string
  *           description: Message content
  *           example: Hello World!
- *     PrivateMessage:
+ *     NewPrivateMessage:
  *       type: object
  *       description: New private message
  *       required:
@@ -46,9 +42,9 @@
  *               type: string
  *               description: Message creation time
  *               example: 1970-01-01 00:00:00
- *     PrivateMessageList:
+ *     PrivateMessage:
  *       allOf:
- *         - $ref: '#/components/schemas/PrivateMessage'
+ *         - $ref: '#/components/schemas/NewPrivateMessage'
  *         - type: object
  *           properties:
  *             senderName:
@@ -71,21 +67,21 @@
  * @swagger
  * parameters:
  *   userA:
- *     name: userA
+ *     name: targetUser
  *     in: path
  *     description: Username of a userA
  *     required: true
  *     schema:
  *       type: string
- *     example: userA
+ *     example: targetUser
  *   userB:
- *     name: userB
+ *     name: currentUser
  *     in: path
- *     description: Username of a userB
+ *     description: Username of a currentUser
  *     required: true
  *     schema:
  *       type: string
- *     example: userB
+ *     example: currentUser
  *   receiver:
  *     name: receiver
  *     in: path
@@ -106,8 +102,10 @@
 import express from 'express';
 import PublicChatController from '../controllers/publicChatController.js';
 import PrivateChatController from '../controllers/privateChatController.js';
+import AnnouncementController from '../controllers/announcementController.js';
 import PublicMessageFactory from '../models/publicMessageModel.js';
 import PrivateMessageFactory from '../models/privateMessageModel.js';
+import AnnouncementFactory from '../models/announcementModel.js';
 import UserFactory from '../models/userModel.js';
 import ChatroomFactory from '../models/chatroomModel.js';
 import { realConnection, testConnection } from '../services/db.js';
@@ -118,15 +116,19 @@ const testUserModel = UserFactory(testConnection);
 const testChatroomModel = ChatroomFactory(testConnection);
 const testPrivateChatModel = PrivateMessageFactory(testConnection);
 const testPublicChatModel = PublicMessageFactory(testConnection);
+const testAnnouncementModel = AnnouncementFactory(testConnection);
 const publicMessageModel = PublicMessageFactory(realConnection);
 const privateMessageModel = PrivateMessageFactory(realConnection);
+const announcementModel = AnnouncementFactory(realConnection);
 const chatroomModel = ChatroomFactory(realConnection);
+
 const publicChatController = new PublicChatController(publicMessageModel, userModel);
 const privateChatController = new PrivateChatController(
   privateMessageModel,
   chatroomModel,
   userModel,
 );
+const announcementController = new AnnouncementController(announcementModel, userModel);
 const testPublicChatController = new PublicChatController(
   testPublicChatModel,
   testUserModel,
@@ -140,12 +142,16 @@ const testPrivateChatController = new PrivateChatController(
   testChatroomModel,
   testUserModel,
 );
+const testAnnouncementController = new AnnouncementController(
+  testAnnouncementModel,
+  testUserModel,
+);
 
 /**
  * @swagger
  * /messages/public:
  *   get:
- *     tags: [Messages, Search]
+ *     tags: [Messages]
  *     summary: Get all public messages
  *     description: Get all messages published on the public wall
  *     responses:
@@ -261,7 +267,7 @@ router.post('/public', (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/PrivateMessage'
+ *             $ref: '#/components/schemas/NewPrivateMessage'
  *     responses:
  *       201:
  *         description: Success
@@ -314,7 +320,7 @@ router.post('/private', (req, res) => {
  * @swagger
  * /messages/private/{userA}/{userB}:
  *   get:
- *     tags: [Messages, Search]
+ *     tags: [Messages]
  *     summary: Get all private messages between sender and receiver
  *     description: Get all messages published on the public wall
  *     parameters:
@@ -334,7 +340,7 @@ router.post('/private', (req, res) => {
  *                     messages:
  *                       type: array
  *                       items:
- *                        $ref: '#/components/schemas/PrivateMessageList'
+ *                        $ref: '#/components/schemas/PrivateMessage'
  *       400:
  *         description: Invalid request
  *         content:
@@ -361,7 +367,7 @@ router.post('/private', (req, res) => {
  *               message: User not logged in
  */
 // router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
-router.get('/private/:userA/:userB', (req, res) => {
+router.get('/private/:targetUser/:currentUser', (req, res) => {
   if (req.query.istest === 'true') {
     testPrivateChatController.getLatestMessageBetweenUsers(req, res);
   } else {
@@ -382,7 +388,7 @@ router.delete('/private', (req, res) => {
  * @swagger
  * /messages/announcement:
  *   get:
- *     tags: [Messages, Search]
+ *     tags: [Messages]
  *     summary: Get all announcement messages
  *     description: Get all messages published on the public wall
  *     responses:
@@ -400,7 +406,16 @@ router.delete('/private', (req, res) => {
  *                       items:
  *                        $ref: '#/components/schemas/Message'
  */
-router.get('/announcement', () => {});
+router.get('/announcement', (req, res) => {
+  if (req.query.istest === 'true') {
+    testAnnouncementController.getLatestAnnouncements(req, res);
+  } else if (req.query.isspeedtest === 'true') {
+    // TODO
+    res.status(500).json({ message: 'speedtest' });
+  } else {
+    announcementController.getLatestAnnouncements(req, res);
+  }
+});
 
 /**
  * @swagger
@@ -454,6 +469,15 @@ router.get('/announcement', () => {});
  *             example:
  *               message: User not logged in
  */
-router.post('/announcement', () => {});
+router.post('/announcement', (req, res) => {
+  if (req.query.istest === 'true') {
+    testAnnouncementController.postNew(req, res);
+  } else if (req.query.isspeedtest === 'true') {
+    // TODO
+    res.status(500).json({ message: 'speedtest' });
+  } else {
+    announcementController.postNew(req, res);
+  }
+});
 
 export default router;

@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Test</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -15,6 +14,7 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
     <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
     <style>
         .nav-link.active {
             font-weight: bold;
@@ -55,74 +55,62 @@
         .navbar-nav .dropdown-menu a {
             cursor: pointer;
         }
+        .search-margin{
+            margin-top: 1.5rem;
+        }
+        .search-margin-expand{
+            margin-top: 4.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 1.5rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        
+        @keyframes expand-search {
+  0%   {margin-top: 1.5rem;}
+
+  100% {margin-top: 4.5rem;}
+}
+
+@keyframes fold-search {
+  0%   {margin-top: 4.5rem;}
+
+  100% {margin-top: 1.5rem;}
+}
     </style>
 </head>
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-<!-- <nav class="navbar navbar-light bg-light fixed-top"> -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <!-- <span class="navbar-toggler-icon"></span> -->
-        <i class="fas fa-bars"></i> Menu
-    </button>
-    <a class="navbar-brand">ESN</a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item mr-2">
-                <a class="nav-link esn-directory" href="/esndirectory">ESN Directory</a>
-            </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link public-chat" href="/chatwall">Chat Wall</a>
-            </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link speed-test active" href="/speedtest">Speed Test</a>
-            </li>          
-        </ul>
-        <ul class="navbar-nav">
-            <li class="nav-item d-none">
-                <b id="username">{username}</b>
-                <span class="dropdown">
-                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">
-                        Undefined
-                    </button>
-                    <ul class="dropdown-menu mt-3 mb-3">
-                        <li class="ml-1"><a id="OK"><i class="fas fa-check-circle" style="color:green"></i> OK</a></li>
-                        <li class="ml-1"><a id="Help"><i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i> Help</a></li>
-                        <li class="ml-1"><a id="Emergency"><i class="fas fa-exclamation-triangle" style="color:red"></i> Emergency</a></li>
-                    </ul>
-                </span>
-            </li>
-            <li class="nav-item">
-                <a id="logout" class="nav-link btn btn-primary text-white" href="/join">Logout</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+    <%- include('partials/navbar') %>
 
-<div class="container mt-5 pt-5">
-    <h1 class="mb-4"><i class="fas fa-tachometer-alt mr-2"></i>ESN Speed Test</h1>
+    <div id="container" class="container search-margin pt-5">
+    <h1 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>ESN Speed Test</h1>
     <div class="card">
         <div class="card-body">
             <form action="/admin/speedtest" method="post" id="speedTestForm">
                 <div class="form-group mb-2">
-                    <label for="duration" class="mr-2">Duration:</label><br>
+                    <label for="duration" class="me-2">Duration:</label><br>
                     <input type="number" class="form-control" name="duration" id="duration" placeholder="Enter duration in seconds" required>
                 </div>
                 <div class="form-group mb-2">
-                    <label for="interval" class="mr-2">Interval:</label><br>
+                    <label for="interval" class="me-2">Interval:</label><br>
                     <input type="number" class="form-control" name="interval" id="interval" placeholder="Enter interval in milliseconds" required>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary mb-2" disabled><i class="fas fa-play"></i> Start</button>
-                    <button type="button" class="btn btn-danger mb-2 ml-2" id="stopButton" disabled><i class="fas fa-stop"></i> Stop</button>
+                    <button type="submit" class="btn btn-primary mb-2 text-white" disabled><i class="fas fa-play"></i> Start</button>
+                    <button type="button" class="btn btn-secondary mb-2 ms-2" id="stopButton" disabled><i class="fas fa-stop"></i> Stop</button>
                 </div>
             </form>
         </div>
     </div>
 
     <div class="mt-4">
-        <h2><i class="fas fa-chart-bar mr-2"></i>Performance</h2>
+        <h2><i class="fas fa-chart-bar me-2"></i>Performance</h2>
         <p><strong>POST Performance:</strong> <span id="post-performance">-</span> requests/second</p>
         <p><strong>GET Performance:</strong> <span id="get-performance">-</span> requests/second</p>
     </div>
@@ -130,6 +118,7 @@
 
 
 <!-- JS scripts remain the same -->
+<script type="module" src="js/createElement.js"></script>
 <script type="module" src="js/status.js"></script>
 <script type="module" src="js/logout.js"></script>
 <script type="module" src="js/speedtest.js"></script>

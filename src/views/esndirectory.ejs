@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESN Directory</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -14,7 +14,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
     <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
-
+    <%- include('partials/bootstrapPlugin') %>
     <style>
         .nav-link.active {
             font-weight: bold;
@@ -55,53 +55,41 @@
         .navbar-nav .dropdown-menu a {
             cursor: pointer;
         }
+        .search{
+            width: max-content;
+        }
+        .search-margin{
+            margin-top: 1.5rem;
+        }
+        .search-margin-expand{
+            margin-top: 4.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 1.5rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        @keyframes expand-search {
+            0% {margin-top: 1.5rem;}
+            100% {margin-top: 4.5rem;}
+        }
+
+        @keyframes fold-search {
+            0% {margin-top: 4.5rem;}
+            100% {margin-top: 1.5rem;}
+        }
     </style>
 </head>
 
 <body>
+    <%- include('partials/navbar') %>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-<!-- <nav class="navbar navbar-light bg-light fixed-top"> -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <!-- <span class="navbar-toggler-icon"></span> -->
-        <i class="fas fa-bars"></i> Menu
-    </button>
-    <a class="navbar-brand">ESN</a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item mr-2">
-                <a class="nav-link esn-directory btn btn-outline-secondary active" href="/esndirectory">ESN Directory</a>
-            </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link public-chat btn btn-outline-secondary" href="/chatwall">Chat Wall</a>
-            </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link speed-test btn btn-outline-secondary" href="/speedtest">Speed Test</a>
-            </li>          
-        </ul>
-        <ul class="navbar-nav">
-            <li class="nav-item d-none">
-                <b id="username">{username}</b>
-                <span class="dropdown">
-                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">
-                        Undefined
-                    </button>
-                    <ul class="dropdown-menu mt-3 mb-3">
-                        <li class="ml-1"><a id="OK"><i class="fas fa-check-circle" style="color:green"></i> OK</a></li>
-                        <li class="ml-1"><a id="Help"><i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i> Help</a></li>
-                        <li class="ml-1"><a id="Emergency"><i class="fas fa-exclamation-triangle" style="color:red"></i> Emergency</a></li>
-                    </ul>
-                </span>
-            </li>
-            <li class="nav-item">
-                <a id="logout" class="nav-link btn btn-primary text-white" href="/join">Logout</a>
-            </li>
-        </ul>
-    </div>
-</nav>
 
 <!-- Individual User -->
-<div class="container mt-4">
+<div id="container" class="container search-margin">
     <div  class="online-users" style="padding-top:50px">
         <h5  class="mb-3">Click on a user to chat!</h5>
         <h4  class="mb-3">Online Users</h4>
@@ -113,14 +101,14 @@
         <div id="offline-user-list">
             <!-- Dynamically Append offline users here. -->
         </div>
-       
-        
     </div>
 </div>
+
+</body>
+<script type="module" src="js/createElement.js"></script>
 <script type="module" src="js/notification.js"></script>
 <script type="module" src="js/status.js"></script>
 <script type="module" src="js/esndirectory.js"></script>
 <script type="module" src="js/logout.js"></script>
-</body>
-
+<script type="module" src="js/search.js"></script>
 </html>
