@@ -116,6 +116,12 @@ const testSearchController = new SearchController(
  *                         type: array
  *                         items:
  *                           $ref: '#/components/schemas/PrivateMessage'
+ *                   - type: object
+ *                     properties:
+ *                       private:
+ *                         type: array
+ *                         items:
+ *                           $ref: '#/components/schemas/StatusHistory'
  */
 router.get('/', (req, res) => {
   if (req.query.istest === 'true') {
