@@ -149,8 +149,8 @@ export class SearchPrivateMessage extends SearchStrategy {
     const statusList = [];
 
     if (isSearchingStatus) {
-      result.forEach((pm) => {
-        statusList.push(pm.status);
+      result.forEach(({ status, timestamp }) => {
+        statusList.push({ status, timestamp });
       });
       return statusList;
     }
