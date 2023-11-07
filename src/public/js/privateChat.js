@@ -3,20 +3,6 @@
 const queries = new URLSearchParams(window.location.search);
 const receiver = queries.get('username');
 
-const createChatMessage = (senderName, status, content, timestamp) => {
-  const iconHTML = STATUS[status];
-  const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
-  let code = '';
-  code += '<div class="card message-card">';
-  code += '<div class="card-body">';
-  code += `<h5 class="card-title">${renderName} ${iconHTML}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
-  code += `<p class="card-text">${content}</p>`;
-  code += '</div>';
-  code += '</div>';
-  return code;
-};
-
 const createMyChatMessage = async (content) => createChatMessage(localStorage.getItem('username'), await getStatus(), content, Date.now());
 
 // scroll to bottom with the new message
@@ -29,10 +15,7 @@ const fetchMessages = async (username) => axios.get(
   { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
 );
 
-const connectSocket = (username) => {
-  const socket = io(undefined, { autoConnect: false });
-  socket.auth = { username };
-  socket.connect();
+const observePrivateMessage = (socket, username) => {
   socket.on('privatemessage', (msg) => {
     const {
       senderName, status, content, timestamp,
@@ -48,20 +31,40 @@ const connectSocket = (username) => {
       notify(msg);
     }
   });
+};
+
+const observeNewAnnouncement = (socket) => {
   socket.on('newAnnouncement', (msg) => {
     notifyAnnouncement(msg);
   });
+};
+
+const observeStartSpeedTest = (socket) => {
   socket.on('startspeedtest', (user) => {
     if (localStorage.getItem('username') !== user) {
       window.history.pushState({ page: 'originalPage' }, 'Original Page', window.location.href);
       window.location = '/503page';
     }
   });
+};
+
+const observeStopSpeedTest = (socket) => {
   socket.on('stopspeedtest', (user) => {
     if (localStorage.getItem('username') !== user) {
       window.history.back();
     }
   });
+};
+
+const connectSocket = (username) => {
+  const socket = io(undefined, { autoConnect: false });
+  socket.auth = { username };
+  socket.connect();
+
+  observePrivateMessage(socket, username);
+  observeNewAnnouncement(socket);
+  observeStartSpeedTest(socket);
+  observeStopSpeedTest(socket);
 };
 
 const username = localStorage.getItem('username');

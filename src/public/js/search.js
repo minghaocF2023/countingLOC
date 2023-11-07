@@ -5,25 +5,20 @@
 
 let currentPageNum = 1;
 
-const createChatMessage = (senderName, status, content, timestamp) => {
-  const STATUS = {
-    OK: '<i class="fas fa-check-circle" style="color:green"></i>',
-    Help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
-    Emergency: '<i class="fas fa-exclamation-triangle" style="color:red"></i>',
-    Undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
-    undefined: '<i class="fas fa-question-circle" style="color:gray"></i>',
-  };
-  const iconHTML = STATUS[status];
-  const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
-  let code = '';
-  code += '<div class="card message-card">';
-  code += '<div class="card-body">';
-  code += `<h5 class="card-title">${renderName} ${iconHTML}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
-  code += `<p class="card-text">${content}</p>`;
-  code += '</div>';
-  code += '</div>';
-  return code;
+const showNoResultFoundAlert = () => {
+  iziToast.show({
+    title: 'No results found',
+    message: 'Please try a different query.',
+    position: 'center',
+    onClosed() {
+      window.location.reload();
+    },
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+        window.location.reload();
+      }]],
+  });
 };
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
@@ -57,139 +52,114 @@ const createAnnouncementMessage = (senderName, content, timestamp) => {
   return code;
 };
 
+const updatePublic = (searchContext, data) => {
+  const resultsContainer = $('#chat-container');
+  // If no results found
+  if (data.length === 0) {
+    // Clear the results container
+    resultsContainer.empty();
+    // Display an alert to the user
+    showNoResultFoundAlert();
+    return;
+  }
+  // If it's the first page, empty the container
+  if (currentPageNum === 1) {
+    resultsContainer.empty();
+    const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style = "margin: 0 auto; display: block;">More Results</button>');
+    resultsContainer.append(moreResultsButton);
+  }
+  data.forEach((result) => {
+    const resultHTML = createChatMessage(
+      result.senderName,
+      result.status,
+      result.content,
+      result.timestamp,
+    );
+    // Change this to append if we want to add new results to the bottom
+    resultsContainer.prepend(resultHTML);
+    if (currentPageNum === 1) {
+      resultsContainer.children().last()[0].scrollIntoView();
+    } else {
+      resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+  // Add an event listener for the "More Results" button
+  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
+    currentPageNum += 1; // Increment the page number
+    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
+  });
+};
+
+const updateUser = (searchContext, data) => {
+  $('#online-user-list').empty();
+  $('#offline-user-list').empty();
+  // If no results found
+  if (data.length === 0) {
+    // Display an alert to the user
+    showNoResultFoundAlert();
+    return;
+  }
+  const userOnlineStatus = data.sort(compareByUsername);
+  const onlineList = [];
+  const offlineList = [];
+  userOnlineStatus.forEach((user) => {
+    if (user.isOnline) {
+      onlineList.push(createUserBlock(user.username, user.isOnline, user.status));
+    } else {
+      offlineList.push(createUserBlock(user.username, user.isOnline, user.status));
+    }
+  });
+  $('#online-user-list').append(onlineList);
+  $('#offline-user-list').append(offlineList);
+};
+
+const updateAnnouncement = (searchContext, data) => {
+  const resultsContainer = $('#chat-container');
+  // If no results found
+  if (data.length === 0) {
+    // Clear the results container
+    resultsContainer.empty();
+
+    // Display an alert to the user
+    showNoResultFoundAlert();
+    return;
+  }
+  // If it's the first page, empty the container
+  if (currentPageNum === 1) {
+    resultsContainer.empty();
+    const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style = "margin: 0 auto; display: block;">More Results</button>');
+    resultsContainer.append(moreResultsButton);
+  }
+  data.forEach((result) => {
+    const resultHTML = createAnnouncementMessage(
+      result.senderName,
+      result.content,
+      result.timestamp,
+    );
+    // Change this to append if we want to add new results to the bottom
+    resultsContainer.prepend(resultHTML);
+    if (currentPageNum === 1) {
+      resultsContainer.children().last()[0].scrollIntoView();
+    } else {
+      resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+  // Add an event listener for the "More Results" button
+  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
+    currentPageNum += 1; // Increment the page number
+    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
+  });
+};
+
 function updateUI(searchContext, data) {
   if (searchContext === 'public') {
-    const resultsContainer = $('#chat-container');
-    // If no results found
-    if (data.length === 0) {
-      // Clear the results container
-      resultsContainer.empty();
-
-      // Display an alert to the user
-      iziToast.show({
-        title: 'No results found',
-        message: 'Please try a different query.',
-        position: 'center',
-        onClosed() {
-          window.location.reload();
-        },
-        buttons: [
-          ['<button>Close</button>', function (instance, toast) {
-            instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
-            window.location.reload();
-          }]],
-      });
-      return;
-    }
-    // If it's the first page, empty the container
-    if (currentPageNum === 1) {
-      resultsContainer.empty();
-      const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style = "margin: 0 auto; display: block;">More Results</button>');
-      resultsContainer.append(moreResultsButton);
-    }
-    data.forEach((result) => {
-      const resultHTML = createChatMessage(
-        result.senderName,
-        result.status,
-        result.content,
-        result.timestamp,
-      );
-      // Change this to append if we want to add new results to the bottom
-      resultsContainer.prepend(resultHTML);
-      if (currentPageNum === 1) {
-        resultsContainer.children().last()[0].scrollIntoView();
-      } else {
-        resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-    // Add an event listener for the "More Results" button
-    resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
-      currentPageNum += 1; // Increment the page number
-      performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
-    });
+    updatePublic(searchContext, data);
   }
   if (searchContext === 'user') {
-    $('#online-user-list').empty();
-    $('#offline-user-list').empty();
-    // If no results found
-    if (data.length === 0) {
-      // Display an alert to the user
-      iziToast.show({
-        title: 'No results found',
-        message: 'Please try a different query.',
-        position: 'center',
-        onClosed() {
-          window.location.reload();
-        },
-        buttons: [
-          ['<button>Close</button>', function (instance, toast) {
-            instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
-            window.location.reload();
-          }]],
-      });
-      return;
-    }
-    const userOnlineStatus = data.sort(compareByUsername);
-    const onlineList = [];
-    const offlineList = [];
-    userOnlineStatus.forEach((user) => {
-      if (user.isOnline) {
-        onlineList.push(createUserBlock(user.username, user.isOnline, user.status));
-      } else {
-        offlineList.push(createUserBlock(user.username, user.isOnline, user.status));
-      }
-    });
-    $('#online-user-list').append(onlineList);
-    $('#offline-user-list').append(offlineList);
+    updateUser(searchContext, data);
   }
   if (searchContext === 'announcement') {
-    const resultsContainer = $('#chat-container');
-    // If no results found
-    if (data.length === 0) {
-      // Clear the results container
-      resultsContainer.empty();
-
-      // Display an alert to the user
-      iziToast.show({
-        title: 'No results found',
-        message: 'Please try a different query.',
-        position: 'center',
-        onClosed() {
-          window.location.reload();
-        },
-        buttons: [
-          ['<button>Close</button>', function (instance, toast) {
-            instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
-            window.location.reload();
-          }]],
-      });
-      return;
-    }
-    // If it's the first page, empty the container
-    if (currentPageNum === 1) {
-      resultsContainer.empty();
-      const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style = "margin: 0 auto; display: block;">More Results</button>');
-      resultsContainer.append(moreResultsButton);
-    }
-    data.forEach((result) => {
-      const resultHTML = createAnnouncementMessage(
-        result.senderName,
-        result.content,
-        result.timestamp,
-      );
-      // Change this to append if we want to add new results to the bottom
-      resultsContainer.prepend(resultHTML);
-      if (currentPageNum === 1) {
-        resultsContainer.children().last()[0].scrollIntoView();
-      } else {
-        resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-    // Add an event listener for the "More Results" button
-    resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
-      currentPageNum += 1; // Increment the page number
-      performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
-    });
+    updateAnnouncement(searchContext, data);
   }
 }
 
