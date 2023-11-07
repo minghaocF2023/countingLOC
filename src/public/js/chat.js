@@ -22,6 +22,8 @@ const createChatMessage = (senderName, status, content, timestamp) => {
   return code;
 };
 
+window.createChatMessage = createChatMessage;
+
 // scroll to bottom with the new message
 const scrollToBottom = () => {
   $('#chat-list').children().last()[0].scrollIntoView();
