@@ -103,25 +103,20 @@ import express from 'express';
 import PublicChatController from '../controllers/publicChatController.js';
 import PrivateChatController from '../controllers/privateChatController.js';
 import AnnouncementController from '../controllers/announcementController.js';
-import PublicMessageFactory from '../models/publicMessageModel.js';
-import PrivateMessageFactory from '../models/privateMessageModel.js';
-import AnnouncementFactory from '../models/announcementModel.js';
-import UserFactory from '../models/userModel.js';
-import ChatroomFactory from '../models/chatroomModel.js';
-import { realConnection, testConnection } from '../services/db.js';
+import {
+  userModel,
+  testUserModel,
+  testChatroomModel,
+  testPrivateMessageModel,
+  testPublicMessageModel,
+  testAnnouncementModel,
+  publicMessageModel,
+  privateMessageModel,
+  announcementModel,
+  chatroomModel,
+} from '../models/models.js';
 
 const router = express.Router();
-const userModel = UserFactory(realConnection);
-const testUserModel = UserFactory(testConnection);
-const testChatroomModel = ChatroomFactory(testConnection);
-const testPrivateChatModel = PrivateMessageFactory(testConnection);
-const testPublicChatModel = PublicMessageFactory(testConnection);
-const testAnnouncementModel = AnnouncementFactory(testConnection);
-const publicMessageModel = PublicMessageFactory(realConnection);
-const privateMessageModel = PrivateMessageFactory(realConnection);
-const announcementModel = AnnouncementFactory(realConnection);
-const chatroomModel = ChatroomFactory(realConnection);
-
 const publicChatController = new PublicChatController(publicMessageModel, userModel);
 const privateChatController = new PrivateChatController(
   privateMessageModel,
@@ -130,15 +125,15 @@ const privateChatController = new PrivateChatController(
 );
 const announcementController = new AnnouncementController(announcementModel, userModel);
 const testPublicChatController = new PublicChatController(
-  testPublicChatModel,
+  testPublicMessageModel,
   testUserModel,
 );
 const speedTestPublicChatController = new PublicChatController(
-  testPublicChatModel,
+  testPublicMessageModel,
   userModel,
 );
 const testPrivateChatController = new PrivateChatController(
-  testPrivateChatModel,
+  testPrivateMessageModel,
   testChatroomModel,
   testUserModel,
 );

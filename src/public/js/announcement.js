@@ -3,19 +3,6 @@
 /* eslint-disable max-len */
 /* eslint-disable no-undef */
 
-const createAnnouncementMessage = (senderName, content, timestamp) => {
-  const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
-  let code = '';
-  code += '<div class="card message-card">';
-  code += '<div class="card-body">';
-  code += `<h5 class="card-title flex-grow-1">${renderName}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
-  code += `<p class="card-text">${content}</p>`;
-  code += '</div>';
-  code += '</div>';
-  return code;
-};
-
 const connectSocket = (username) => {
   const socket = io(undefined, { autoConnect: false });
   socket.auth = { username };

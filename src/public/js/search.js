@@ -6,6 +6,24 @@
 
 let currentPageNum = 1;
 
+const insertResult = (resultHTML, resultsContainer) => {
+  // Change this to append if we want to add new results to the bottom
+  resultsContainer.prepend(resultHTML);
+  if (currentPageNum === 1) {
+    resultsContainer.children().last()[0].scrollIntoView();
+  } else {
+    resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+const addMoreResultListener = (resultsContainer, searchContext) => {
+  // Add an event listener for the "More Results" button
+  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
+    currentPageNum += 1; // Increment the page number
+    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
+  });
+};
+
 const showNoResultFoundAlert = () => {
   iziToast.show({
     title: 'No results found',
@@ -50,49 +68,6 @@ const showInvalidSearchTypeAlert = () => {
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
-const createUserBlock = (username, onlineStatus, emergencyStatus) => {
-  const onlineStatusStr = onlineStatus ? 'online' : 'offline';
-  const div = document.createElement('div');
-  div.id = username;
-  div.className = 'card mb-3 user-card';
-  div.innerHTML = '<div class="card-body">'
-      + `<h5 class="card-title">${username} ${STATUS[emergencyStatus]}</h5>`
-      + `<p class="card-text"><span class="status ${onlineStatusStr}">${onlineStatusStr}</span></p>`
-      + '</div>'
-      + '</div>';
-  div.onclick = () => {
-    window.location.href = `/privateChat?username=${username}`;
-  };
-  return div;
-};
-
-const createAnnouncementMessage = (senderName, content, timestamp) => {
-  const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
-  let code = '';
-  code += '<div class="card message-card">';
-  code += '<div class="card-body">';
-  code += `<h5 class="card-title flex-grow-1">${renderName}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
-  code += `<p class="card-text">${content}</p>`;
-  code += '</div>';
-  code += '</div>';
-  return code;
-};
-
-const createChatMessage = (senderName, status, content, timestamp) => {
-  const iconHTML = STATUS[status];
-  const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
-  let code = '';
-  code += '<div class="card message-card">';
-  code += '<div class="card-body">';
-  code += `<h5 class="card-title">${renderName} ${iconHTML}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
-  code += `<p class="card-text">${content}</p>`;
-  code += '</div>';
-  code += '</div>';
-  return code;
-};
-
 const updatePublic = (searchContext, data) => {
   const resultsContainer = $('#chat-container');
   // If no results found
@@ -118,19 +93,9 @@ const updatePublic = (searchContext, data) => {
       result.content,
       result.timestamp,
     );
-    // Change this to append if we want to add new results to the bottom
-    resultsContainer.prepend(resultHTML);
-    if (currentPageNum === 1) {
-      resultsContainer.children().last()[0].scrollIntoView();
-    } else {
-      resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    insertResult(resultHTML, resultsContainer);
   });
-  // Add an event listener for the "More Results" button
-  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
-    currentPageNum += 1; // Increment the page number
-    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
-  });
+  addMoreResultListener(resultsContainer, searchContext);
 };
 
 const updateUser = (searchContext, data) => {
@@ -180,19 +145,9 @@ const updateAnnouncement = (searchContext, data) => {
       result.content,
       result.timestamp,
     );
-    // Change this to append if we want to add new results to the bottom
-    resultsContainer.prepend(resultHTML);
-    if (currentPageNum === 1) {
-      resultsContainer.children().last()[0].scrollIntoView();
-    } else {
-      resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    insertResult(resultHTML, resultsContainer);
   });
-  // Add an event listener for the "More Results" button
-  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
-    currentPageNum += 1; // Increment the page number
-    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
-  });
+  addMoreResultListener(resultsContainer, searchContext);
 };
 
 const updatePrivate = (searchContext, data) => {
@@ -224,19 +179,9 @@ const updatePrivate = (searchContext, data) => {
       result.content,
       result.timestamp,
     );
-    // Change this to append if we want to add new results to the bottom
-    resultsContainer.prepend(resultHTML);
-    if (currentPageNum === 1) {
-      resultsContainer.children().last()[0].scrollIntoView();
-    } else {
-      resultsContainer.children().first()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    insertResult(resultHTML, resultsContainer);
   });
-  // Add an event listener for the "More Results" button
-  resultsContainer.off('click', '#more-results').on('click', '#more-results', () => {
-    currentPageNum += 1; // Increment the page number
-    performSearch($('#search-content').val().trim(), searchContext, currentPageNum); // Perform search with the new page number
-  });
+  addMoreResultListener(resultsContainer, searchContext);
 };
 
 function updateUI(searchContext, data) {
