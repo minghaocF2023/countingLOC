@@ -1,4 +1,5 @@
 import authChecker from '../utils/authChecker.js';
+import testChecker from '../utils/testChecker.js';
 
 class announcementController {
   // constructor
@@ -15,9 +16,7 @@ class announcementController {
     if (payload === null) {
       return;
     }
-
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
     // sort announcements by timestamp
@@ -37,8 +36,7 @@ class announcementController {
       return;
     }
 
-    if (global.isTest === true && global.testUser !== payload.username) {
-      res.status(503).json({ message: 'under speed test' });
+    if (testChecker.isTest(res, payload)) {
       return;
     }
     if (!req.body.content) {
@@ -63,14 +61,6 @@ class announcementController {
 
     res.status(201).json({ success: true, data: newAnnouncement });
   }
-
-  // async deleteAnnouncement(req, res) {
-  //   this.announcementModel.deleteMany({
-  //     senderName: req.body.senderName,
-  //   }).then(() => {
-  //     res.status(200).json({ message: 'deleted' });
-  //   });
-  // }
 }
 
 export default announcementController;

@@ -1,9 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose, { mongo } from 'mongoose';
 import axios from 'axios';
 import app from '../app.js';
 import userFactory from '../src/models/userModel.js';
 import JWT from '../src/utils/jwt.js';
-import { setTestMode } from '../src/utils/testMode.js';
+import { testConnection } from '../src/services/db.js';
 
 const PORT = 3000;
 const HOST = `http://localhost:${PORT}`;
@@ -13,7 +13,6 @@ let mockToken;
 let mockUser;
 
 beforeAll(async () => {
-  setTestMode(true);
   User = userFactory(mongoose);
 
   // Create a user in MongoDB
@@ -44,7 +43,6 @@ afterEach(async () => {
 
 afterAll(async () => {
   await axios.delete(`${HOST}/users`, { data: { username: mockUser.username }, params: { istest: 'true' } });
-  // await axios.delete(`${HOST}/messages/announcement`, { data: { username: mockUser.username } });
   await mongoose.disconnect().then(() => {
     server.close();
   });
@@ -52,7 +50,7 @@ afterAll(async () => {
 
 // Query Type 1:
 test('get latest announcement', async () => {
-  const announcement = 'Latest Announcement';
+  const announcement = 'this is a unique Announcement';
 
   // send the message
   const postResponse = await axios.post(
@@ -74,7 +72,7 @@ test('get latest announcement', async () => {
   });
 
   expect(getResponse.status).toBe(200);
-  expect(getResponse.data.data[0].content).toBe('Latest Announcement');
+  expect(getResponse.data.data[0].content).toBe('this is a unique Announcement');
 }, 30000);
 
 test('Post announcement', async () => {
