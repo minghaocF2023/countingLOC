@@ -571,6 +571,112 @@ router.post('/:username/status/:status', (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /users/{username}/addDoctorIdentity:
+ *   post:
+ *     tags: [Users]
+ *     summary: Add Doctor Identity
+ *     description: Add doctor identity
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+  *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.post('/:username/adddoctoridentity', (req, res) => {
+  if (req.query.istest === 'true') {
+    // const testStatusController = new StatusController(testUserModel);
+    // testStatusController.updateStatus(req, res);
+  } else {
+    const { username } = req.params;
+    userController.addDoctorIdentity(req, res, username);
+  }
+});
+
+/**
+ * @swagger
+ * /users/{username}/isdoctor:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get Doctor Identity of Current User
+ *     description: if current user is doctor
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+  *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.get('/:username/isdoctor', (req, res) => {
+  if (req.query.istest === 'true') {
+    // const testStatusController = new StatusController(testUserModel);
+    // testStatusController.updateStatus(req, res);
+  } else {
+    const { username } = req.params;
+    userController.getDoctorIdentity(req, res, username);
+  }
+});
+
 // /**
 //   * @swagger
 //   * /users/validate:

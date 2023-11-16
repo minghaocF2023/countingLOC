@@ -14,6 +14,18 @@ router.get('/acknowledge', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'acknowledge');
 });
 
+router.get('/doctorIdentification', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'doctorIdentification');
+});
+
+router.get('/doctorAppointment', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'doctorAppointment');
+});
+
+router.get('/patientAppointment', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'patientAppointment');
+});
+
 router.get('/esndirectory', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'esndirectory');
 });

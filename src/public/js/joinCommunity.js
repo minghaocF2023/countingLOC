@@ -136,6 +136,31 @@ const joinCommunity = async (inputUsername, inputPassword) => {
 };
 
 // ================= DOM controll ========================
+const roleForm = document.getElementById('roleForm');
+const roleSelect = document.getElementById('role');
+
+const addDoctorIdentity = (username) => {
+  axios.post(`/users/${username}/adddoctoridentity`)
+    .then(() => {
+      window.location.href = '/esndirectory'; // Redirect to the desired page on success
+    })
+    .catch((error) => {
+      console.error('Error setting user as doctor:', error);
+    });
+};
+if (roleForm) {
+  roleForm.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent the default form submission
+    const isDoctor = roleSelect.value === 'yes';
+    const inputUsername = localStorage.getItem('username');
+    if (isDoctor) {
+      addDoctorIdentity(inputUsername);
+    } else {
+      window.location.href = '/esndirectory';
+    }
+  });
+}
+
 const registerButton = document.getElementById('register_button');
 if (registerButton) {
   registerButton.addEventListener('click', () => {

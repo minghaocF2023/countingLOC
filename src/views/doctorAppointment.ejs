@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments</title>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css">
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
+        <script>
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    validRange: {
+                        start: new Date() // Disables past dates
+                    },
+                    dateClick: function(info) {
+                        // Date click handler
+                        // You can use this to load the appointments for the selected date
+                        console.log(info);
+                        if (info.date >= new Date()) {
+                          // Fetch appointments for info.date
+                        }
+                      },
+                });
+                calendar.render();
+            });
+
+        </script>
+        <style>
+            body, html {
+                height: 100%;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .page-container {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding-top: 70px; /* Adjust this value based on your navbar's height */
+            }
+
+            .appointments-container {
+                overflow-y: auto;
+                flex: 1;
+            }
+
+            #addAvailabilityButton {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                /* Additional styling for your button */
+            }
+
+            #calendar {
+                max-width: 600px;
+            }
+
+            .nav-link.active {
+                font-weight: bold;
+            }
+
+            .user-card {
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .user-card:hover {
+                cursor: pointer;
+            }
+
+            .status {
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-size: 0.8em;
+                font-weight: bold;
+            }
+
+            .status.online {
+                color: white;
+                background-color: #4CAF50;
+            }
+
+            .status.offline {
+                color: white;
+                background-color: #f44336;
+            }
+
+            .navbar-toggler {
+                outline: 2px solid rgb(178, 212, 216);
+                outline-offset: -2px;
+            }
+
+            .navbar-nav .dropdown-menu a {
+                cursor: pointer;
+            }
+        </style>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+        <div class="page-container">
+            <div id='calendar'></div>
+            <div class="appointments-container">
+                <div class="booked-section">
+                    <!-- Dynamically filled with booked appointments -->
+                </div>
+                <div class="vacant-section">
+                    <!-- Dynamically filled with vacant slots -->
+                </div>
+            </div>
+            <button id="addAvailabilityButton">Add Availability</button>
+        </div>
+        <script type="module" src="js/createElement.js"></script>
+        <script type="module" src="js/status.js"></script>
+        <script type="module" src="js/logout.js"></script>
+        <script type="module" src="js/doctorAppointment.js"></script>
+</body>
+
+</html>

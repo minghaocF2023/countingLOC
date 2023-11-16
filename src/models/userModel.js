@@ -52,6 +52,11 @@ const userFactory = (connection) => {
       type: Date,
       default: Date.now,
     },
+    isDoctor: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   });
 
   let UserModel;
@@ -188,6 +193,13 @@ const userFactory = (connection) => {
     }
 
     /**
+     * Set user doctor status
+     */
+    async setDoctor() {
+      await this.updateOne({ isDoctor: true });
+    }
+
+    /**
      * Get all online users
      * @returns {User[]} array of online users
      */
@@ -227,6 +239,10 @@ const userFactory = (connection) => {
 
     getIsOnline() {
       return this.isOnline;
+    }
+
+    getIsDoctor() {
+      return this.isDoctor;
     }
   }
 

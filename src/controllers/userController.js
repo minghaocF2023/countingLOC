@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import crypto from 'crypto';
 import JWT from '../utils/jwt.js';
 import { isValidUsername, isValidPassword, isBannedUsername } from '../public/js/validation.js';
@@ -30,13 +31,47 @@ class UserController {
         res.json({ message: isBannedUsername(username) ? 'Banned username' : 'User not found' });
       } else {
         res.status(200);
-        res.json({ message: 'OK', user: { username: user.username, isOnline: user.isOnline, status: user.status } });
+        res.json({
+          message: 'OK',
+          user: {
+            username: user.username, isOnline: user.isOnline, status: user.status, isDoctor: user.isDoctor,
+          },
+        });
       }
     }).catch((e) => {
       console.error(e);
       res.status(500);
       res.json({ message: 'Server error' });
     });
+  }
+
+  async addDoctorIdentity(req, res, username) {
+    try {
+      const user = await this.userModel.findOne({ username: username.toLowerCase() });
+      if (user) {
+        await user.setDoctor();
+        res.json({ message: 'Role updated successfully' });
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    } catch (error) {
+      console.error('Error setting user as doctor:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+
+  async getDoctorIdentity(req, res, username) {
+    try {
+      const user = await this.userModel.findOne({ username: username.toLowerCase() });
+      if (user) {
+        res.json({ isDoctor: user.getIsDoctor() });
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    } catch (error) {
+      console.error('Error getting user doctor identity:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
   }
 
   /**
