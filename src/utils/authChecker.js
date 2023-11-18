@@ -16,6 +16,14 @@ const authChecker = {
     }
     return payload;
   },
+
+  getAuthUsername: (req, res) => {
+    const payload = authChecker.checkAuth(req, res);
+    if (!payload) {
+      return null;
+    }
+    return payload.username;
+  },
 };
 
 export default authChecker;

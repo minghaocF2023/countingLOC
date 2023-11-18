@@ -6,6 +6,14 @@
  *       type: string
  *       description: User's username
  *       example: testUser
+ *     Allergy:
+ *       type: string
+ *       description: Allergy
+ *       example: ibuprofen
+ *     Health:
+ *       type: string
+ *       description: Health condition
+ *       example: Lung Cancer
  *     StatusHistory:
  *       type: object
  *       description: User's status
@@ -18,7 +26,44 @@
  *           type: string
  *           description: status code
  *           example: "GREEN"
- *
+ *     Profile:
+ *       type: object
+ *       description: user profile
+ *       properties:
+ *         firstName:
+ *           type: string
+ *           description: first name
+ *           example: Leo
+ *         lastName:
+ *           type: string
+ *           description: last name
+ *           example: Bot
+ *         profileImage:
+ *           type: string
+ *           description: profile image url
+ *           example: https://cdn.custom-cursor.com/cursors/pack2195.png
+ *         birthdate:
+ *           type: string
+ *           description: user birthdate
+ *           example: 01/01/2023
+ *         phone:
+ *           type: string
+ *           description: user phone number
+ *           example: 6500000000
+ *         email:
+ *           type: string
+ *           description: user email
+ *           example: leobot@andrew.cmu.edu
+ *         drugAllergy:
+ *           type: array
+ *           description: drug allergy list
+ *           items:
+ *             $ref: '#/components/schemas/Allergy'
+ *         healthCondition:
+ *           type: array
+ *           description: health condition list
+ *           items:
+ *             $ref: '#/components/schemas/Health'
  *     UserPassword:
  *       type: string
  *       description: User's password
@@ -336,7 +381,6 @@ router.post('/:username', (req, res) => {
   // loginController.loginUser(req, res);
   if (req.query.istest === 'true') {
     const testLoginController = new LoginController(testUserModel);
-    console.log('add test user!!!!!!!!!!!!!!!!!!');
     testLoginController.loginUser(req, res);
   } else {
     loginController.loginUser(req, res);
@@ -358,12 +402,12 @@ router.post('/:username', (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *              allOf:
+ *               allOf:
  *                - $ref: '#/components/schemas/Response'
  *                - type: object
  *                  properties:
  *                    user:
- *                      $ref: '#/components/schemas/Username'
+ *                    $ref: '#/components/schemas/Username'
  *       400:
  *         description: Invalid request
  *         content:
@@ -570,49 +614,5 @@ router.post('/:username/status/:status', (req, res) => {
     statusController.updateStatus(req, res);
   }
 });
-
-// /**
-//   * @swagger
-//   * /users/validate:
-//   *   post:
-//   *     summary: validate new user information
-//   *     description: validate the username and password input from a new user
-//   *     tags: [obsolete]
-//   *     requestBody:
-//   *       required: true
-//   *       content:
-//   *         application/json:
-//   *           schema:
-//   *             $ref: '#/components/schemas/NewUser'
-//   *     responses:
-//   *       200:
-//   *         description: validation success
-//   *         schema:
-//   *           type: object
-//   *           $ref: '#/components/schemas/NewUser'
-// */
-// router.post('/validate', UserController.validate);
-
-// /**
-//   * @swagger
-//   * /users/register:
-//   *   post:
-//   *     summary: register a new user
-//   *     description: Store new user's username and password into database
-//   *     tags: [obsolete]
-//   *     requestBody:
-//   *       required: true
-//   *       content:
-//   *         application/json:
-//   *           schema:
-//   *             $ref: '#/components/schemas/NewUser'
-//   *     responses:
-//   *       200:
-//   *         description: registration success
-//   *         schema:
-//   *           type: object
-//   *           $ref: '#/components/schemas/NewUser'
-// */
-// router.post('/register', UserController.createUser);
 
 export default router;

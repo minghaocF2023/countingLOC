@@ -11,7 +11,9 @@ import { Server } from 'socket.io';
 import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
+import mailAlertRouter from './src/routes/mailAlertRouter.js';
 import adminRouter from './src/routes/adminRouter.js';
+import profileRouter from './src/routes/profileRouter.js';
 import searchRouter from './src/routes/searchRouter.js';
 import SocketServer from './src/services/socket.js';
 import PrivateSocketServer from './src/services/privateSocket.js';
@@ -38,7 +40,7 @@ app.use(express.static('src/public'));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
-
+app.set('public', path.join(__dirname, 'src/public'));
 const options = {
   definition: {
     openapi: '3.1.0',
@@ -91,6 +93,10 @@ app.use('/users/', userRouter);
 app.use('/messages/', messageRouter);
 app.use('/admin/', adminRouter);
 app.use('/search/', searchRouter);
+app.use('/mail/', mailAlertRouter);
+app.use('/profile/', profileRouter, () => {
+  console.error('auth error or under test');
+});
 app.use(
   '/docs',
   swaggerUi.serve,

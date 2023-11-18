@@ -5,6 +5,7 @@ import PublicMessageFactory from './publicMessageModel.js';
 import UserFactory from './userModel.js';
 
 import { realConnection, testConnection } from '../services/db.js';
+import ProfileFactory from './profileModel.js';
 
 const userModel = UserFactory(realConnection);
 const testUserModel = UserFactory(testConnection);
@@ -16,7 +17,7 @@ const publicMessageModel = PublicMessageFactory(realConnection);
 const testPublicMessageModel = PublicMessageFactory(testConnection);
 const announcementModel = AnnouncementFactory(realConnection);
 const testAnnouncementModel = AnnouncementFactory(testConnection);
-
+const ProfileModel = ProfileFactory(realConnection);
 export {
   userModel,
   testUserModel,
@@ -24,6 +25,7 @@ export {
   testChatroomModel,
   privateMessageModel,
   testPrivateMessageModel,
+  ProfileModel,
   publicMessageModel,
   testPublicMessageModel,
   announcementModel,
