@@ -53,21 +53,25 @@
                 padding-top: 70px; /* Adjust this value based on your navbar's height */
             }
 
-            .appointments-container {
-                overflow-y: auto;
-                flex: 1;
+            #calendar {
+                width: 100%;
+                margin: 0 auto; 
             }
 
-            #addAvailabilityButton {
+            #addAvailabilityButton{
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 width: 100%;
-                /* Additional styling for your button */
+                height: 50px; /* Height of the footer */
             }
 
-            #calendar {
-                max-width: 600px;
+            .appointments-container {
+                overflow-y: auto;
+                flex: 1;
+                padding: 0 20px;
+                padding-bottom: 50px;
+                padding-top: 10px;
             }
 
             .nav-link.active {
@@ -118,13 +122,19 @@
             <div id='calendar'></div>
             <div class="appointments-container">
                 <div class="booked-section">
-                    <!-- Dynamically filled with booked appointments -->
+                    <h4  class="mb-3">Booked</h4>
+                    <div id="booked-list">
+                        <!-- Dynamically filled with booked appointments -->
+                    </div>
                 </div>
                 <div class="vacant-section">
-                    <!-- Dynamically filled with vacant slots -->
+                    <h4 class="mb-3">Vacant</h4>
+                    <div id="vacant-list">
+                        <!-- Dynamically filled with vacant slots -->
+                    </div>
                 </div>
             </div>
-            <button id="addAvailabilityButton">Add Availability</button>
+            <button id="addAvailabilityButton" class="nav-link btn btn-primary text-white active">ADD AVAILABILITY</button>
         </div>
         <script type="module" src="js/createElement.js"></script>
         <script type="module" src="js/status.js"></script>

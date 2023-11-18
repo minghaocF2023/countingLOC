@@ -56,14 +56,17 @@
             .appointments-container {
                 overflow-y: auto;
                 flex: 1;
+                padding: 0 20px;
+                padding-bottom: 50px;
+                padding-top: 10px;
             }
 
-            #addAvailabilityButton {
+            #addAvailabilityButton{
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 width: 100%;
-                /* Additional styling for your button */
+                height: 50px; /* Height of the footer */
             }
 
             #calendar {
@@ -118,13 +121,13 @@
             <div id='calendar'></div>
             <div class="appointments-container">
                 <div class="booked-section">
-                    <!-- Dynamically filled with booked appointments -->
-                </div>
-                <div class="vacant-section">
-                    <!-- Dynamically filled with vacant slots -->
+                    <h4  class="mb-3">Booked</h4>
+                    <div id="booked-list">
+                        <!-- Dynamically filled with booked appointments -->
+                    </div>
                 </div>
             </div>
-            <button id="addAvailabilityButton">Book More</button>
+            <button id="addAvailabilityButton" class="nav-link btn btn-primary text-white active">BOOK MORE</button>
         </div>
         <script type="module" src="js/createElement.js"></script>
         <script type="module" src="js/status.js"></script>

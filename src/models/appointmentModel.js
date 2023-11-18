@@ -6,15 +6,11 @@ const appointmentFactory = (connection) => {
   }
   const AppointmentSchema = new mongoose.Schema({
     date: {
-      type: Date,
+      type: String,
       required: true,
     },
     startTime: {
-      type: String, // "HH:mm" format would be better than int for time
-      required: true,
-    },
-    endTime: {
-      type: String, // To enforce the 1-hour duration rule, we calculate endTime based on startTime
+      type: Number,
       required: true,
     },
     doctorUsername: {
@@ -25,11 +21,6 @@ const appointmentFactory = (connection) => {
       type: String,
       required: false,
       default: '',
-    },
-    status: {
-      type: String,
-      enum: ['booked', 'available'], // To differentiate between booked appointments and available slots
-      required: true,
     },
   });
 
@@ -42,42 +33,62 @@ const appointmentFactory = (connection) => {
 
   class Appointment extends AppointmentModel {
     /**
-     * Get all announcement
-     * @param {mongoose.FilterQuery<Announcement>} filter
-     * @param {mongoose.ProjectionType<Announcement>?=} projection
-     * @param {mongoose.QueryOptions<Announcement>?=} options
-     * @returns {Promise<Announcement[]>} array of announcements
+     * Get all appointments
+     * @param {mongoose.FilterQuery<Appointments>} filter
+     * @param {mongoose.ProjectionType<Appointments>?=} projection
+     * @param {mongoose.QueryOptions<Appointments>?=} options
+     * @returns {Promise<Appointments[]>} array of appointments
      */
     static async get(filter, projection, options) {
       return this.find(filter, projection, options)
-        .then((announcements) => announcements.map((pm) => new Appointment(pm)));
+        .then((appointments) => appointments.map((pm) => new Appointment(pm)));
     }
 
-    getContent() {
-      return this.content;
+    getDate() {
+      return this.date;
     }
 
-    getSenderName() {
-      return this.senderName;
+    getStartTime() {
+      return this.startTime;
     }
 
-    getTimestamp() {
-      return this.timestamp;
+    getDoctorUsername() {
+      return this.doctorUsername;
     }
 
-    static async createAnnouncment(data) {
-      const newAnnouncement = new this(data);
-      await newAnnouncement.save();
-      return newAnnouncement;
+    getPatientUsername() {
+      return this.patientUsername;
+    }
+
+    setDate(date) {
+      this.date = date;
+    }
+
+    setStartTime(startTime) {
+      this.startTime = startTime;
+    }
+
+    setDoctorUsername(doctorUsername) {
+      this.doctorUsername = doctorUsername;
+    }
+
+    setPatientUsername(patientUsername) {
+      this.patientUsername = patientUsername;
+    }
+
+    static async createAppointment(data) {
+      const newAppointment = new this(data);
+      await newAppointment.save();
+      return newAppointment;
     }
 
     /**
-     * Get all messages from the database
-     * @returns {Promise<Announcement[]>} A promise that resolves to an array of Announcements
+     * Get all appointments from the database
+     * @returns {Promise<Appointment[]>} A promise that resolves to an array of Appointments
      */
-    static async getAllAnnouncements() {
+    static async getAllAppointments() {
       // eslint-disable-next-line max-len
-      return this.find({}).then((announcements) => announcements.map((msg) => new Appointment(msg)));
+      return this.find({}).then((appointments) => appointments.map((msg) => new Appointment(msg)));
     }
   }
 
