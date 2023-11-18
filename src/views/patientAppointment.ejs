@@ -16,41 +16,21 @@
     <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css">
     <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
     <%- include('partials/bootstrapPlugin') %>
-        <script>
-
-            document.addEventListener('DOMContentLoaded', function () {
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    validRange: {
-                        start: new Date() // Disables past dates
-                    },
-                    dateClick: function(info) {
-                        // Date click handler
-                        // You can use this to load the appointments for the selected date
-                        console.log(info);
-                        if (info.date >= new Date()) {
-                          // Fetch appointments for info.date
-                        }
-                      },
-                });
-                calendar.render();
-            });
-
-        </script>
         <style>
-            body, html {
+            body,
+            html {
                 height: 100%;
                 margin: 0;
                 display: flex;
                 flex-direction: column;
             }
-            
+
             .page-container {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
-                padding-top: 70px; /* Adjust this value based on your navbar's height */
+                padding-top: 70px;
+                /* Adjust this value based on your navbar's height */
             }
 
             .appointments-container {
@@ -61,16 +41,44 @@
                 padding-top: 10px;
             }
 
-            #addAvailabilityButton{
+            #addAvailabilityButton {
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 width: 100%;
-                height: 50px; /* Height of the footer */
+                height: 50px;
+                /* Height of the footer */
+            }
+
+            .selected-date {
+                background-color: rgb(236, 200, 127);
             }
 
             #calendar {
                 max-width: 600px;
+            }
+
+            #bookMoreButton {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 50px;
+                /* Height of the footer */
+            }
+
+            .doctor-separator {
+                margin-top: 15px;
+                margin-bottom: 15px;
+                border: 0;
+                border-top: 1px solid #eee;
+                /* Light grey line */
+            }
+
+            .modal-content {
+                overflow-y: auto;
+                background-color: #fff;
+                /* Ensure solid background for the entire modal content */
             }
 
             .nav-link.active {
@@ -120,19 +128,52 @@
         <div class="page-container">
             <div id='calendar'></div>
             <div class="appointments-container">
+                <h8>Please note that each appointment is one hour.</h8>
+                <h7 id="title-date-selected"></h7>
                 <div class="booked-section">
-                    <h4  class="mb-3">Booked</h4>
+                    <h4 class="mb-3">Booked</h4>
                     <div id="booked-list">
                         <!-- Dynamically filled with booked appointments -->
+                        <!-- First Appointment Card -->
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Appointment with DoctorA</h5>
+                                <p class="card-text">Time: 9:00 AM</p>
+                                <button class="btn btn-danger">Delete</button>
+                                <button class="btn" style="background-color: rgb(236, 200, 127);">Update</button>
+                            </div>
+                        </div>
+
+                        <!-- Second Appointment Card -->
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Appointment with DoctorD</h5>
+                                <p class="card-text">Time: 4:00 PM</p>
+                                <button class="btn btn-danger">Delete</button>
+                                <button class="btn" style="background-color: rgb(236, 200, 127);">Update</button>
+                            </div>
+                        </div>
+
+                        <!-- Third Appointment Card -->
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Appointment with DoctorC</h5>
+                                <p class="card-text">Time: 12:00 PM</p>
+                                <button class="btn btn-danger">Delete</button>
+                                <button class="btn" style="background-color: rgb(236, 200, 127);">Update</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <button id="addAvailabilityButton" class="nav-link btn btn-primary text-white active">BOOK MORE</button>
+            <button id="bookMoreButton" class="nav-link btn btn-primary text-white active" data-bs-toggle="modal"
+                data-bs-target="#bookMoreModal">BOOK MORE</button>
         </div>
-        <script type="module" src="js/createElement.js"></script>
-        <script type="module" src="js/status.js"></script>
-        <script type="module" src="js/logout.js"></script>
-        <script type="module" src="js/patientAppointment.js"></script>
+        <%- include('partials/patientModal') %>
+            <script type="module" src="js/createElement.js"></script>
+            <script type="module" src="js/status.js"></script>
+            <script type="module" src="js/logout.js"></script>
+            <script type="module" src="js/patientAppointment.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,125 @@
+<!-- Patient Appointment Modal -->
+<div class="modal fade" id="bookMoreModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="bookAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content">
+
+            <div class="mb-3 px-3 py-4">
+                <div class="d-flex justify-content-center mb-3 align-items-start">
+                    <label for="bookMoreLabel" class="form-label flex-grow-1">
+                        <h4><i class="bi bi-calendar-plus-fill pe-2" id = "title-modal"></i>Book More for <span
+                                id="selectedDate">[Selected Date]</span></h4>
+                    </label>
+                    <button type="button" class="btn" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div id="doctorAvailabilityList">
+                    <!-- Doctor A's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor A</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorA" data-time="10:00">10 AM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorA" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                    <!-- Doctor B's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor B</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="15:00">3 PM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                    <!-- Doctor B's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor B</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="15:00">3 PM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                    <!-- Doctor B's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor B</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="15:00">3 PM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                    <!-- Doctor B's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor B</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="15:00">3 PM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                    <!-- Doctor B's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor B</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="15:00">3 PM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                    <!-- Doctor B's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor B</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="15:00">3 PM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                    <!-- Doctor B's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor B</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="15:00">3 PM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                    <!-- Doctor B's Availability -->
+                    <div class="doctor-availability">
+                        <h4>Doctor B</h4>
+                        <div class="time-slots">
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="15:00">3 PM</button>
+                            <button type="button" class="btn btn-outline-primary appointment-time-slot"
+                                data-doctor="DoctorB" data-time="16:00">4 PM</button>
+                        </div>
+                    </div>
+                    <hr class="doctor-separator">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary text-white" id="submit-bookmore-btn"
+                        data-bs-dismiss="modal">Confirm</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
