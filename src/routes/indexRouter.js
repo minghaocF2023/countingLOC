@@ -56,6 +56,8 @@ router.get('/shelter', (req, res) => {
 
 router.get('/addShelter', (req, res) => {
   res.render('addShelter');
+router.get('/market', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'marketmedicine');
 });
 
 // router.get('/messages/public', (req, res) => {

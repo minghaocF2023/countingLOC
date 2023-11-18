@@ -5,6 +5,8 @@ import PublicMessageFactory from './publicMessageModel.js';
 import UserFactory from './userModel.js';
 import ShelterFactory from './shelterModel.js';
 import AppointmentFactory from './appointmentModel.js';
+import MedicineFactory from './medicineModel.js';
+import RequestFactory from './requestModel.js';
 
 import { realConnection, testConnection } from '../services/db.js';
 
@@ -22,6 +24,10 @@ const shelterModel = ShelterFactory(realConnection);
 const testShelterModel = ShelterFactory(testConnection);
 const appointmentModel = AppointmentFactory(realConnection);
 const testAppointmentModel = AppointmentFactory(testConnection);
+const medicineModel = MedicineFactory(realConnection);
+const testMedicineModel = MedicineFactory(testConnection);
+const requestModel = RequestFactory(realConnection);
+const testRequestModel = RequestFactory(testConnection);
 
 export {
   userModel,
@@ -38,4 +44,8 @@ export {
   testShelterModel,
   appointmentModel,
   testAppointmentModel,
+  medicineModel,
+  testMedicineModel,
+  requestModel,
+  testRequestModel,
 };

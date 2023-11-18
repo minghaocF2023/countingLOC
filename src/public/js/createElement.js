@@ -56,3 +56,15 @@ const createAnnouncementMessage = (senderName, content, timestamp) => {
 };
 
 window.createAnnouncementMessage = createAnnouncementMessage;
+
+const createMedicineItem = (medicinename, quantity) => {
+  let html = '';
+  html += '<div class="card message-card">';
+  html += '<div class="card-body">';
+  html += `<h5 class="card-title">${medicinename}</h5>`;
+  html += `<p class="card-text">Quantity: ${quantity}</p>`;
+  html += '</div>';
+  html += '</div>';
+  return html;
+};
+window.createMedicineItem = createMedicineItem;
