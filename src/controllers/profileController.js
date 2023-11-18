@@ -29,7 +29,11 @@ class ProfileController {
       res.status(400).json({ message: 'Bad Request.' });
       return;
     }
-
+    const { profileId } = await this.userModel.getUserProfileId(username);
+    if (profileId) {
+      res.status(409).json({ message: 'profile already exsist' });
+      return;
+    }
     this.profileModel.createNewProfile(req.body.profile).then((profile) => {
       // eslint-disable-next-line no-underscore-dangle
       this.userModel.updateUserProfileId(username, profile._id).then(() => {
@@ -47,6 +51,10 @@ class ProfileController {
   async updateProfile(req, res) {
     const username = authChecker.getAuthUsername(req, res);
     const { profileId } = await this.userModel.getUserProfileId(username);
+    if (!profileId) {
+      res.status(404).json({ message: 'profile not found' });
+      return;
+    }
     const profileData = req.body.profile;
     const profile = await this.profileModel.updateProfileById(profileId, profileData);
     res.status(201).json({ profile });
@@ -58,8 +66,14 @@ class ProfileController {
   async deleteProfile(req, res) {
     const username = authChecker.getAuthUsername(req, res);
     const { profileId } = await this.userModel.getUserProfileId(username);
+    if (!profileId) {
+      res.status(404).json({ message: 'profile not found' });
+      return;
+    }
     this.profileModel.deleteProfileById(profileId).then(() => {
-      res.status(201).json({ message: 'deleted' });
+      this.userModel.updateUserProfileId(username, null).then(() => {
+        res.status(201).json({ message: 'deleted' });
+      });
     }).catch((error) => {
       console.error(error);
       res.status(500).json({ message: 'internal error' });
