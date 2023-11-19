@@ -37,7 +37,7 @@ class appointmentController {
     if (testChecker.isTest(res, payload)) {
       return;
     }
-    const doctorUsername = payload.username;
+    const doctorUsername = payload.username.toLowerCase();
     const { date } = req.query;
     const appointments = await this.appointmentModel.find({ doctorUsername, date });
     // console.log(appointments);
@@ -55,7 +55,7 @@ class appointmentController {
     if (testChecker.isTest(res, payload)) {
       return;
     }
-    const doctorUsername = payload.username;
+    const doctorUsername = payload.username.toLowerCase();
     const { date } = req.query;
     const appointments = await this.appointmentModel.find({ doctorUsername, date });
     // console.log(appointments);
@@ -85,7 +85,7 @@ class appointmentController {
     }
     try {
       const { date, startTimes } = req.body;
-      const doctorUsername = payload.username;
+      const doctorUsername = payload.username.toLowerCase();
 
       // Ensure startTimes is an array
       // console.log(startTimes);
@@ -123,7 +123,7 @@ class appointmentController {
     if (testChecker.isTest(res, payload)) {
       return;
     }
-    const patientUsername = payload.username;
+    const patientUsername = payload.username.toLowerCase();
     const { date } = req.query;
     const appointments = await this.appointmentModel.find({ patientUsername, date });
     res.status(200).json({ success: true, appointments });
@@ -175,7 +175,7 @@ class appointmentController {
       date, startTime, doctorUsername,
     } = req.body;
 
-    const patientUsername = payload.username;
+    const patientUsername = payload.username.toLowerCase();
     // console.log(patientUsername);
     try {
       const appointment = await this.appointmentModel.findOne({
@@ -214,7 +214,7 @@ class appointmentController {
       date, startTime, doctorUsername,
     } = req.query;
 
-    const patientUsername = payload.username;
+    const patientUsername = payload.username.toLowerCase();
 
     try {
       const appointment = await this.appointmentModel.findOne({
@@ -255,7 +255,7 @@ class appointmentController {
       dateOld, startTimeOld, doctorUsernameOld, dateNew, startTimeNew, doctorUsernameNew,
     } = req.body;
 
-    const patientUsername = payload.username;
+    const patientUsername = payload.username.toLowerCase();
 
     try {
       const targetAppointment = await this.appointmentModel.findOne({

@@ -441,7 +441,7 @@ router.get('/patientappt', (req, res) => {
  *             example:
  *               application/json:
  *                 message: OK
- *                 appointments: [
+ *                 doctors: [
  *                          {doctorUsername: 'DoctorA', availableTimes: [9,11,12,13,14,16,17]},
  *                          {doctorUsername: 'DoctorB', availableTimes: [12,13,16]},
  *                          ]

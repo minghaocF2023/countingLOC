@@ -150,6 +150,13 @@ async function fetchAppointmentsForDate(date) {
 function updateTimeSlotsModal(timeSlots) {
   const container = $('#timeSlotsContainer');
   container.empty();
+  console.log(container);
+  if (timeSlots.length === 0) {
+    const noTimeSlotsMessage = document.createElement('p');
+    noTimeSlotsMessage.textContent = 'No time slots available';
+    container.append(noTimeSlotsMessage);
+    return;
+  }
   timeSlots.forEach((time) => {
     const timeSlotButton = document.createElement('button');
     timeSlotButton.className = 'btn btn-outline-primary time-slot';
@@ -198,10 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clickedDate.addClass('selected-date');
       }
       fetchAppointmentsForDate(info.dateStr);
-      $('#addAvailabilityButton').on('click', () => {
-        fetchAndDisplayTimeSlots(info.dateStr);
-        $('#addAvailabilityModal').modal('show');
-      });
     },
   });
 
@@ -211,6 +214,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const initialDateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   updateTitleDate(initialDateStr);
   fetchAppointmentsForDate(initialDateStr);
+
+  $('#addAvailabilityButton').on('click', () => {
+    const selectedDateStr = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
+    $('#addAvailabilityModal').modal('show');
+    $('#timeSlotsContainer').empty();
+    fetchAndDisplayTimeSlots(selectedDateStr);
+  });
+
+  $('#addAvailabilityModal').on('show.bs.modal', () => {
+    $('#timeSlotsContainer').empty();
+  });
+
+  $('#addAvailabilityModal').on('hidden.bs.modal', () => {
+    $('#timeSlotsContainer').empty();
+  });
 
   // Enable multiple selection for .time-slot elements
   const timeSlots = document.querySelectorAll('.time-slot');
