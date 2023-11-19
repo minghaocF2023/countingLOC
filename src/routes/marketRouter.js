@@ -159,109 +159,217 @@ router.post('/medicines', (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /market/medicines/requests:
- *   get:
- *     tags: [Medicines]
- *     summary: Get all requests
- *     description: Retrieve a list of all requests
- *     responses:
- *       200:
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/Response'
- *                 - type: object
- *                   properties:
- *                     medicines:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/Request'
- */
-router.get('/medicines/requests', (req, res) => {
-  if (req.query.istest === 'true') {
-    testRequestController.getAllRequests(req, res);
-  } else {
-    requestController.getAllRequests(req, res);
-  }
-});
-
-/**
- * @swagger
- * /market/medicines/requests:
- *   post:
- *     tags: [Medicines]
- *     summary: Post a new request
- *     description: Create a new request entry
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/NewRequest'
- *     responses:
- *       201:
- *         description: Request posted successfully
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/Response'
- *                 - type: object
- *                   properties:
- *                     medicine:
- *                       $ref: '#/components/schemas/Request'
- */
-router.post('/medicines/requests', (req, res) => {
-  // console.log('route ok2');
-  if (req.query.istest === 'true') {
-    // TODO
-  } else if (req.query.isspeedtest === 'true') {
-    // TODO
-    res.status(500).json({ message: 'speedtest' });
-  } else {
-    requestController.postNewRequest(req, res);
-  }
-});
-
-/**
- * @swagger
- * /market/medicines/{username}/requests:
- *   get:
- *     tags: [Medicines]
- *     summary: Get all requests from a user
- *     description: Retrieve a list of request sent by a sepcific user
- *     responses:
- *       200:
- *         description: Success
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/Response'
- *                 - type: object
- *                   properties:
- *                     requests:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/Request'
- */
-router.post('/medicines/:username/requests', (req, res) => {
-  // TODO
-});
+// /**
+//  * @swagger
+//  * /market/requests:
+//  *   get:
+//  *     tags: [Requests]
+//  *     summary: Get all requests
+//  *     description: Retrieve a list of all requests
+//  *     responses:
+//  *       200:
+//  *         description: Success
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               allOf:
+//  *                 - $ref: '#/components/schemas/Response'
+//  *                 - type: object
+//  *                   properties:
+//  *                     medicines:
+//  *                       type: array
+//  *                       items:
+//  *                         $ref: '#/components/schemas/Request'
+//  */
+// router.get('/requests', (req, res) => {
+//   if (req.query.istest === 'true') {
+//     testRequestController.getAllRequests(req, res);
+//   } else {
+//     requestController.getAllRequests(req, res);
+//   }
+// });
 
 // /**
 //  * @swagger
-//  * /medicines/{medicinename}:
+//  * /requests:
+//  *   post:
+//  *     tags: [Requests]
+//  *     summary: Post a new request
+//  *     description: Create a new request entry
+//  *     requestBody:
+//  *       required: true
+//  *       content:
+//  *         application/json:
+//  *           schema:
+//  *             $ref: '#/components/schemas/NewRequest'
+//  *     responses:
+//  *       201:
+//  *         description: Request posted successfully
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               allOf:
+//  *                 - $ref: '#/components/schemas/Response'
+//  *                 - type: object
+//  *                   properties:
+//  *                     medicine:
+//  *                       $ref: '#/components/schemas/Request'
+//  */
+// router.post('/requests', (req, res) => {
+//   // console.log('route ok2');
+//   if (req.query.istest === 'true') {
+//     // TODO
+//   } else if (req.query.isspeedtest === 'true') {
+//     // TODO
+//     res.status(500).json({ message: 'speedtest' });
+//   } else {
+//     requestController.postNewRequest(req, res);
+//   }
+// });
+
+// /**
+//  * @swagger
+//  * /market/requests/{username}:
+//  *   get:
+//  *     tags: [Requests]
+//  *     summary: Get all requests from a user
+//  *     description: Retrieve a list of request sent by a sepcific user
+//  *     responses:
+//  *       200:
+//  *         description: Success
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               allOf:
+//  *                 - $ref: '#/components/schemas/Response'
+//  *                 - type: object
+//  *                   properties:
+//  *                     requests:
+//  *                       type: array
+//  *                       items:
+//  *                         $ref: '#/components/schemas/Request'
+//  */
+// router.post('/requests/:username', (req, res) => {
+//   // TODO
+// });
+
+// // /**
+// //  * @swagger
+// //  * /medicines/{medicinename}:
+// //  *   put:
+// //  *     tags: [Medicines]
+// //  *     summary: Modify quantity of selected medicine
+// //  *     description: Update the medicine quantity
+// //  *     parameters:
+// //  *       - $ref: '#/parameters/medicinename'
+// //  *     requestBody:
+// //  *       required: true
+// //  *       content:
+// //  *         application/json:
+// //  *           schema:
+// //  *             type: object
+// //  *             required:
+// //  *               - quantity
+// //  *             properties:
+// //  *               quantity:
+// //  *                 type: integer
+// //  *                 description: The new quantity of the medicine
+// //  *     responses:
+// //  *       200:
+// //  *         description: Success
+// //  *         content:
+// //  *           application/json:
+// //  *             schema:
+// //  *              allOf:
+// //  *                - $ref: '#/components/schemas/Response'
+// //  *                - type: object
+// //  *                  properties:
+// //  *                   updatedQuantity:
+// //  *                     type: integer
+// //  *                     example: 500
+// //  *       400:
+// //  *         description: Invalid request
+// //  *         content:
+// //  *           application/json:
+// //  *             schema:
+// //  *               $ref: '#/components/schemas/Response'
+// //  *             example:
+// //  *               message: Invalid request
+// //  *       404:
+// //  *         description: Fail to login
+// //  *         content:
+// //  *           application/json:
+// //  *             schema:
+// //  *               $ref: '#/components/schemas/Response'
+// //  *             example:
+// //  *               message: Incorrect username/password
+// //  */
+// // router.put('/:medicinename', (req, res) => {
+// //   // TODO
+// // });
+
+// // /**
+// //  * @swagger
+// //  * /medicines/requests/reject/{requestId}:
+// //  *   put:
+// //  *     tags: [Medicines]
+// //  *     summary: Reject a request
+// //  *     description: Reject a request
+// //  *     parameters:
+// //  *       - in: path
+// //  *         name: requestId
+// //  *         required: true
+// //  *         schema:
+// //  *           type: string
+// //  *         description: The ID of the request to approve
+// //  *     responses:
+// //  *       200:
+// //  *         description: Request rejected
+// //  *         content:
+// //  *           application/json:
+// //  *             schema:
+// //  *               allOf:
+// //  *                 - $ref: '#/components/schemas/Response'
+// //  *                 - type: object
+// //  *                   properties:
+// //  *                     message:
+// //  *                       type: string
+// //  *                       example: Request approved successfully
+// //  *       400:
+// //  *         description: Invalid request or insufficient medicine stock
+// //  *         content:
+// //  *           application/json:
+// //  *             schema:
+// //  *               $ref: '#/components/schemas/Response'
+// //  *             example:
+// //  *               message: Invalid request or insufficient medicine stock
+// //  *       404:
+// //  *         description: Request not found
+// //  *         content:
+// //  *           application/json:
+// //  *             schema:
+// //  *               $ref: '#/components/schemas/Response'
+// //  *             example:
+// //  *               message: Request not found
+// //  */
+// // router.put('/requests/reject/:requestId', (req, res) => {
+// //   requestController.rejectRequest(req, res);
+// // });
+
+// /**
+//  * @swagger
+//  * /market/requests/{requestId}:
 //  *   put:
-//  *     tags: [Medicines]
-//  *     summary: Modify quantity of selected medicine
-//  *     description: Update the medicine quantity
+//  *     tags: [Requests]
+//  *     summary: Update request status
+//  *     description: Approves or rejects a request based on the provided status in the request body.
 //  *     parameters:
-//  *       - $ref: '#/parameters/medicinename'
+//  *       - in: path
+//  *         name: requestId
+//  *         required: true
+//  *         schema:
+//  *           type: string
+//  *         description: The ID of the request to be updated.
 //  *     requestBody:
 //  *       required: true
 //  *       content:
@@ -269,62 +377,14 @@ router.post('/medicines/:username/requests', (req, res) => {
 //  *           schema:
 //  *             type: object
 //  *             required:
-//  *               - quantity
+//  *               - status
 //  *             properties:
-//  *               quantity:
-//  *                 type: integer
-//  *                 description: The new quantity of the medicine
+//  *               status:
+//  *                 type: string
+//  *                 description: The new status of the request (e.g., 'Approved', 'Rejected').
 //  *     responses:
 //  *       200:
-//  *         description: Success
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *              allOf:
-//  *                - $ref: '#/components/schemas/Response'
-//  *                - type: object
-//  *                  properties:
-//  *                   updatedQuantity:
-//  *                     type: integer
-//  *                     example: 500
-//  *       400:
-//  *         description: Invalid request
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               $ref: '#/components/schemas/Response'
-//  *             example:
-//  *               message: Invalid request
-//  *       404:
-//  *         description: Fail to login
-//  *         content:
-//  *           application/json:
-//  *             schema:
-//  *               $ref: '#/components/schemas/Response'
-//  *             example:
-//  *               message: Incorrect username/password
-//  */
-// router.put('/:medicinename', (req, res) => {
-//   // TODO
-// });
-
-// /**
-//  * @swagger
-//  * /medicines/requests/reject/{requestId}:
-//  *   put:
-//  *     tags: [Medicines]
-//  *     summary: Reject a request
-//  *     description: Reject a request
-//  *     parameters:
-//  *       - in: path
-//  *         name: requestId
-//  *         required: true
-//  *         schema:
-//  *           type: string
-//  *         description: The ID of the request to approve
-//  *     responses:
-//  *       200:
-//  *         description: Request rejected
+//  *         description: Request status updated successfully.
 //  *         content:
 //  *           application/json:
 //  *             schema:
@@ -334,87 +394,27 @@ router.post('/medicines/:username/requests', (req, res) => {
 //  *                   properties:
 //  *                     message:
 //  *                       type: string
-//  *                       example: Request approved successfully
+//  *                       example: Request status updated successfully.
 //  *       400:
-//  *         description: Invalid request or insufficient medicine stock
+//  *         description: Invalid request or other client error.
 //  *         content:
 //  *           application/json:
 //  *             schema:
 //  *               $ref: '#/components/schemas/Response'
 //  *             example:
-//  *               message: Invalid request or insufficient medicine stock
+//  *               message: Invalid request or other client error.
 //  *       404:
-//  *         description: Request not found
+//  *         description: Request not found.
 //  *         content:
 //  *           application/json:
 //  *             schema:
 //  *               $ref: '#/components/schemas/Response'
 //  *             example:
-//  *               message: Request not found
+//  *               message: Request not found.
 //  */
-// router.put('/requests/reject/:requestId', (req, res) => {
-//   requestController.rejectRequest(req, res);
+
+// router.put('/medicines/requests/:requestId', (req, res) => {
+//   requestController.updateRequest(req, res);
 // });
-
-/**
- * @swagger
- * /market/medicines/requests/{requestId}:
- *   put:
- *     tags: [Medicines]
- *     summary: Update request status
- *     description: Approves or rejects a request based on the provided status in the request body.
- *     parameters:
- *       - in: path
- *         name: requestId
- *         required: true
- *         schema:
- *           type: string
- *         description: The ID of the request to be updated.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - status
- *             properties:
- *               status:
- *                 type: string
- *                 description: The new status of the request (e.g., 'Approved', 'Rejected').
- *     responses:
- *       200:
- *         description: Request status updated successfully.
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/Response'
- *                 - type: object
- *                   properties:
- *                     message:
- *                       type: string
- *                       example: Request status updated successfully.
- *       400:
- *         description: Invalid request or other client error.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: Invalid request or other client error.
- *       404:
- *         description: Request not found.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Response'
- *             example:
- *               message: Request not found.
- */
-
-router.put('/medicines/requests/:requestId', (req, res) => {
-  requestController.updateRequest(req, res);
-});
 
 export default router;

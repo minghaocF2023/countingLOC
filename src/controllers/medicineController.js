@@ -1,6 +1,14 @@
 import authChecker from '../utils/authChecker.js';
 import testChecker from '../utils/testChecker.js';
 
+const standardizeMedicineName = (name) => name
+  .trim()
+  .replace(/\s+/g, ' ')
+  .toLowerCase()
+  .split(' ')
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
 class medicineController {
   // constructor
   constructor(medicineModel, userModel) {
@@ -47,14 +55,15 @@ class medicineController {
     }
 
     const { medicinename, quantity } = req.body;
+    const standardizedName = standardizeMedicineName(medicinename);
 
-    let medicine = await this.medicineModel.getOne({ medicinename });
+    let medicine = await this.medicineModel.getOne({ medicinename: standardizedName });
 
     if (medicine) {
       medicine.quantity += quantity;
     } else {
       const data = {
-        medicinename,
+        medicinename: standardizedName,
         quantity,
       };
       // eslint-disable-next-line new-cap

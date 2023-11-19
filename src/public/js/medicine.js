@@ -1,7 +1,44 @@
+/* eslint-disable func-names */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 /* eslint-disable max-len */
 /* eslint-disable no-undef */
+
+const insertMedicineInSortedOrder = (newMedicine) => {
+  const newMedElement = createMedicineItem(newMedicine.medicinename, newMedicine.quantity);
+  $('#market-list').append(newMedElement);
+
+  // Sort the entire list of medicines
+  $('#market-list .card').sort((a, b) => {
+    const aText = $(a).find('.card-title').text().trim()
+      .toLowerCase();
+    const bText = $(b).find('.card-title').text().trim()
+      .toLowerCase();
+    return aText.localeCompare(bText);
+  }).appendTo('#market-list');
+};
+
+const updateOrInsertMedicine = (newMedicine) => {
+  let found = false;
+
+  // Use .each() to iterate over each medicine card in the market list
+  $('#market-list .card').each(function () {
+    const cardTitle = $(this).find('.card-title').text().trim()
+      .toLowerCase();
+
+    // Check if the card title matches the new medicine name
+    if (cardTitle === newMedicine.medicinename.toLowerCase()) {
+      found = true;
+      const quantityElement = $(this).find('.card-text');
+      console.log(newMedicine.quantity);
+      quantityElement.text(`Quantity: ${newMedicine.quantity}`);
+      return false; // Breaks the .each() loop
+    }
+  });
+  if (!found) {
+    insertMedicineInSortedOrder(newMedicine);
+  }
+};
 
 const connectSocket = (username) => {
   const socket = io(undefined, { autoConnect: false });
@@ -9,11 +46,8 @@ const connectSocket = (username) => {
   socket.connect();
 
   socket.on('newMedicine', (medicine) => {
-    console.log('enter');
-    const newMedElement = createMedicineItem(medicine.medicinename, medicine.quantity);
-    console.log(medicine.medicinename);
     if (medicine.senderName !== localStorage.getItem('username')) {
-      $('#market-list').prepend(newMedElement);
+      updateOrInsertMedicine(medicine);
     }
   });
 
@@ -32,7 +66,7 @@ $(window).on('load', () => {
     },
   }).then((res) => {
     let list = '';
-    console.log(res.data);
+    // console.log(res.data);
     res.data.data.forEach((medicine) => {
       list += createMedicineItem(medicine.medicinename, medicine.quantity);
     });
@@ -63,18 +97,55 @@ $('#submit-medicine-btn').on('click', () => {
       .then((response) => {
         console.log('Medicine donated successfully', response.data);
         $('#staticBackdrop').modal('hide');
-        // Optionally refresh or update the list of medicines on the page
       })
       .catch((error) => {
         console.error('Error donating medicine:', error);
-        // Handle the error, for example by showing a message to the user
       });
   } else {
-    // Handle the case where the name or quantity is not entered correctly
     console.error('Invalid medicine name or quantity');
-    // Optionally show an error message to the user
   }
 });
+
+// $('#submit-request-btn').on('click', () => {
+//   const medicineName = $('#medicineName').val().trim();
+//   console.log(medicineName);
+//   const quantity = parseInt($('#medicineQuantity').val(), 10);
+//   console.log(quantity);
+
+//   if (medicineName && quantity > 0) {
+//     axios.post('/requests', { // Make sure this endpoint is correct
+//       medicinename: medicineName,
+//       quantity,
+//     }, {
+//       headers: {
+//         Authorization: `Bearer ${localStorage.getItem('token')}`,
+//       },
+//     })
+//       .then((response) => {
+//         console.log('Request posted successfully', response.data);
+//         iziToast.success({ // Displaying success message to the user
+//           title: 'Success',
+//           message: 'Request posted successfully!',
+//         });
+//         $('#staticBackdrop3').modal('hide');
+//         $('#medicineName').val(''); // Clearing the input fields
+//         $('#medicineQuantity').val('');
+//       })
+//       .catch((error) => {
+//         console.error('Error posting request:', error);
+//         iziToast.error({ // Displaying error message to the user
+//           title: 'Error',
+//           message: 'Error posting request. Please try again.',
+//         });
+//       });
+//   } else {
+//     console.error('Invalid medicine name or quantity');
+//     iziToast.error({ // Displaying error message to the user for input validation
+//       title: 'Error',
+//       message: 'Invalid medicine name or quantity. Please correct and try again.',
+//     });
+//   }
+// });
 
 $(() => {
   $('[data-toggle="tooltip"]').tooltip();

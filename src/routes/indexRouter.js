@@ -60,6 +60,14 @@ router.get('/market', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'marketmedicine');
 });
 
+router.get('/request/', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'requestwall');
+});
+
+router.get('/makerequest', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'makerequest');
+});
+
 // router.get('/messages/public', (req, res) => {
 //   res.render('chatwall');
 // });

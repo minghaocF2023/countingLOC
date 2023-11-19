@@ -68,3 +68,42 @@ const createMedicineItem = (medicinename, quantity) => {
   return html;
 };
 window.createMedicineItem = createMedicineItem;
+
+const createRequestItem = (medicinename, quantity, username, status, timestamp) => {
+  const buttonsHtml = status === 'Waiting for Review'
+    ? `<div class="mt-3">
+     <button class="btn btn-success btn-approve">Approve</button>
+     <button class="btn btn-danger btn-reject" style="margin-left: 1em">Reject</button>
+   </div>`
+    : `<div class="mt-3">
+   </div>`;
+
+  const html = `
+    <div class="card message-card">
+      <div class="card-body">
+        <h5 class="card-title">${medicinename}-${username}</h5>
+        <p class="card-text">Quantity: ${quantity}</p>
+        <p class="card-text">Status: ${status}</p>
+        <span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>
+        ${buttonsHtml}
+      </div>
+    </div>
+  `;
+
+  return html;
+  // let html = '';
+  // html += '<div class="card message-card">';
+  // html += '<div class="card-body">';
+  // html += `<h5 class="card-title">${medicinename}-${username}</h5>`;
+  // html += `<p class="card-text">Quantity: ${quantity}</p>`;
+  // html += `<p class="card-text">Status: ${status}</p>`;
+  // html += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
+  // html += '<div class="mt-3">';
+  // html += '<button class="btn btn-success btn-approve">Approve</button>';
+  // html += '<button class="btn btn-danger btn-reject" style="margin-left: 1em">Reject</button>';
+  // html += '</div>';
+  // html += '</div>';
+  // html += '</div>';
+  // return html;
+};
+window.createRequestItem = createRequestItem;

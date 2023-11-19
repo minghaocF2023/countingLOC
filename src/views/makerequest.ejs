@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css">
+    <style>
+        .form-group {
+            margin-bottom: 1rem;
+        }
+    </style> 
+  </head>
+
+<body>
+  <%- include('partials/navbar') %>
+
+  <div class="mt-5 py-3 px-5">
+    <h1 class="text-center mt-2 mb-5 font-weight-normal">Make a Request</h1>
+    <form style="max-width: 400px; margin: auto;">
+        <div class="form-group">
+            <label for="medicineName">Enter Medicine Name:</label>
+            <input type="text" class="form-control" id="medicineName" placeholder="Medicine Name" name="medicineName" required>
+        </div>
+        <div class="form-group">
+            <label for="medicineQuantity">Enter Quantity:</label>
+            <input type="number" class="form-control" id="medicineQuantity" placeholder="Quantity" name="medicineQuantity" required>
+        </div>
+      <div class="d-grid gap-2">
+        <button type="button" id="submit-request-button" class="button-styled btn btn-lg btn-primary mt-5 text-white">Confirm</button>
+        <button type="button" class="btn btn-back" onclick="history.back()">Back</button>
+      </div>
+
+    </form>
+
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script type="module" src="js/createElement.js"></script>
+    <script type="module" src="js/logout.js"></script>
+    <script type="module" src="js/notification.js"></script>
+    <script type="module" src="js/status.js"></script>
+    <script type="module" src="js/announcement.js"></script>
+    <script type="module" src="js/search.js"></script>
+    <script type="module" src="js/medicine.js"></script>
+</body>
+
+</html>
