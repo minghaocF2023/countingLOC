@@ -19,7 +19,9 @@ const appointmentFactory = (connection) => {
     },
     patientUsername: {
       type: String,
-      required: false,
+      required() {
+        return this.patientUsername !== '';
+      },
       default: '',
     },
   });

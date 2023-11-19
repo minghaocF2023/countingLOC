@@ -33,19 +33,149 @@ function updateTitleDate(dateStr) {
 }
 
 function reapplySelectedDateHighlight() {
-  // Format the selected date to match FullCalendar's data-date format
   const formattedSelectedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
 
-  // Remove previous highlights
   $('.selected-date').removeClass('selected-date');
 
-  // Find the cell with the selected date and add the highlight class
   $(`[data-date="${formattedSelectedDate}"]`).addClass('selected-date');
 }
 
 function updateModalTitleWithSelectedDate() {
   const formattedDate = selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   document.getElementById('selectedDate').textContent = formattedDate;
+}
+
+function formatTime(time) {
+  const hour = parseInt(time, 10);
+  const ampm = hour < 12 ? 'am' : 'pm';
+  const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+  return `${formattedHour}${ampm}`;
+}
+
+function undoFormatTime(time) {
+  const formattedTime = time.replace('am', '').replace('pm', '');
+  const hour = parseInt(formattedTime, 10);
+  if (time.includes('am') || hour === 12) {
+    return hour;
+  }
+  return hour + 12;
+}
+
+function updateBookedList(appointments) {
+  const bookedList = document.getElementById('booked-list');
+  bookedList.innerHTML = '';
+  if (appointments.length === 0) {
+    const card = document.createElement('div');
+    card.className = 'card mb-3';
+    card.innerHTML = `
+          <div class="card-body">
+              <p class="card-text">No appointments booked</p>
+          </div>
+      `;
+    bookedList.appendChild(card);
+  }
+  appointments.sort((a, b) => a.startTime - b.startTime);
+  if (appointments.length > 0) {
+    appointments.forEach((appt) => {
+      const card = document.createElement('div');
+      card.className = 'card mb-3';
+      card.innerHTML = `
+          <div class="card-body">
+              <h5 class="card-title">Appointment with ${appt.patientUsername}</h5>
+              <p class="card-text">Time: ${formatTime(appt.startTime)}</p>
+          </div>
+      `;
+      bookedList.appendChild(card);
+    });
+  }
+}
+
+function updateVacantList(timeslots) {
+  const vacantList = document.getElementById('vacant-list');
+  vacantList.innerHTML = '';
+  if (timeslots.length === 0) {
+    const card = document.createElement('div');
+    card.className = 'card mb-3';
+    card.innerHTML = `
+          <div class="card-body">
+              <p class="card-text">No vacant time slots</p>
+          </div>
+      `;
+    vacantList.appendChild(card);
+  }
+  timeslots.sort((a, b) => a - b);
+  if (timeslots.length > 0) {
+    timeslots.forEach((time) => {
+      const card = document.createElement('div');
+      card.className = 'card mb-3';
+      card.innerHTML = `
+          <div class="card-body">
+              <p class="card-text">Time: ${formatTime(time)}</p>
+          </div>
+      `;
+      vacantList.appendChild(card);
+    });
+  }
+}
+
+async function fetchAppointmentsForDate(date) {
+  // Fetch booked appointments
+  axios.get(`/doctorAppointment/doctorappt?date=${date}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  }).then((response) => {
+    const bookedAppointments = [];
+    const vacantTimeslots = [];
+    const { appointments } = response.data;
+    if (appointments.length === 0) {
+      updateBookedList([]);
+      updateVacantList([]);
+      return;
+    }
+    appointments.forEach((appt) => {
+      if (appt.patientUsername === '') {
+        vacantTimeslots.push(appt.startTime);
+      } else {
+        bookedAppointments.push(appt);
+      }
+      updateBookedList(bookedAppointments);
+      updateVacantList(vacantTimeslots);
+    });
+  }).catch((error) => {
+    console.error(error);
+  });
+}
+
+function updateTimeSlotsModal(timeSlots) {
+  const container = $('#timeSlotsContainer');
+  container.empty();
+  timeSlots.forEach((time) => {
+    const timeSlotButton = document.createElement('button');
+    timeSlotButton.className = 'btn btn-outline-primary time-slot';
+    timeSlotButton.textContent = formatTime(time);
+    timeSlotButton.dataset.time = time;
+    container.append(timeSlotButton);
+
+    // Attach click event listener for selection
+    timeSlotButton.addEventListener('click', () => {
+      timeSlotButton.classList.toggle('selected');
+    });
+  });
+}
+
+async function fetchAndDisplayTimeSlots(date) {
+  try {
+    const response = await axios.get(`/doctorAppointment/doctortimeslot?date=${date}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    const timeSlots = response.data.timeslots;
+    updateTimeSlotsModal(timeSlots);
+  } catch (error) {
+    console.error('Error fetching time slots:', error);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -56,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
       start: new Date(),
     },
     datesSet(dateInfo) {
-      // toggleAddAvailabilityButton(dateInfo.start);
       reapplySelectedDateHighlight();
     },
     dateClick(info) {
@@ -68,6 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!clickedDate.hasClass('fc-today')) {
         clickedDate.addClass('selected-date');
       }
+      fetchAppointmentsForDate(info.dateStr);
+      $('#addAvailabilityButton').on('click', () => {
+        fetchAndDisplayTimeSlots(info.dateStr);
+        $('#addAvailabilityModal').modal('show');
+      });
     },
   });
 
@@ -76,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const today = new Date();
   const initialDateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   updateTitleDate(initialDateStr);
+  fetchAppointmentsForDate(initialDateStr);
 
   // Enable multiple selection for .time-slot elements
   const timeSlots = document.querySelectorAll('.time-slot');
@@ -85,22 +220,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  $('#submit-availability-btn').on('click', () => {
-    // Get the selected time slots
+  $('#submit-availability-btn').on('click', async () => {
     const selectedTimeSlots = [];
     $('.selected').each((index, element) => {
-      selectedTimeSlots.push(element.textContent);
+      selectedTimeSlots.push(undoFormatTime(element.textContent));
     });
-    console.log(selectedTimeSlots);
-    // clear the selected time slots
+
     $('.selected').removeClass('selected');
-    // #TODO: re-render the availability section to show the new availability (re GET)
+
+    const newAvailability = {
+      date: selectedDate.toISOString().split('T')[0],
+      startTimes: selectedTimeSlots,
+    };
+
+    const response = await fetch('/doctorAppointment/newavailability', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify(newAvailability),
+    });
+
+    if (response.ok) {
+      console.log('Availability added successfully');
+      // Refresh the booked and vacant lists
+      fetchAppointmentsForDate(selectedDate.toISOString().split('T')[0]);
+    } else {
+      console.error('Failed to add availability');
+    }
   });
 });
 
 $(window).on('load', () => {
   $("button[type='submit']").prop('disabled', false);
-  // hide id="search-navbar" in nav bar
   $('#search-navbar').hide();
   $('#search-icon').hide();
   $('#addAvailabilityButton').hide();

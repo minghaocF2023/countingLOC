@@ -29,10 +29,6 @@ const appointmentController = new AppointmentController(appointmentModel, userMo
  *           type: string
  *           description: Doctor's username
  *           example: 'doctorA'
- *         patientUsername:
- *           type: string
- *           description: Patient's username
- *           example: 'patientA'
  *     Appointment:
  *       type: object
  *       properties:
@@ -165,19 +161,13 @@ router.get('/', (req, res) => {
 
 /**
  * @swagger
- * /appointments/doctorappt:
+ * /doctorAppointment/doctorappt:
  *   get:
  *     tags:
  *       - Appointments
  *     summary: Get all appointments for a doctor on a date
  *     description: Get a list of all appointments for a doctor regardless of it's booked or not for a specific date
  *     parameters:
- *       - in: query
- *         name: doctorUsername
- *         schema:
- *           type: string
- *         required: true
- *         example: 'doctorA'
  *       - in: query
  *         name: date
  *         schema:
@@ -241,19 +231,13 @@ router.get('/doctorappt', (req, res) => {
 
 /**
  * @swagger
- * /appointments/doctortimeslot:
+ * /doctorAppointment/doctortimeslot:
  *   get:
  *     tags:
  *       - Appointments
  *     summary: Get all time slots that hasn't been selected by the doctor yet on a date
  *     description: Get a list of all time slots for the doctor on a specific date
  *     parameters:
- *       - in: query
- *         name: doctorUsername
- *         schema:
- *           type: string
- *         required: true
- *         example: 'doctorA'
  *       - in: query
  *         name: date
  *         schema:
@@ -313,12 +297,12 @@ router.get('/doctortimeslot', (req, res) => {
 
 /**
  * @swagger
- * /appointments/newavailability:
+ * /doctorAppointment/newavailability:
  *   post:
  *     tags:
  *       - Appointments
- *     summary: Doctor add new availability for a date
- *     description: Doctor add new availability for a date
+ *     summary: Doctor adds new availability for a date
+ *     description: Doctor adds new availability time slots for a specific date.
  *     requestBody:
  *       required: true
  *       content:
@@ -326,20 +310,18 @@ router.get('/doctortimeslot', (req, res) => {
  *           schema:
  *             type: object
  *             required:
- *               - doctorUsername
  *               - date
  *               - startTime
  *             properties:
- *               doctorUsername:
- *                 type: string
- *                 example: 'doctorA'
  *               date:
  *                 type: string
  *                 format: date
  *                 example: '2023-11-16'
- *               startTime:
- *                 type: number
- *                 example: 11
+ *               startTimes:
+ *                 type: array
+ *                 items:
+ *                   type: number
+ *                 example: [9, 11, 14, 15]
  *     responses:
  *       201:
  *         description: Availability added successfully
@@ -361,19 +343,13 @@ router.post('/newavailability', (req, res) => {
 
 /**
  * @swagger
- * /appointments/patientappt:
+ * /patientAppointment/patientappt:
  *   get:
  *     tags:
  *       - Appointments
  *     summary: Get all appointments for a patient on a date
  *     description: Get a list of all appointments for a patient for a specific date
  *     parameters:
- *       - in: query
- *         name: patientUsername
- *         schema:
- *           type: string
- *         required: true
- *         example: 'patientA'
  *       - in: query
  *         name: date
  *         schema:
@@ -436,7 +412,7 @@ router.get('/patientappt', (req, res) => {
 
 /**
  * @swagger
- * /appointments/getdoctorsavailability:
+ * /patientAppointment/getdoctorsavailability:
  *   get:
  *     tags:
  *       - Appointments
@@ -505,7 +481,7 @@ router.get('/getdoctorsavailability', (req, res) => {
 
 /**
  * @swagger
- * /appointments/newappointment:
+ * /patientAppointment/newappointment:
  *   post:
  *     tags:
  *       - Appointments
@@ -562,19 +538,13 @@ router.post('/newappointment', (req, res) => {
 
 /**
  * @swagger
- * /appointments/deleteappointment:
+ * /patientAppointment/deleteappointment:
  *   delete:
  *     tags:
  *       - Appointments
  *     summary: Patient delete an existing appointment
  *     description: Patient delete an existing appointment
  *     parameters:
- *       - in: query
- *         name: patientUsername
- *         schema:
- *           type: string
- *         required: true
- *         example: 'patientA'
  *       - in: query
  *         name: date
  *         schema:
@@ -639,7 +609,7 @@ router.delete('/deleteappointment', (req, res) => {
 
 /**
  * @swagger
- * /appointments/updateappointment:
+ * /patientAppointment/updateappointment:
  *   put:
  *     tags:
  *       - Appointments
@@ -652,7 +622,6 @@ router.delete('/deleteappointment', (req, res) => {
  *           schema:
  *             type: object
  *             required:
- *               - patientUsername
  *               - dateOld
  *               - dateNew
  *               - startTimeOld
@@ -660,9 +629,6 @@ router.delete('/deleteappointment', (req, res) => {
  *               - doctorUsernameOld
  *               - doctorUsernameNew
  *             properties:
- *               patientUsername:
- *                 type: string
- *                 example: 'patientA'
  *               dateOld:
  *                 type: string
  *                 format: date

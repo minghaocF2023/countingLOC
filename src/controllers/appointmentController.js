@@ -11,8 +11,8 @@ class appointmentController {
   }
 
   /**
-     * Get all appointments
-     */
+   * Get all appointments
+   */
   async getAllAppointments(req, res) {
     const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
@@ -26,26 +26,27 @@ class appointmentController {
   }
 
   /**
-     * Get a list of all appointments for a doctor regardless of it's booked or not for a specific date
-     */
+   * Get a list of all appointments for a doctor regardless of it's booked or not for a specific date
+   */
   async getDoctorAppointments(req, res) {
     const payload = authChecker.checkAuth(req, res);
+    // console.log(payload);
     if (payload === null) {
       return;
     }
     if (testChecker.isTest(res, payload)) {
       return;
     }
-    const { doctorUsername } = req.query;
+    const doctorUsername = payload.username;
     const { date } = req.query;
     const appointments = await this.appointmentModel.find({ doctorUsername, date });
-    console.log(appointments);
+    // console.log(appointments);
     res.status(200).json({ success: true, appointments });
   }
 
   /**
-     * Get a list of time slots that hasn't been selected by the doctor yet on a date
-     */
+   * Get a list of time slots that hasn't been selected by the doctor yet on a date
+   */
   async getDoctorTimeSlots(req, res) {
     const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
@@ -54,10 +55,10 @@ class appointmentController {
     if (testChecker.isTest(res, payload)) {
       return;
     }
-    const { doctorUsername } = req.query;
+    const doctorUsername = payload.username;
     const { date } = req.query;
     const appointments = await this.appointmentModel.find({ doctorUsername, date });
-    console.log(appointments);
+    // console.log(appointments);
     const selectedTimeSlots = [];
     appointments.forEach((appointment) => {
       selectedTimeSlots.push(appointment.startTime);
@@ -72,8 +73,8 @@ class appointmentController {
   }
 
   /**
-     * Doctor add new availability for a date given doctorUsername as string, date as string, startTime as number
-     */
+   * Doctor add new availability for a date given doctorUsername as string, date as string, startTime as number
+   */
   async addNewAvailability(req, res) {
     const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
@@ -83,25 +84,37 @@ class appointmentController {
       return;
     }
     try {
-      const { date, startTime, doctorUsername } = req.body;
-      const newAvailability = {
-        date,
-        startTime,
-        doctorUsername: doctorUsername || payload.username, // fallback to authenticated user if not provided
-        patientUsername: '', // No patient since this is a new availability
-      };
-      const availability = new this.appointmentModel(newAvailability);
-      await availability.save();
-      res.status(201).json({ success: true, data: availability });
+      const { date, startTimes } = req.body;
+      const doctorUsername = payload.username;
+
+      // Ensure startTimes is an array
+      // console.log(startTimes);
+      if (!Array.isArray(startTimes)) {
+        res.status(400).json({ success: false, message: 'startTimes must be an array' });
+        return;
+      }
+
+      // Create a new availability for each startTime provided
+      const availabilities = await Promise.all(startTimes.map(async (startTime) => {
+        const newAvailability = new this.appointmentModel({
+          date,
+          startTime,
+          doctorUsername,
+          patientUsername: '',
+        });
+        return newAvailability.save();
+      }));
+
+      res.status(201).json({ success: true, data: availabilities });
     } catch (error) {
       console.error(error);
-      res.status(400).json({ success: false, message: 'Invalid data provided' });
+      res.status(500).json({ success: false, message: 'Failed to create new availabilities' });
     }
   }
 
   /**
-     * Get a list of all appointments for a patient for a specific date
-     */
+   * Get a list of all appointments for a patient for a specific date
+   */
   async getPatientAppointments(req, res) {
     const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
@@ -110,16 +123,16 @@ class appointmentController {
     if (testChecker.isTest(res, payload)) {
       return;
     }
-    const { patientUsername } = req.query;
+    const patientUsername = payload.username;
     const { date } = req.query;
     const appointments = await this.appointmentModel.find({ patientUsername, date });
     res.status(200).json({ success: true, appointments });
   }
 
   /**
-     * Get a list of all doctors and their vacant availabilities on a specific date for that day, that means the patientUsername is empty
-     * It should return the doctor names as well as their available time slots
-     */
+   * Get a list of all doctors and their vacant availabilities on a specific date for that day, that means the patientUsername is empty
+   * It should return the doctor names as well as their available time slots
+   */
   async getDoctorsAvailability(req, res) {
     const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
@@ -148,8 +161,8 @@ class appointmentController {
   }
 
   /**
-     * Patient book an appointment given doctorUsername as string, date as string, startTime as number, and patientUsername as string
-     */
+   * Patient book an appointment given doctorUsername as string, date as string, startTime as number, and patientUsername as string
+   */
   async addNewAppointment(req, res) {
     const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
@@ -159,9 +172,11 @@ class appointmentController {
       return;
     }
     const {
-      date, startTime, doctorUsername, patientUsername,
+      date, startTime, doctorUsername,
     } = req.body;
 
+    const patientUsername = payload.username;
+    // console.log(patientUsername);
     try {
       const appointment = await this.appointmentModel.findOne({
         date,
@@ -178,15 +193,15 @@ class appointmentController {
       await appointment.save();
       res.status(200).json({ success: true, message: 'Appointment booked successfully.' });
     } catch (error) {
-      console.error('Error booking appointment:', error);
+      // console.error('Error booking appointment:', error);
       res.status(500).json({ success: false, message: 'Internal server error.' });
     }
   }
 
   /**
-     * Patient cancel an appointment given doctorUsername as string, date as string, startTime as number, and patientUsername as string
-     * However, this shouldn't delete the entire item, it should just set the patientUsername to empty string
-     */
+   * Patient cancel an appointment given doctorUsername as string, date as string, startTime as number, and patientUsername as string
+   * However, this shouldn't delete the entire item, it should just set the patientUsername to empty string
+   */
   async deleteAppointment(req, res) {
     const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
@@ -196,8 +211,10 @@ class appointmentController {
       return;
     }
     const {
-      date, startTime, doctorUsername, patientUsername,
+      date, startTime, doctorUsername,
     } = req.query;
+
+    const patientUsername = payload.username;
 
     try {
       const appointment = await this.appointmentModel.findOne({
@@ -217,15 +234,15 @@ class appointmentController {
 
       res.status(200).json({ success: true, message: 'Appointment canceled successfully.' });
     } catch (error) {
-      console.error('Error canceling appointment:', error);
+      // console.error('Error canceling appointment:', error);
       res.status(500).json({ success: false, message: 'Internal server error.' });
     }
   }
 
   /**
-     * Patient update an existing appointment given patientUsername as string, date_old and date_new as string,
-     * startTime_new and startTime_old as number, and doctorUsername_old and doctorUsername_new as string
-     */
+   * Patient update an existing appointment given patientUsername as string, date_old and date_new as string,
+   * startTime_new and startTime_old as number, and doctorUsername_old and doctorUsername_new as string
+   */
   async updateAppointment(req, res) {
     const payload = authChecker.checkAuth(req, res);
     if (payload === null) {
@@ -235,8 +252,10 @@ class appointmentController {
       return;
     }
     const {
-      dateOld, startTimeOld, doctorUsernameOld, patientUsername, dateNew, startTimeNew, doctorUsernameNew,
+      dateOld, startTimeOld, doctorUsernameOld, dateNew, startTimeNew, doctorUsernameNew,
     } = req.body;
+
+    const patientUsername = payload.username;
 
     try {
       const targetAppointment = await this.appointmentModel.findOne({
@@ -264,7 +283,7 @@ class appointmentController {
 
       res.status(200).json({ success: true, updatedAppointment: targetAppointment });
     } catch (error) {
-      console.error('Error updating appointment:', error);
+      // console.error('Error updating appointment:', error);
       res.status(500).json({ success: false, message: 'Internal server error.' });
     }
   }

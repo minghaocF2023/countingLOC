@@ -95,6 +95,8 @@ app.use('/admin/', adminRouter);
 app.use('/search/', searchRouter);
 app.use('/shelters/', shelterRouter);
 app.use('/appointments/', appointmentRouter);
+app.use('/patientAppointment/', appointmentRouter);
+app.use('/doctorAppointment/', appointmentRouter);
 app.use(
   '/docs',
   swaggerUi.serve,
