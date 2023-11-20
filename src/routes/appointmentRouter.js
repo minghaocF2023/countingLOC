@@ -4,10 +4,13 @@ import AppointmentController from '../controllers/appointmentController.js';
 import {
   appointmentModel,
   userModel,
+  testAppointmentModel,
+  testUserModel,
 } from '../models/models.js';
 
 const router = express.Router();
 const appointmentController = new AppointmentController(appointmentModel, userModel);
+const testAppointmentController = new AppointmentController(testAppointmentModel, testUserModel);
 
 /**
  * @swagger
@@ -152,8 +155,7 @@ const appointmentController = new AppointmentController(appointmentModel, userMo
  */
 router.get('/', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.getAllAppointments(req, res);
   } else {
     appointmentController.getAllAppointments(req, res);
   }
@@ -222,8 +224,7 @@ router.get('/', (req, res) => {
  */
 router.get('/doctorappt', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.getDoctorAppointments(req, res);
   } else {
     appointmentController.getDoctorAppointments(req, res);
   }
@@ -288,8 +289,7 @@ router.get('/doctorappt', (req, res) => {
  */
 router.get('/doctortimeslot', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.getDoctorTimeSlots(req, res);
   } else {
     appointmentController.getDoctorTimeSlots(req, res);
   }
@@ -334,8 +334,7 @@ router.get('/doctortimeslot', (req, res) => {
  */
 router.post('/newavailability', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.addNewAvailability(req, res);
   } else {
     appointmentController.addNewAvailability(req, res);
   }
@@ -403,8 +402,7 @@ router.post('/newavailability', (req, res) => {
  */
 router.get('/patientappt', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.getPatientAppointments(req, res);
   } else {
     appointmentController.getPatientAppointments(req, res);
   }
@@ -472,8 +470,7 @@ router.get('/patientappt', (req, res) => {
  */
 router.get('/getdoctorsavailability', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.getDoctorsAvailability(req, res);
   } else {
     appointmentController.getDoctorsAvailability(req, res);
   }
@@ -529,8 +526,7 @@ router.get('/getdoctorsavailability', (req, res) => {
  */
 router.post('/newappointment', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.addNewAppointment(req, res);
   } else {
     appointmentController.addNewAppointment(req, res);
   }
@@ -600,8 +596,7 @@ router.post('/newappointment', (req, res) => {
  */
 router.delete('/deleteappointment', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.deleteAppointment(req, res);
   } else {
     appointmentController.deleteAppointment(req, res);
   }
@@ -685,8 +680,7 @@ router.delete('/deleteappointment', (req, res) => {
  */
 router.put('/updateappointment', (req, res) => {
   if (req.query.istest === 'true') {
-    //   const testAppointmentController = new appointmentController(testUserModel);
-    //   testAppointmentController.getAllUsers(req, res);
+    testAppointmentController.updateAppointment(req, res);
   } else {
     appointmentController.updateAppointment(req, res);
   }
