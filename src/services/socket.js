@@ -11,13 +11,13 @@ class SocketServer {
 
   static handleConnection(socket, userToSocket) {
     const { username } = socket.handshake.auth;
-    console.log(`private a user connected ${socket.id}...`);
+    // console.log(`private a user connected ${socket.id}...`);
     // console.log('Handshake data:', socket.handshake);
     userToSocket.set(username, socket.id);
-    console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
+    // console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
 
     socket.on('disconnect', () => {
-      console.log(`a user disconnected ${socket.id}`);
+      // console.log(`a user disconnected ${socket.id}`);
       userToSocket.set(username, null);
     });
 

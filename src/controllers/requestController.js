@@ -99,6 +99,7 @@ class requestController {
     request.status = status;
     await request.save();
 
+    // eslint-disable-next-line max-len
     // const socketServer = req.app.get('socketServer'); // Assuming socketServer is attached to the app
     // socketServer.to(request.username).emit('requestStatusUpdated', {
     //   // eslint-disable-next-line no-underscore-dangle

@@ -48,7 +48,7 @@ class medicineController {
       return;
     }
     if (!req.body.medicinename || !req.body.quantity) {
-      console.log(req.body);
+      // console.log(req.body);
       res.status(400);
       res.json({ message: 'Invalid request' });
       return;
@@ -77,6 +77,12 @@ class medicineController {
     socketServer.publishEvent('newMedicine', medicine);
 
     res.status(201).json({ success: true, data: medicine });
+  }
+
+  async deleteMedicine(req, res) {
+    this.medicineModel.findOneAndDelete({ medicinename: req.body.medicinename }).then(() => {
+      res.status(200).json({ message: 'deleted' });
+    });
   }
 }
 

@@ -75,22 +75,17 @@
 
 import express from 'express';
 import MedicineController from '../controllers/medicineController.js';
-import RequestController from '../controllers/requestController.js';
 import {
   medicineModel,
   testMedicineModel,
   userModel,
   testUserModel,
-  requestModel,
-  testRequestModel,
 } from '../models/models.js';
 
 const router = express.Router();
 const medicineController = new MedicineController(medicineModel, userModel);
 const testMedicineController = new MedicineController(testMedicineModel, testUserModel);
-const requestController = new RequestController(requestModel, medicineModel, userModel);
 // eslint-disable-next-line max-len
-const testRequestController = new RequestController(testRequestModel, testMedicineModel, testUserModel);
 
 /**
  * @swagger
@@ -157,6 +152,14 @@ router.post('/medicines', (req, res) => {
     res.status(500).json({ message: 'speedtest' });
   } else {
     medicineController.donateNewMedicine(req, res);
+  }
+});
+
+router.delete('/medicines', (req, res) => {
+  if (req.query.istest === 'true') {
+    testMedicineController.deleteMedicine(req, res);
+  } else {
+    medicineController.deleteMedicine(req, res);
   }
 });
 

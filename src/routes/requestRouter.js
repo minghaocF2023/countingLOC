@@ -149,9 +149,8 @@ router.get('/', (req, res) => {
    *                       $ref: '#/components/schemas/Request'
    */
 router.post('/', (req, res) => {
-  // console.log('route ok2');
   if (req.query.istest === 'true') {
-    // TODO
+    testRequestController.postNewRequest(req, res);
   } else if (req.query.isspeedtest === 'true') {
     // TODO
     res.status(500).json({ message: 'speedtest' });
@@ -190,9 +189,13 @@ router.post('/', (req, res) => {
    *                         $ref: '#/components/schemas/Request'
    */
 router.get('/:username', (req, res) => {
-  // TODO
-  console.log('kk');
-  requestController.getUserRequests(req, res);
+  if (req.query.istest === 'true') {
+    testRequestController.getUserRequests(req, res);
+  } else if (req.query.isspeedtest === 'true') {
+    res.status(500).json({ message: 'speedtest' });
+  } else {
+    requestController.getUserRequests(req, res);
+  }
 });
 
 /**
@@ -253,7 +256,13 @@ router.get('/:username', (req, res) => {
    */
 
 router.put('/:requestId', (req, res) => {
-  requestController.updateRequest(req, res);
+  if (req.query.istest === 'true') {
+    testRequestController.updateRequest(req, res);
+  } else if (req.query.isspeedtest === 'true') {
+    res.status(500).json({ message: 'speedtest' });
+  } else {
+    requestController.updateRequest(req, res);
+  }
 });
 
 export default router;
