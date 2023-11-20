@@ -57,5 +57,5 @@ const createAnnouncementMessage = (senderName, content, timestamp) => {
 
 window.createAnnouncementMessage = createAnnouncementMessage;
 
-const createPill = (content) => `<span class="badge rounded-pill text-bg-primary text-white">${content}</span>`;
+const createPill = (content) => `<span class="badge me-2 rounded-pill text-bg-primary text-white">${content}</span>`;
 window.createPill = createPill;

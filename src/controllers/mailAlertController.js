@@ -27,7 +27,7 @@ class MailAlertController {
       }
       const mailOptions = {
         from: '"ESN Community" <esn.alert@gmail.com>',
-        to: 'leo000111444@gmail.com',
+        to: profile.doctorEmail,
         cc: 'esn.alert@gmail.com',
         subject: '[Emergency] Emergency Alert from ESN',
         html: data,

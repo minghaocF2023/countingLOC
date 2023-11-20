@@ -24,7 +24,7 @@
             <div  class="bg-body-secondary p-2 py-1 rounded-pill d-flex justify-content-between my-2">
                 <div style="width: max-content;" class=" p-1 d-flex justify-content-center align-items-center rounded-pill">
                     <div class="overflow-hidden" style="background-color:#fff; border-radius: 50%; height: 2rem; aspect-ratio: 1 / 1;">
-                        <img src="images/ambulance.png" style="height: 2rem; aspect-ratio: 1 / 1;"  alt="">
+                        <img id="navImg" src="images/ambulance.png" style="height: 2rem; aspect-ratio: 1 / 1;"  alt="">
                     </div>
                     <b class="ms-2" id="username">{username}</b>
                     <span class="dropdown">
@@ -77,6 +77,24 @@
         </div>
     </nav>
     <script>
+
+        const getProfileImg = async () => {
+        const profile = await axios.get('/profile', {
+            headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        return profile.data;
+        };
+
+        $(window).on('load',()=>{
+            getProfileImg().then((data)=>{
+                $("#navImg").attr('src', data.profile.profileImage);
+            })
+            
+        })
+
         $("#search-btn").on("click",()=>{
             if(!$("#search-navbar").hasClass("show")){
             $("#search-icon").addClass("d-none");

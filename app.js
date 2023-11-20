@@ -8,12 +8,14 @@ import swaggerUi from 'swagger-ui-express';
 import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import fileUpload from 'express-fileupload';
 import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
 import mailAlertRouter from './src/routes/mailAlertRouter.js';
 import adminRouter from './src/routes/adminRouter.js';
 import profileRouter from './src/routes/profileRouter.js';
+import fileRouter from './src/routes/fileRouter.js';
 import searchRouter from './src/routes/searchRouter.js';
 import SocketServer from './src/services/socket.js';
 import PrivateSocketServer from './src/services/privateSocket.js';
@@ -32,7 +34,7 @@ const io = new Server(server);
 const socketServer = new SocketServer(io);
 app.set('socketServer', socketServer);
 app.set('privateSocketServer', PrivateSocketServer);
-
+app.use(fileUpload());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/node_modules', express.static(`${__dirname}/node_modules/`));
@@ -97,6 +99,7 @@ app.use('/mail/', mailAlertRouter);
 app.use('/profile/', profileRouter, () => {
   console.error('auth error or under test');
 });
+app.use('/files/', fileRouter);
 app.use(
   '/docs',
   swaggerUi.serve,

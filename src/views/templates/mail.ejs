@@ -27,8 +27,18 @@
 <p>Birthdate: <%= profile.birthdate %></p>
 <p>Phone: <%= profile.phone %></p>
 <p>Email: <%= profile.email %></p>
-<p>Drug Allergy: ibuprofen</p>
-<p>Health Condition: HIV, Lung cancer</p>
+<p>Drug Allergy:</p>
+<ul>
+  <% for (let i = 0; i < profile.drugAllergy.length; i++) { %>
+    <li><%= profile.drugAllergy[i] %></li>
+  <% } %>
+</ul>
+<p>Health Condition:</p>
+<ul>
+  <% for (let i = 0; i < profile.healthCondition.length; i++) { %>
+    <li><%=profile.healthCondition[i] %></li>
+  <% } %>
+</ul>
 </div>
 
 <p>The Best,</p>

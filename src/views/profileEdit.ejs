@@ -127,11 +127,13 @@
             </div>
             <div class="col-6">
                 <label for="image">Profile Image
-                    <button type="button"  class="btn btn-primary text-white">Upload</button>
+                    <button type="button" id="uploadImg"  class="btn btn-primary text-white">Upload</button>
+                    <input id="profileImg" class="d-none" type="file" name="image">
                 </label>
                 <div style="background-color:#eee; border-radius: 10px; width: 100%; aspect-ratio: 1 / 1;">
-                    <img src="images/ambulance.png" style="width: 100%; aspect-ratio: 1 / 1;"  alt="">
+                    <img id="imageArea" src="images/ambulance.png" style="width: 100%; aspect-ratio: 1 / 1;"  alt="">
                 </div>
+                <p class="d-none" id="imgName"></p>
                 
             </div>
         

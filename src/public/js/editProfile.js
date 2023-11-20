@@ -9,7 +9,9 @@ const postNewProfile = async () => {
   const doctorID = $('#emergency').children(':selected').attr('id');
   const email = $('#mail').val();
   const docMail = $('#docEmail').val();
-  const profileImage = 'https://cdn.custom-cursor.com/cursors/pack2195.png';
+  const imgName = $('#imgName').text();
+
+  const profileImage = imgName === '' ? 'images/ambulance.png' : `upload/${imgName}`;
   const healthCondition = [];
   const drugAllergy = [];
 
@@ -72,6 +74,11 @@ const setUserProfile = async () => {
     $('#birthdate').val(profile.birthdate.split('T')[0]);
     $('#phone').val(profile.phone);
     $('#mail').val(profile.email);
+    // console.log(profile.profileImage.split('/').pop());
+    const img = profile.profileImage;
+    const profileName = profile.profileImage.split('/').pop();
+    $('#imgName').text(profileName);
+    $('#imageArea').attr('src', img);
     $('#docEmail').val(profile.doctorEmail);
     if (profile.doctorID) {
       $('#default').removeAttr('selected');
@@ -158,4 +165,31 @@ $(window).on('load', async () => {
 $('#emergency').on('change', () => {
   const currentDocEmail = $('#emergency').val();
   $('#docEmail').val(currentDocEmail);
+});
+const uploadImage = async () => {
+  const file = $('#profileImg').prop('files')[0];
+  const fileName = `${localStorage.getItem('username')}_photo`;
+  const formData = new FormData();
+  formData.append('image', file, fileName);
+  axios.post('/files/upload', formData, {
+    headers: {
+      'content-type': 'multipart/form-data', // do not forget this
+    },
+  }).then(() => {
+    showSuccess('Success', 'Image Uploaded');
+    $('#imgName').text(fileName);
+  });
+};
+$('#uploadImg').on('click', async () => {
+  $('#profileImg').trigger('click');
+});
+
+$('#profileImg').on('change', async () => {
+  const file = $('#profileImg').prop('files') ? $('#profileImg').prop('files')[0] : null;
+
+  if (file) {
+    const url = URL.createObjectURL(file);
+    $('#imageArea').attr('src', url);
+    await uploadImage();
+  }
 });

@@ -15,6 +15,8 @@ const setProfileData = (data) => {
   $('#birthdate').text(data.birthdate.split('T')[0]);
   $('#phone').text(data.phone);
   $('#mail').text(data.email);
+  console.log(data.profileImage);
+  $('#imgArea').attr('src', data.profileImage);
   $('#docMail').text(data.doctorEmail);
 
   data.drugAllergy.forEach((e) => {
