@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable func-names */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
@@ -105,47 +106,6 @@ $('#submit-medicine-btn').on('click', () => {
     console.error('Invalid medicine name or quantity');
   }
 });
-
-// $('#submit-request-btn').on('click', () => {
-//   const medicineName = $('#medicineName').val().trim();
-//   console.log(medicineName);
-//   const quantity = parseInt($('#medicineQuantity').val(), 10);
-//   console.log(quantity);
-
-//   if (medicineName && quantity > 0) {
-//     axios.post('/requests', { // Make sure this endpoint is correct
-//       medicinename: medicineName,
-//       quantity,
-//     }, {
-//       headers: {
-//         Authorization: `Bearer ${localStorage.getItem('token')}`,
-//       },
-//     })
-//       .then((response) => {
-//         console.log('Request posted successfully', response.data);
-//         iziToast.success({ // Displaying success message to the user
-//           title: 'Success',
-//           message: 'Request posted successfully!',
-//         });
-//         $('#staticBackdrop3').modal('hide');
-//         $('#medicineName').val(''); // Clearing the input fields
-//         $('#medicineQuantity').val('');
-//       })
-//       .catch((error) => {
-//         console.error('Error posting request:', error);
-//         iziToast.error({ // Displaying error message to the user
-//           title: 'Error',
-//           message: 'Error posting request. Please try again.',
-//         });
-//       });
-//   } else {
-//     console.error('Invalid medicine name or quantity');
-//     iziToast.error({ // Displaying error message to the user for input validation
-//       title: 'Error',
-//       message: 'Invalid medicine name or quantity. Please correct and try again.',
-//     });
-//   }
-// });
 
 $(() => {
   $('[data-toggle="tooltip"]').tooltip();

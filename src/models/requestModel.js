@@ -84,6 +84,11 @@ const RequestFactory = (connection) => {
       return request;
     }
 
+    getRequestId() {
+      // eslint-disable-next-line no-underscore-dangle
+      return this._id;
+    }
+
     // TODO: all getters
     getMedicineName() {
       // eslint-disable-next-line no-underscore-dangle

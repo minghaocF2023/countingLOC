@@ -167,6 +167,13 @@ router.post('/', (req, res) => {
    *     tags: [Requests]
    *     summary: Get all requests from a user
    *     description: Retrieve a list of request sent by a sepcific user
+   *     parameters:
+   *       - in: path
+   *         name: username
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The username of the user to retrieve requests for.
    *     responses:
    *       200:
    *         description: Success
@@ -182,8 +189,10 @@ router.post('/', (req, res) => {
    *                       items:
    *                         $ref: '#/components/schemas/Request'
    */
-router.post('/requests/:username', (req, res) => {
+router.get('/:username', (req, res) => {
   // TODO
+  console.log('kk');
+  requestController.getUserRequests(req, res);
 });
 
 /**
@@ -243,7 +252,7 @@ router.post('/requests/:username', (req, res) => {
    *               message: Request not found.
    */
 
-router.put('/requests/:requestId', (req, res) => {
+router.put('/:requestId', (req, res) => {
   requestController.updateRequest(req, res);
 });
 

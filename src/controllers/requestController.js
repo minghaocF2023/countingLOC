@@ -87,79 +87,42 @@ class requestController {
     }
 
     if (status === 'Approved') {
-      // Additional logic for approval
-      // E.g., Deducting the quantity of medicine from inventory
       const medicine = await this.medicineModel.findOne({ medicinename: request.medicinename });
       if (!medicine || medicine.quantity < request.quantity) {
         return res.status(400).json({ message: 'Insufficient medicine stock' });
       }
       medicine.quantity -= request.quantity;
       await medicine.save();
-
-      // Optionally, send a notification about approval
-      // ...
-    } else if (status === 'Rejected') {
-      // TODO
-      // Additional logic for rejection
-      // E.g., Sending a notification about rejection, logging the reason, etc.
-      // ...
-    }
+    } else if (status === 'Rejected') { /* empty */ }
 
     // Update the request status
     request.status = status;
     await request.save();
 
+    // const socketServer = req.app.get('socketServer'); // Assuming socketServer is attached to the app
+    // socketServer.to(request.username).emit('requestStatusUpdated', {
+    //   // eslint-disable-next-line no-underscore-dangle
+    //   requestId: request._id.toString(),
+    //   status,
+    // });
+
     return res.status(200).json({ message: `Request ${status.toLowerCase()} successfully`, request });
   }
 
-  //   // approve one request and update status to "Approved"
-  //   async approveRequest(req, res) {
-  //     console.log(req.params);
-  //     const { requestId } = req.params;
-  //     const request = await this.requestModel.findById(requestId);
-
-  //     if (!request) {
-  //       return res.status(404).json({ message: 'Request not found' });
-  //     }
-
-  //     console.log(request.medicinename);
-  //     const medicine = await this.medicineModel.getOne({ medicinename: request.medicinename });
-  //     console.log(medicine);
-
-  //     if (!medicine || medicine.quantity < request.quantity) {
-  //       return res.status(400).json({ message: 'Insufficient medicine stock' });
-  //     }
-
-  //     // Deduct the quantity from the medicine stock
-  //     medicine.quantity -= request.quantity;
-  //     await medicine.save();
-  //     // Update the request status
-  //     request.status = 'Approved';
-  //     await request.save();
-
-  //     // Optionally, notify the requester (Citizen A) via some mechanism
-  //     // ...
-
-  //     return res.status(200).json({ message: 'Request approved successfully', request });
-  //   }
-
-  //   // reject one request
-  //   async rejectRequest(req, res) {
-  //     const { requestId } = req.params;
-  //     const request = await this.requestModel.findById(requestId);
-
-  //     if (!request) {
-  //       return res.status(404).json({ message: 'Request not found' });
-  //     }
-
-  //     request.status = 'Rejected';
-  //     await request.save();
-
-  //     // Optionally, notify the requester (Citizen A) via some mechanism
-  //     // ...
-
-//     return res.status(200).json({ message: 'Request rejected successfully', request });
-//   }
+  // get requests by username
+  async getUserRequests(req, res) {
+    const payload = authChecker.checkAuth(req, res);
+    if (payload === null) {
+      return;
+    }
+    if (testChecker.isTest(res, payload)) {
+      return;
+    }
+    // sort medicines by medicine name
+    const { username } = req.params;
+    const requests = await this.requestModel.find({ username }).sort({ timeStamp: -1 });
+    res.status(200).json({ success: true, data: requests });
+  }
 }
 
 export default requestController;

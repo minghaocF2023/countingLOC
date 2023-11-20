@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Wall</title>
+    <title>Requests</title>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -74,16 +74,29 @@
         
         <div id="chat-container" class="messages search-margin" style="margin-bottom: 115px;">
             <div class="d-flex align-items-end mb-3">
-                <h3 class="flex-grow-1">Announcement</h3>
-                <button class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-plus-circle-fill me-2 text-white"></i>New</button>
+                <h3 class="flex-grow-1">My Request List</h3>
+                <a id="make-request" href="/request" class="btn btn-primary text-white" style="height: 100%">All Requests</a>
             </div>
-            <h5>newest to oldest</h5>
+
             <!-- Message Cards -->
-            <div id="announce-list" style="overflow-y: auto;">
+            <div id="myrequest-list" style="overflow-y: auto;">
+            </div>
+        </div>
+
+            <!-- Enter Message Area -->
+    <div class="fixed-bottom bg-white p-3" style="box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); margin-top: 20px">
+        <div class="container">
+            <!-- <div class="row"> -->
+            <div class="d-flex justify-content-center">
+                <div class="input-group-append">
+                    <a id="make-request" href="/makerequest" class="btn btn-primary text-white" style="height: 100%">Make a Request</a>
+                    <!-- <button id="make-request"  style="height: 100%" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#requestMedicineModal">Make a Request</button> -->
+                </div>
             </div>
         </div>
     </div>
-    <%- include('partials/searchModal') %>
+
+    </div>
     <script type="module" src="js/createElement.js"></script>
     <script type="module" src="js/logout.js"></script>
     <script type="module" src="js/notification.js"></script>
@@ -92,6 +105,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/medicine.js"></script>
     <script type="module" src="js/request.js"></script>
+    <script type="module" src="js/myrequest.js"></script>
     
 </body>
 

@@ -68,6 +68,10 @@ router.get('/makerequest', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'makerequest');
 });
 
+router.get('/myrequest', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'myrequest');
+});
+
 // router.get('/messages/public', (req, res) => {
 //   res.render('chatwall');
 // });

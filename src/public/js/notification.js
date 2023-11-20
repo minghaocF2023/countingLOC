@@ -34,6 +34,20 @@ const notifyAnnouncement = () => {
   });
 };
 
+const notifyRequest = () => {
+  iziToast.info({
+    title: 'New request',
+    message: 'Click to view ->',
+    position: 'topRight',
+    timeout: 5000,
+    buttons: [
+      ['<button>View</button>', () => {
+        window.location = '/request';
+      }],
+    ],
+  });
+};
+
 const alertMsgDuringOffline = (user) => {
   showInfo(
     'New message',
@@ -61,6 +75,7 @@ const hasUnreadMsg = async (user) => axios.get(
 window.notify = notify;
 window.getChattedUsers = getChattedUsers;
 window.notifyAnnouncement = notifyAnnouncement;
+window.notifyRequest = notifyRequest;
 
 (await getChattedUsers()).forEach(async (user) => {
   if (await hasUnreadMsg(user)) {
