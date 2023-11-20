@@ -154,10 +154,11 @@ import {
   testChatroomModel,
   privateMessageModel,
   testPrivateMessageModel,
+  ProfileModel,
 } from '../models/models.js';
 
 const router = express.Router();
-const userController = new UserController(userModel);
+const userController = new UserController(userModel, new ProfileModel());
 const loginController = new LoginController(userModel);
 const statusController = new StatusController(userModel);
 const privateChatController = new PrivateChatController(
@@ -209,6 +210,41 @@ router.get('/', (req, res) => {
   } else {
     userController.getAllUsers(req, res);
   }
+});
+
+/**
+ * @swagger
+ * /users/doctors:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get all doctors
+ *     description: Get a list of doctors
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+ *                   properties:
+ *                     users:
+ *                       $ref: '#/components/schemas/UserList'
+ *                       description: List of registered usernames
+ *                     banned_users:
+ *                       $ref: '#/components/schemas/UsernameList'
+ *                       description: List of banned usernames
+ *             example:
+ *               message: OK
+ *               users: [
+ *                 {username: testUser1, isOnline: true},
+ *                 {username: testUser2, isOnline: false}
+ *               ]
+ *               banned_users: [bannedUser1, bannedUser2]
+ */
+router.get('/doctors', (req, res) => {
+  userController.getDoctorUsers(req, res);
 });
 
 /**

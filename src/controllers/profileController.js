@@ -14,6 +14,10 @@ class ProfileController {
   async getProfile(req, res) {
     const username = authChecker.getAuthUsername(req, res);
     const { profileId } = await this.userModel.getUserProfileId(username);
+    if (!profileId) {
+      res.status(404).json({ message: 'Profile not found.' });
+      return;
+    }
     const profile = await this.profileModel.getOne(profileId);
     res.status(200).json({ profile });
   }

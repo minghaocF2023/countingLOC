@@ -1,10 +1,12 @@
+/* eslint-disable no-underscore-dangle */
 import crypto from 'crypto';
 import JWT from '../utils/jwt.js';
 import { isValidUsername, isValidPassword, isBannedUsername } from '../public/js/validation.js';
 
 class UserController {
-  constructor(userModel) {
+  constructor(userModel, profileModel) {
     this.userModel = userModel;
+    this.profileModel = profileModel;
   }
 
   async getAllUsers(req, res) {
@@ -19,6 +21,25 @@ class UserController {
       console.error(e);
       res.status(500);
       res.json({ message: 'Server error' });
+    });
+  }
+
+  async getDoctorUsers(req, res) {
+    const result = [];
+    const taskList = [];
+    this.userModel.getDoctors().then((users) => {
+      users.forEach((user) => {
+        const task = this.profileModel.getOne({ _id: user.profileId }, 'email').then((response) => {
+          result.push({ _id: user._id, username: user.username, email: response.email });
+        });
+        taskList.push(task);
+      });
+      Promise.all(taskList).then(() => {
+        res.status(200).json({ doctorList: result });
+      });
+    }).catch((err) => {
+      console.error(err);
+      res.status(500).json({ message: 'Server error' });
     });
   }
 

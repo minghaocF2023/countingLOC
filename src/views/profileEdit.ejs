@@ -93,7 +93,7 @@
 <!-- Individual User -->
 <div id="container"  class="container search-margin">
    
-    <form class="needs-validation" novalidate action="">
+    <form id="profile" class="needs-validation" novalidate>
         <div class="row g-2 ">
             <div class="col-12 d-flex justify-content-center">
                 <h3>Edit Profile</h3>
@@ -114,11 +114,11 @@
 
                
                 <label for="gender">Pronoun</label>
-                <select class="form-select" id="inputGroupSelect01">
+                <select class="form-select" id="pronoun">
                     <option selected>Choose...</option>
-                    <option value="he">He/Him</option>
-                    <option value="she">She/Her</option>
-                    <option value="they">They/Them</option>
+                    <option value="He/His">He/His</option>
+                    <option value="She/Her">She/Her</option>
+                    <option value="They/Their">They/Their</option>
                 </select>
                 <div class="valid-feedback">
                     Looks good!
@@ -162,11 +162,9 @@
             <div class="col-6">
                 <label for="emergency">Emergency Contact</label>
                 <select class="form-select" id="emergency" required>
-                    <option selected>Choose...</option>
-                    <option value="Leo">Dr. Leo</option>
-                    <option value="Laura">Dr. Laura</option>
-                    <option value="Yuke">Dr. Yuke</option>
-                    <option value="other">Other</option>
+                    <option id="default" value="default" selected>Choose...</option>
+
+                    
                 </select>
                 <div class="valid-feedback">
                     Looks good!
@@ -182,33 +180,41 @@
             <hr>
             <div class="col-12">
                 <label for="allergy">Drug Allergy</label>
-                <input type="text" class="form-control" id="allergy" placeholder="Allergy" required>
+                <div class="d-flex">
+                    <input type="text" class="form-control me-2" id="allergy" placeholder="Allergy" required>
+                <button id="allergyAdd" class="btn btn-primary text-white">Add</button>
+                </div>
+                
                 <div class="valid-feedback">
                     Looks good!
                 </div>
             </div>
             <div class="col-12">
-                <div class="block" style="height: 5rem; background-color: #eee;">
+                <div class="block p-2" id="allergyArea" style="height: 5rem; background-color: #eee;">
                 </div>
             </div>
 
             <div class="col-12">
                 <label for="health">Health Condition</label>
-                <input type="text" class="form-control" id="health" placeholder="Health Condition" required>
+                <div class="d-flex">
+                    <input type="text" class="form-control me-2" id="health" placeholder="Health Condition" required>
+                    <button id="healthBtn" class="btn btn-primary text-white">Add</button>
+                </div>
+                
                 <div class="valid-feedback">
                     Looks good!
                 </div>
             </div>
             <div class="col-12">
-                <div class="block" style="height: 5rem; background-color: #eee;">
+                <div class="block p-2" id="healthArea" style="height: 5rem; background-color: #eee;">
                 </div>
             </div>
 
   
  
-            <button type="button" class="my-3 btn btn-outline-danger">Delete Profile</button>
-            <button type="button"  class="btn btn-primary text-white">Update</button>
-            <button type="button"  class="btn btn-outline-secondary">Back</button>
+            <button id="delete" type="button" class="my-3 btn btn-outline-danger">Delete Profile</button>
+            <button id="update" type="button"  class="btn btn-primary text-white">Update</button>
+            <button id="back" type="button"  class="btn btn-outline-secondary">Back</button>
 
 
 
@@ -229,9 +235,10 @@
 <script type="module" src="js/logout.js"></script>
 <script type="module" src="js/search.js"></script>
 <script type="module" src="/js/pwa.js"></script>
+<script type="module" src="/js/editProfile.js"></script>
 <script>
     $("#emergency").on('change', ()=>{
-        if($("#emergency").val() === 'other'){
+        if($("#emergency").val() === ''){
         $("#docEmail").removeAttr("disabled");
     }else{
         $("#docEmail").attr('disabled', 'disabled');

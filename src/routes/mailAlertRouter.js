@@ -63,8 +63,11 @@
  *           $ref: '#/components/schemas/Profile'
  */
 import express from 'express';
-import mailAlertController from '../controllers/mailAlertController.js';
+import MailAlertController from '../controllers/mailAlertController.js';
+import { ProfileModel, userModel } from '../models/models.js';
 
+// eslint-disable-next-line new-cap
+const mailAlertController = new MailAlertController(new userModel(), new ProfileModel());
 /**
  * @swagger
  * /mail:

@@ -14,7 +14,7 @@
   style="margin: 0 auto; max-width: 720px; padding: 30px 0; font-family: Arial"
 >
   <h3>Hello, <%= receiver %></h3>
-  <p>Leo bot had set his status to emergency! Here is his information:</p>
+  <p><%= profile.firstName %> had set status to emergency! Here is <%= profile.firstName %>'s information:</p>
   <div
   style="
     background: #eee;
@@ -22,9 +22,11 @@
     font-family: Arial;
   "
 >
-<p>First Name: Lee</p>
-<p>Last Name: Bot</p>
-<p>Birthdate: 01/01/2023</p>
+<p>First Name: <%= profile.firstName %></p>
+<p>Last Name: <%= profile.lastName %></p>
+<p>Birthdate: <%= profile.birthdate %></p>
+<p>Phone: <%= profile.phone %></p>
+<p>Email: <%= profile.email %></p>
 <p>Drug Allergy: ibuprofen</p>
 <p>Health Condition: HIV, Lung cancer</p>
 </div>

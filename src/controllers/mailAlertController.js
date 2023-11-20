@@ -1,34 +1,35 @@
-import nodeMailer from 'nodemailer';
-import smtpTransport from 'nodemailer-smtp-transport';
-import 'dotenv/config';
+/* eslint-disable class-methods-use-this */
 import ejs from 'ejs';
+import transporter from '../utils/mailer.js';
+import authChecker from '../utils/authChecker.js';
 
-const mailAlertController = {
-  sendMailAlert: (req, res) => {
-    const transporter = nodeMailer.createTransport(smtpTransport({
-      service: 'Gmail',
-      host: 'smtp.gmail.com',
-      secureConnection: false, // TLS encryption
-      auth: {
-        user: process.env.EMAIL_ACCOUNT,
-        pass: process.env.EMAIL_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    }));
+class MailAlertController {
+  constructor(userModel, profileModel) {
+    this.userModel = userModel;
+    this.profileModel = profileModel;
+  }
+
+  async sendMailAlert(req, res) {
+    const username = authChecker.getAuthUsername(req, res);
+    const { profileId } = await this.userModel.getUserProfileId(username);
+
+    if (!profileId) {
+      res.status(404).json({ message: 'profile not found' });
+      return;
+    }
+    const profile = await this.profileModel.getOne(profileId);
 
     const template = `${req.app.get('views')}/templates/mail.ejs`;
-    ejs.renderFile(template, { receiver: 'Dr. Leo' }, (err, data) => {
+    ejs.renderFile(template, { receiver: `${profile.firstName}'s Emergency Contact`, profile }, (err, data) => {
       if (err) {
         console.error(err);
         return;
       }
       const mailOptions = {
         from: '"ESN Community" <esn.alert@gmail.com>',
-        to: req.body.email,
+        to: 'leo000111444@gmail.com',
         cc: 'esn.alert@gmail.com',
-        subject: '[TEST] This is a testing email for ESN',
+        subject: '[Emergency] Emergency Alert from ESN',
         html: data,
         attachments: [
           {
@@ -53,7 +54,7 @@ const mailAlertController = {
         res.status(200).json({ message: 'OK' });
       });
     });
-  },
-};
+  }
+}
 
-export default mailAlertController;
+export default MailAlertController;

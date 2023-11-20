@@ -12,6 +12,15 @@ const showInfo = (errorTitle, errorMessage, link) => {
   });
 };
 
+const showWarning = (errorTitle, errorMessage) => {
+  iziToast.warning({
+    title: errorTitle,
+    message: errorMessage,
+    color: 'red',
+    position: 'topRight',
+  });
+};
+
 const notify = (msg) => {
   const { senderName } = msg.content;
   showInfo(
@@ -61,7 +70,7 @@ const hasUnreadMsg = async (user) => axios.get(
 window.notify = notify;
 window.getChattedUsers = getChattedUsers;
 window.notifyAnnouncement = notifyAnnouncement;
-
+window.showWarning = showWarning;
 (await getChattedUsers()).forEach(async (user) => {
   if (await hasUnreadMsg(user)) {
     alertMsgDuringOffline(user);
