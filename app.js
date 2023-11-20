@@ -17,6 +17,7 @@ import appointmentRouter from './src/routes/appointmentRouter.js';
 import marketRouter from './src/routes/marketRouter.js';
 import requestRouter from './src/routes/requestRouter.js';
 import SocketServer from './src/services/socket.js';
+import emergencyEventRouter from './src/routes/emergencyEventRouter.js';
 import PrivateSocketServer from './src/services/privateSocket.js';
 import shelterRouter from './src/routes/shelterRouter.js';
 
@@ -102,6 +103,7 @@ app.use('/doctorAppointment/', appointmentRouter);
 // app.use('/medicines/', marketRouter);
 app.use('/market/', marketRouter);
 app.use('/requests/', requestRouter);
+app.use('/emergency/events/', emergencyEventRouter);
 app.use(
   '/docs',
   swaggerUi.serve,
