@@ -5,6 +5,8 @@
 /* eslint-disable max-len */
 /* eslint-disable no-undef */
 
+let availableMedicine = [];
+
 const insertMedicineInSortedOrder = (newMedicine) => {
   const newMedElement = createMedicineItem(newMedicine.medicinename, newMedicine.quantity);
   $('#market-list').append(newMedElement);
@@ -74,6 +76,9 @@ $(window).on('load', () => {
 
     list = list.split('</div>').join('</div>');
     $('#market-list').html(list);
+    availableMedicine = res.data.data.map((item) => item.medicinename);
+    console.log(availableMedicine);
+    // console.log(res.data.data[0].medicinename);
   }).catch((err) => {
     if (err.response && err.response.data && err.response.data.message === 'User not logged in') {
       window.location = '/join';
@@ -85,6 +90,13 @@ $(window).on('load', () => {
 $('#submit-medicine-btn').on('click', () => {
   const medicineName = $('#medicineName').val().trim();
   const quantity = parseInt($('#medicineQuantity').val(), 10);
+
+  // // eslint-disable-next-line no-restricted-globals
+  // if (!medicineName || isNaN(quantity) || quantity <= 0) {
+  //   console.error('Invalid medicine name or quantity');
+  //   alert('Invalid medicine name or quantity.');
+  //   return; // Prevent further execution
+  // }
 
   if (medicineName && quantity > 0) {
     axios.post('/market/medicines', {
@@ -110,3 +122,6 @@ $('#submit-medicine-btn').on('click', () => {
 $(() => {
   $('[data-toggle="tooltip"]').tooltip();
 });
+
+// eslint-disable-next-line import/prefer-default-export
+export { availableMedicine };

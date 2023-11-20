@@ -24,32 +24,30 @@ const connectSocket = (username) => {
 };
 
 $(window).on('load', () => {
-  // Fetch and display user-specific requests
-  const myUsername = localStorage.getItem('username'); // Retrieve the username from localStorage
+  const myUsername = localStorage.getItem('username');
   if (myUsername) {
-    axios.get(`/requests/${myUsername}`, { // Use template literal to insert the username into the URL
+    axios.get(`/requests/${myUsername}`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you're using token-based authentication
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     }).then((res) => {
       console.log(res.data);
       let list = '';
       res.data.data.forEach((element) => {
-        // Ensure createRequestItem is a function that returns an HTML string for each request
         // eslint-disable-next-line no-underscore-dangle
         list += createMyRequestItem(element._id, element.medicinename, element.quantity, element.username, element.status, element.timestamp);
       });
-      // Add the list to the 'myrequest-list' element in reverse order
+
       list = list.split('</div>').reverse().join('</div>');
-      $('#myrequest-list').html(list); // Make sure 'myrequest-list' is the correct ID of your container element
+      $('#myrequest-list').html(list);
     }).catch((err) => {
       if (err.response && err.response.data && err.response.data.message === 'User not logged in') {
-        window.location = '/join'; // Redirect to login if not logged in
+        window.location = '/join';
       }
     });
   }
 
-  connectSocket(myUsername); // Establish WebSocket connection
+  connectSocket(myUsername);
 });
 
 $(() => {

@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable max-len */
 /* eslint-disable no-undef */
+import { availableMedicine } from './medicine.js';
 
 const connectSocket = (username) => {
   const socket = io(undefined, { autoConnect: false });
@@ -39,17 +40,18 @@ $(window).on('load', () => {
     // reverse the list
     list = list.split('</div>').reverse().join('</div>');
     $('#request-list').html(list);
+    console.log(availableMedicine);
   }).catch((err) => {
     if (err.response && err.response.data && err.response.data.message === 'User not logged in') {
       window.location = '/join';
     }
   });
-//   // Fetch and display user-specific requests
-//   const myUsername = localStorage.getItem('username');
-//   if (myUsername) {
-//     // eslint-disable-next-line no-use-before-define
-//     fetchUserRequests(myUsername);
-//   }
+  //   // Fetch and display user-specific requests
+  //   const myUsername = localStorage.getItem('username');
+  //   if (myUsername) {
+  //     // eslint-disable-next-line no-use-before-define
+  //     fetchUserRequests(myUsername);
+  //   }
   connectSocket(localStorage.getItem('username'));
 });
 
@@ -83,14 +85,28 @@ const updateRequestStatus = (id, newStatus) => {
     });
 };
 
-$('#submit-request-button').on('click', () => {
-//   console.log('hi');
+$('#submit-request-button').on('click', (e) => {
   const medicinename = $('#medicineName').val().trim();
   const quantity = parseInt($('#medicineQuantity').val(), 10);
   console.log(medicinename);
 
-  if (!medicineName || quantity <= 0) {
+  // eslint-disable-next-line no-restricted-globals
+  if (!medicinename || isNaN(quantity) || quantity <= 0) {
     console.error('Invalid medicine name or quantity');
+    // iziToast.info({
+    //   title: 'New request',
+    //   message: 'Click to view ->',
+    // });
+    // eslint-disable-next-line no-alert
+    alert('Invalid medicine name or quantity. Please enter valid data.');
+    e.preventDefault();
+    return;
+  }
+
+  if (!availableMedicine.includes(medicinename)) {
+    console.error('Medicine name does not exist');
+    alert('The entered medicine name does not exist in our database. Please choose a valid medicine name.');
+    e.preventDefault();
     return;
   }
 
@@ -111,30 +127,6 @@ $('#submit-request-button').on('click', () => {
       console.error('Error creating request:', error);
     });
 });
-
-// const fetchUserRequests = (username) => {
-//   axios.get(`/requests/${username}`, { // Adjust the URL according to your API route
-//     headers: {
-//       Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you're using token-based authentication
-//     },
-//   })
-//     .then((response) => {
-//       const { requests } = response.data.data;
-//       console.log(requests);
-//       const requestsList = document.getElementById('myrequest-list');
-//       requestsList.innerHTML = '';
-
-//       requests.forEach((request) => {
-//         // eslint-disable-next-line no-underscore-dangle
-//         const requestCard = createMyRequestItem(request._id, request.medicinename, request.quantity, request.timestamp, request.status); // Assuming you have a function to create the HTML for a request
-//         requestsList.prepend(requestCard);
-//       });
-//     })
-//     .catch((error) => {
-//       console.error('Error fetching user requests:', error);
-//       // Handle error (e.g., show error message)
-//     });
-// };
 
 $(() => {
   $('[data-toggle="tooltip"]').tooltip();

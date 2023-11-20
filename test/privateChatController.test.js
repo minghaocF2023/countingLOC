@@ -9,6 +9,7 @@ const HOST = `http://localhost:${PORT}`;
 let server;
 let User;
 let mockToken1;
+let mockToken2;
 let mockUser1;
 let mockUser2;
 

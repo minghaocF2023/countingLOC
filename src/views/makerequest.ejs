@@ -37,7 +37,7 @@
             <input type="number" class="form-control" id="medicineQuantity" placeholder="Quantity" name="medicineQuantity" required>
         </div>
       <div class="d-grid gap-2">
-        <button type="button" id="submit-request-button" class="button-styled btn btn-lg btn-primary mt-5 text-white" onclick="history.back()">Confirm</button>
+        <a id="submit-request-button" href="/requestConfirmation" class="btn btn-primary text-white" style="height: 100%" type="submit">Confirm</a>
         <button type="button" class="btn btn-back" onclick="history.back()">Back</button>
       </div>
 
@@ -54,6 +54,7 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/medicine.js"></script>
     <script type="module" src="js/request.js"></script>
+    <script type="module" src="js/helper.js"></script>
 </body>
 
 </html>
