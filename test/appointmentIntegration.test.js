@@ -46,7 +46,6 @@ beforeAll(async () => {
   mockToken1 = jwt.generateToken(mockDoctor1.username);
   mockToken2 = jwt.generateToken(mockPatient1.username);
   server = app;
-  console('hihi');
 });
 
 afterAll(async () => {

@@ -308,6 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
       $('#addAvailabilityModal').modal('hide');
     } catch (error) {
       // Doctor chose 'NO' or closed the iziToast
+      console.log('hihi');
       console.log('Adding availability canceled.');
     }
   });
