@@ -1,7 +1,86 @@
+/* eslint-disable max-len */
 /* eslint-disable func-names */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 // eslint-disable-next-line no-undef
+
+const showBookConfirmationAlert = () => {
+  iziToast.show({
+    title: 'Confirmation',
+    message: 'Booking successful!',
+    position: 'center',
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+      }],
+    ],
+  });
+};
+
+const showBookFailureAlert = () => {
+  iziToast.show({
+    title: 'Error',
+    message: 'Booking failed. Please try again. If the timeslot is no longer available, please select another timeslot.',
+    position: 'center',
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+      }],
+    ],
+  });
+};
+
+const showDeleteConfirmationAlert = () => {
+  iziToast.show({
+    title: 'Confirmation',
+    message: 'Appointment Canceled!',
+    position: 'center',
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+      }],
+    ],
+  });
+};
+
+const showDeleteFailureAlert = () => {
+  iziToast.show({
+    title: 'Error',
+    message: 'Delete failed. Please try again. We are sorry for the inconvenience',
+    position: 'center',
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+      }],
+    ],
+  });
+};
+
+const showUpdateConfirmationAlert = () => {
+  iziToast.show({
+    title: 'Confirmation',
+    message: 'Appointment Updated!',
+    position: 'center',
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+      }],
+    ],
+  });
+};
+
+const showUpdateFailureAlert = () => {
+  iziToast.show({
+    title: 'Error',
+    message: 'Update failed. Please try again. If the timeslot is no longer available, please select another timeslot.',
+    position: 'center',
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+      }],
+    ],
+  });
+};
 
 let isUpdating = false;
 let oldAppointmentDetails = {};
@@ -204,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clickedDate.addClass('selected-date');
       }
       fetchAppointmentsForDate(info.dateStr);
+      fetchAndDisplayTimeSlots(info.dateStr);
     },
   });
 
@@ -223,6 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   $('#bookMoreModal').on('show.bs.modal', () => {
     $('#doctorAvailabilityList').empty();
+    const selectedDateStr = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
+    fetchAndDisplayTimeSlots(selectedDateStr);
   });
 
   $('#bookMoreModal').on('hidden.bs.modal', () => {
@@ -235,13 +317,6 @@ document.addEventListener('DOMContentLoaded', () => {
     $('.appointment-time-slot.selected').removeClass('selected');
     $(this).addClass('selected');
   });
-
-  function handleResponse(response) {
-    if (response.data.success) {
-      fetchAppointmentsForDate(selectedDate.toISOString().split('T')[0]);
-      $('#bookMoreModal').modal('hide');
-    }
-  }
 
   function handleError(error) {
     console.error(error);
@@ -267,7 +342,18 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-        }).then(handleResponse).catch(handleError);
+        }).then(
+          (response) => {
+            if (response.data.success) {
+              fetchAppointmentsForDate(selectedDateStr);
+              fetchAndDisplayTimeSlots(selectedDateStr);
+              showUpdateConfirmationAlert();
+            } else {
+              showUpdateFailureAlert();
+            }
+          },
+        ).catch(handleError);
+        $('#bookMoreModal').modal('hide');
       } else {
         // Create new appointment
         axios.post('/patientAppointment/newappointment', {
@@ -278,7 +364,18 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-        }).then(handleResponse).catch(handleError);
+        }).then(
+          (response) => {
+            if (response.data.success) {
+              fetchAppointmentsForDate(selectedDateStr);
+              fetchAndDisplayTimeSlots(selectedDateStr);
+              showBookConfirmationAlert();
+            } else {
+              showBookFailureAlert();
+            }
+          },
+        ).catch(handleError);
+        $('#bookMoreModal').modal('hide');
       }
 
       // Reset update state
@@ -300,10 +397,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }).then((response) => {
       if (response.data.success) {
         fetchAppointmentsForDate(selectedDateStr);
+        fetchAndDisplayTimeSlots(selectedDateStr);
+        showDeleteConfirmationAlert();
+      } else {
+        showDeleteFailureAlert();
       }
-    }).catch((error) => {
-      console.error(error);
-    });
+    }).catch(handleError);
   });
 
   $('#booked-list').on('click', '.update-button', function () {

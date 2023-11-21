@@ -2,6 +2,41 @@
 /* eslint-disable no-undef */
 // eslint-disable-next-line no-undef
 
+const confirmAddAvailability = () => new Promise((resolve, reject) => {
+  iziToast.question({
+    timeout: 20000,
+    close: false,
+    overlay: true,
+    displayMode: 'once',
+    id: 'question',
+    zindex: 1100,
+    title: 'Confirm Adding Availability',
+    message: 'Do you really want to add these time slots? You won\'t be able to change or delete them after confirming.',
+    position: 'center',
+    buttons: [
+      ['<button><b>YES</b></button>', (instance, toast) => {
+        instance.hide({ transitionOut: 'fadeOut', onClosing: () => resolve() }, toast, 'button');
+      }, true],
+      ['<button>NO</button>', (instance, toast) => {
+        instance.hide({ transitionOut: 'fadeOut', onClosing: () => reject() }, toast, 'button');
+      }, false],
+    ],
+  });
+});
+
+const showConfirmationAlert = () => {
+  iziToast.show({
+    title: 'Confirmation',
+    message: 'Time Slot(s) Added Successfully',
+    position: 'center',
+    buttons: [
+      ['<button>Close</button>', function (instance, toast) {
+        instance.hide({ transitionOut: 'fadeOutUp' }, toast, 'button');
+      }],
+    ],
+  });
+};
+
 function toggleAddAvailabilityButton(date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -239,33 +274,41 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   $('#submit-availability-btn').on('click', async () => {
-    const selectedTimeSlots = [];
-    $('.selected').each((index, element) => {
-      selectedTimeSlots.push(undoFormatTime(element.textContent));
-    });
+    try {
+      await confirmAddAvailability();
+      // Proceed if the doctor confirms
+      const selectedTimeSlots = [];
+      $('.selected').each((index, element) => {
+        selectedTimeSlots.push(undoFormatTime(element.textContent));
+      });
 
-    $('.selected').removeClass('selected');
+      $('.selected').removeClass('selected');
 
-    const newAvailability = {
-      date: selectedDate.toISOString().split('T')[0],
-      startTimes: selectedTimeSlots,
-    };
+      const newAvailability = {
+        date: selectedDate.toISOString().split('T')[0],
+        startTimes: selectedTimeSlots,
+      };
 
-    const response = await fetch('/doctorAppointment/newavailability', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify(newAvailability),
-    });
+      const response = await fetch('/doctorAppointment/newavailability', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(newAvailability),
+      });
 
-    if (response.ok) {
-      console.log('Availability added successfully');
-      // Refresh the booked and vacant lists
-      fetchAppointmentsForDate(selectedDate.toISOString().split('T')[0]);
-    } else {
-      console.error('Failed to add availability');
+      if (response.ok) {
+        console.log('Availability added successfully');
+        fetchAppointmentsForDate(selectedDate.toISOString().split('T')[0]);
+        showConfirmationAlert();
+      } else {
+        console.error('Failed to add availability');
+      }
+      $('#addAvailabilityModal').modal('hide');
+    } catch (error) {
+      // Doctor chose 'NO' or closed the iziToast
+      console.log('Adding availability canceled.');
     }
   });
 });
