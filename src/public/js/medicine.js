@@ -33,7 +33,7 @@ const updateOrInsertMedicine = (newMedicine) => {
     if (cardTitle === newMedicine.medicinename.toLowerCase()) {
       found = true;
       const quantityElement = $(this).find('.card-text');
-      console.log(newMedicine.quantity);
+      // console.log(newMedicine.quantity);
       quantityElement.text(`Quantity: ${newMedicine.quantity}`);
       return false; // Breaks the .each() loop
     }
@@ -77,7 +77,7 @@ $(window).on('load', () => {
     list = list.split('</div>').join('</div>');
     $('#market-list').html(list);
     availableMedicine = res.data.data.map((item) => item.medicinename);
-    console.log(availableMedicine);
+    // console.log(availableMedicine);
     // console.log(res.data.data[0].medicinename);
   }).catch((err) => {
     if (err.response && err.response.data && err.response.data.message === 'User not logged in') {
@@ -91,12 +91,12 @@ $('#submit-medicine-btn').on('click', () => {
   const medicineName = $('#medicineName').val().trim();
   const quantity = parseInt($('#medicineQuantity').val(), 10);
 
-  // // eslint-disable-next-line no-restricted-globals
-  // if (!medicineName || isNaN(quantity) || quantity <= 0) {
-  //   console.error('Invalid medicine name or quantity');
-  //   alert('Invalid medicine name or quantity.');
-  //   return; // Prevent further execution
-  // }
+  // eslint-disable-next-line no-restricted-globals
+  if (quantity <= 0) {
+    // console.error('Invalid medicine name or quantity');
+    // alert('Invalid medicine name or quantity.');
+    return; // Prevent further execution
+  }
 
   if (medicineName && quantity > 0) {
     axios.post('/market/medicines', {
@@ -115,7 +115,7 @@ $('#submit-medicine-btn').on('click', () => {
         console.error('Error donating medicine:', error);
       });
   } else {
-    console.error('Invalid medicine name or quantity');
+    // console.error('Invalid medicine name or quantity');
   }
 });
 

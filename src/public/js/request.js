@@ -31,7 +31,7 @@ $(window).on('load', () => {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   }).then((res) => {
-    console.log(res.data);
+    // console.log(res.data);
     let list = '';
     res.data.data.forEach((element) => {
       // eslint-disable-next-line no-underscore-dangle
@@ -40,18 +40,12 @@ $(window).on('load', () => {
     // reverse the list
     list = list.split('</div>').reverse().join('</div>');
     $('#request-list').html(list);
-    console.log(availableMedicine);
+    // console.log(availableMedicine);
   }).catch((err) => {
     if (err.response && err.response.data && err.response.data.message === 'User not logged in') {
       window.location = '/join';
     }
   });
-  //   // Fetch and display user-specific requests
-  //   const myUsername = localStorage.getItem('username');
-  //   if (myUsername) {
-  //     // eslint-disable-next-line no-use-before-define
-  //     fetchUserRequests(myUsername);
-  //   }
   connectSocket(localStorage.getItem('username'));
 });
 
@@ -70,7 +64,6 @@ $(document).on('click', '.btn-reject', function () {
 });
 
 const updateRequestStatus = (id, newStatus) => {
-  console.log(id);
   axios.put(`/requests/${id}`, { status: newStatus }, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -82,31 +75,29 @@ const updateRequestStatus = (id, newStatus) => {
     })
     .catch((error) => {
       console.error('Error updating request status:', error);
+      if (error.response && error.response.status === 400) {
+        // Handle insufficient stock error
+        iziToast.error({
+          title: 'Error',
+          position: 'topCenter',
+          message: error.response.data.message,
+        });
+      }
     });
 };
 
 $('#submit-request-button').on('click', (e) => {
   const medicinename = $('#medicineName').val().trim();
   const quantity = parseInt($('#medicineQuantity').val(), 10);
-  console.log(medicinename);
+  // console.log(medicinename);
 
-  // eslint-disable-next-line no-restricted-globals
-  if (!medicinename || isNaN(quantity) || quantity <= 0) {
-    console.error('Invalid medicine name or quantity');
-    // iziToast.info({
-    //   title: 'New request',
-    //   message: 'Click to view ->',
-    // });
-    // eslint-disable-next-line no-alert
-    alert('Invalid medicine name or quantity. Please enter valid data.');
-    e.preventDefault();
-    return;
+  if (quantity <= 0) {
+    return; // Prevent further execution
   }
 
   if (!availableMedicine.includes(medicinename)) {
-    console.error('Medicine name does not exist');
-    alert('The entered medicine name does not exist in our database. Please choose a valid medicine name.');
-    e.preventDefault();
+    // alert('The entered medicine name does not exist in our database. Please choose a valid medicine name.');
+    // e.preventDefault();
     return;
   }
 
@@ -120,6 +111,7 @@ $('#submit-request-button').on('click', (e) => {
   })
     .then((response) => {
       console.log('Request created successfully:', response.data);
+      window.location.href = '/requestConfirmation';
       $('#medicineName').val('');
       $('#medicineQuantity').val('');
     })

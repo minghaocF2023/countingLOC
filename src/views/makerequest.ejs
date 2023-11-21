@@ -27,7 +27,7 @@
 
   <div class="mt-5 py-3 px-5">
     <h1 class="text-center mt-2 mb-5 font-weight-normal">Make a Request</h1>
-    <form style="max-width: 400px; margin: auto;">
+    <form id="myForm" style="max-width: 400px; margin: auto;" class="row g-3 needs-validation" novalidate>
         <div class="form-group">
             <label for="medicineName">Enter Medicine Name:</label>
             <input type="text" class="form-control" id="medicineName" placeholder="Medicine Name" name="medicineName" required>
@@ -35,9 +35,14 @@
         <div class="form-group">
             <label for="medicineQuantity">Enter Quantity:</label>
             <input type="number" class="form-control" id="medicineQuantity" placeholder="Quantity" name="medicineQuantity" required>
+            <div id="quantityFeedback" class="invalid-feedback" style="display: none;">Please enter a valid quantity.</div>
+            <!-- <div class="invalid-feedback">
+              Please provide a valid zip.
+            </div> -->
         </div>
       <div class="d-grid gap-2">
-        <a id="submit-request-button" href="/requestConfirmation" class="btn btn-primary text-white" style="height: 100%" type="submit">Confirm</a>
+        <!-- <a id="submit-request-button" href="/requestConfirmation" class="btn btn-primary text-white" style="height: 100%" type="submit">Confirm</a> -->
+        <button id="submit-request-button" class="btn btn-primary text-white" type="submit">Submit</button>
         <button type="button" class="btn btn-back" onclick="history.back()">Back</button>
       </div>
 
@@ -54,7 +59,15 @@
     <script type="module" src="js/search.js"></script>
     <script type="module" src="js/medicine.js"></script>
     <script type="module" src="js/request.js"></script>
-    <script type="module" src="js/helper.js"></script>
+    <script type="module" src="js/helper2.js"></script>
+    <!-- <script>
+      $(document).ready(function() {
+        $('#myForm').on('submit', function(event) {
+          event.preventDefault();
+          window.location.href = '/requestConfirmation';
+        });
+      });
+    </script> -->
 </body>
 
 </html>

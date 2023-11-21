@@ -69,17 +69,19 @@
 
     <%- include('partials/navbar') %>
 
-    <!-- Chat Messages Container -->
-    <div id="chat-container-outer" class="text-center container mt-4">
-        <div id="chat-container" class="messages search-margin" style="margin-bottom: 115px;">
-            <div class="d-flex align-items-end mb-3">
-                <h1>Request Sent</h1>
-            </div>
-        </div>
-        <div class="text-center">
+    <div class="text-center mt-5 py-3 px-5" >
+        <img class="logo" src="images/ambulance.png">
+        <h1 class="mt-2 mb-5 font-weight-normal">Request Sent</h1>
+        <p>Your request has been sent successfully. Go back to market or check requests.</p>
+        <a id="make-request" href="/myrequest" class="btn btn-primary text-white" style="height: 100%">To My Request</a>
+        <a id="make-request" href="/market" class="btn btn-primary text-white" style="height: 100%">To Market</a>
+     </div>
+
+          <!-- <a href="login.ejs" class="btn btn-primary" role="button">Sign In</a> -->
+        <!-- <div class="text-center">
             <a id="make-request" href="/myrequest" class="btn btn-primary text-white" style="height: 100%">To My Request</a>
             <a id="make-request" href="/market" class="btn btn-primary text-white" style="height: 100%">To Market</a>
-        </div>
+        </div> -->
         
 
     </div>
