@@ -82,7 +82,7 @@ test('Get all requests', async () => {
   });
 
   expect(getResponse.status).toBe(200);
-  expect(getResponse.data.data[0].medicinename).toBe('test medicine');
+  expect(getResponse.data.data[0].medicinename).toBe('Test Medicine');
 }, 5000);
 
 // 5. Query: get one user's requests

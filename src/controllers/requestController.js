@@ -1,6 +1,14 @@
 import authChecker from '../utils/authChecker.js';
 import testChecker from '../utils/testChecker.js';
 
+const standardizeMedicineName = (name) => name
+  .trim()
+  .replace(/\s+/g, ' ')
+  .toLowerCase()
+  .split(' ')
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
 class requestController {
   // constructor
   constructor(requestModel, medicineModel, userModel) {
@@ -42,18 +50,19 @@ class requestController {
       return;
     }
     if (!req.body.medicinename || !req.body.quantity) {
-      console.log(req.body);
+      // console.log(req.body);
       res.status(400);
       res.json({ message: 'Invalid request' });
       return;
     }
 
     const { medicinename, quantity } = req.body;
+    const standardizedMedicineName = standardizeMedicineName(medicinename);
 
     // const request = await this.requestModel.getOne({ medicineName });
 
     const data = {
-      medicinename,
+      medicinename: standardizedMedicineName,
       quantity,
       username: payload.username,
       status: 'Waiting for Review',

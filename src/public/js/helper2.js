@@ -1,5 +1,13 @@
 import { availableMedicine } from './medicine.js';
 
+const standardizeMedicineName = (name) => name
+  .trim()
+  .replace(/\s+/g, ' ')
+  .toLowerCase()
+  .split(' ')
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
 (() => {
   const forms = document.querySelectorAll('.needs-validation');
 
@@ -17,7 +25,9 @@ import { availableMedicine } from './medicine.js';
       }
 
       // Validate medicine name
-      if (medicineNameInput && !availableMedicine.includes(medicineNameInput.value.trim())) {
+      //   if (medicineNameInput && !availableMedicine.includes(medicineNameInput.value.trim())) {
+      const standardizedMedicineName = standardizeMedicineName(medicineNameInput.value);
+      if (!standardizedMedicineName || !availableMedicine.includes(standardizedMedicineName)) {
         medicineNameInput.setCustomValidity('Invalid medicine name');
       } else {
         medicineNameInput.setCustomValidity('');

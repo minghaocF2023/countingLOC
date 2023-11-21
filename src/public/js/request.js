@@ -4,6 +4,14 @@
 /* eslint-disable no-undef */
 import { availableMedicine } from './medicine.js';
 
+const standardizeMedicineName = (name) => name
+  .trim()
+  .replace(/\s+/g, ' ')
+  .toLowerCase()
+  .split(' ')
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
 const connectSocket = (username) => {
   const socket = io(undefined, { autoConnect: false });
   socket.auth = { username };
@@ -90,7 +98,8 @@ const updateRequestStatus = (id, newStatus) => {
 };
 
 $('#submit-request-button').on('click', (e) => {
-  const medicinename = $('#medicineName').val().trim();
+  // const medicinename = $('#medicineName').val().trim();
+  const medicinename = standardizeMedicineName($('#medicineName').val().trim());
   const quantity = parseInt($('#medicineQuantity').val(), 10);
   // console.log(medicinename);
 
@@ -99,8 +108,6 @@ $('#submit-request-button').on('click', (e) => {
   }
 
   if (!availableMedicine.includes(medicinename)) {
-    // alert('The entered medicine name does not exist in our database. Please choose a valid medicine name.');
-    // e.preventDefault();
     return;
   }
 
