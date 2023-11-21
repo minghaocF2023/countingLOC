@@ -155,12 +155,4 @@ router.post('/medicines', (req, res) => {
   }
 });
 
-router.delete('/medicines', (req, res) => {
-  if (req.query.istest === 'true') {
-    testMedicineController.deleteMedicine(req, res);
-  } else {
-    medicineController.deleteMedicine(req, res);
-  }
-});
-
 export default router;

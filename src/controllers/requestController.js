@@ -10,7 +10,7 @@ class requestController {
   }
 
   /**
-   * Get all history medicine
+   * Get all history requests
    */
   async getAllRequests(req, res) {
     const payload = authChecker.checkAuth(req, res);
@@ -27,7 +27,7 @@ class requestController {
 
   // post new medicine donation
   async postNewRequest(req, res) {
-    console.log(req.body);
+    // console.log(req.body);
     if (!req.headers.authorization || !req.headers.authorization.includes('Bearer')) {
       res.status(401).json({ message: 'User not logged in' });
       return;
@@ -93,19 +93,14 @@ class requestController {
       }
       medicine.quantity -= request.quantity;
       await medicine.save();
+
+      const socketServer = req.app.get('socketServer');
+      socketServer.publishEvent('medicineUpdated', { medicinename: medicine.medicinename, newQuantity: medicine.quantity });
     } else if (status === 'Rejected') { /* empty */ }
 
     // Update the request status
     request.status = status;
     await request.save();
-
-    // eslint-disable-next-line max-len
-    // const socketServer = req.app.get('socketServer'); // Assuming socketServer is attached to the app
-    // socketServer.to(request.username).emit('requestStatusUpdated', {
-    //   // eslint-disable-next-line no-underscore-dangle
-    //   requestId: request._id.toString(),
-    //   status,
-    // });
 
     return res.status(200).json({ message: `Request ${status.toLowerCase()} successfully`, request });
   }
@@ -123,6 +118,35 @@ class requestController {
     const { username } = req.params;
     const requests = await this.requestModel.find({ username }).sort({ timeStamp: -1 });
     res.status(200).json({ success: true, data: requests });
+  }
+
+  async deleteRequest(req, res) {
+    const { requestId } = req.params;
+    const payload = authChecker.checkAuth(req, res);
+
+    if (payload === null) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    const request = await this.requestModel.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+
+    if (request.username !== payload.username) {
+      return res.status(403).json({ message: 'Unauthorized to delete this request' });
+    }
+
+    if (request.status !== 'Waiting for Review') {
+      return res.status(400).json({ message: 'Only requests with status "Waiting" can be deleted' });
+    }
+
+    await this.requestModel.findByIdAndDelete(requestId);
+
+    const socketServer = req.app.get('socketServer');
+    socketServer.publishEvent('deleteRequest', { requestId, username: payload.username });
+
+    return res.status(200).json({ message: 'Request deleted successfully' });
   }
 }
 

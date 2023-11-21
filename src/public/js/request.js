@@ -23,6 +23,9 @@ const connectSocket = (username) => {
       window.location = '/503page';
     }
   });
+  socket.on('medicineUpdated', (data) => {
+    $(`.card[data-medicinename="${data.medicinename}"] .medicine-quantity`).text(data.newQuantity);
+  });
 };
 
 $(window).on('load', () => {

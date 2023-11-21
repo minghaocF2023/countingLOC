@@ -265,4 +265,40 @@ router.put('/:requestId', (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /requests/{requestId}:
+ *   delete:
+ *     tags: [Requests]
+ *     summary: Delete a request
+ *     description: Deletes a specific request by its ID
+ *     parameters:
+ *       - in: path
+ *         name: requestId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the request to be deleted.
+ *     responses:
+ *       200:
+ *         description: Request deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *       401:
+ *         description: User not logged in.
+ *       403:
+ *         description: Unauthorized to delete this request.
+ *       404:
+ *         description: Request not found.
+ */
+router.delete('/:requestId', (req, res) => {
+  if (req.query.istest === 'true') {
+    testRequestController.deleteRequest(req, res);
+  } else {
+    requestController.deleteRequest(req, res);
+  }
+});
+
 export default router;

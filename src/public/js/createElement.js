@@ -59,7 +59,7 @@ window.createAnnouncementMessage = createAnnouncementMessage;
 
 const createMedicineItem = (medicinename, quantity) => {
   let html = '';
-  html += '<div class="card message-card">';
+  html += `<div class="card message-card" data-medicinename="${medicinename}">`;
   html += '<div class="card-body">';
   html += `<h5 class="card-title">${medicinename}</h5>`;
   html += `<p class="card-text">Quantity: ${quantity}</p>`;
@@ -93,16 +93,23 @@ const createRequestItem = (id, medicinename, quantity, username, status, timesta
 window.createRequestItem = createRequestItem;
 
 const createMyRequestItem = (id, medicinename, quantity, username, status, timestamp) => {
-  let code = '';
-  code += '<div class="card message-card">';
-  code += '<div class="card-body">';
-  code += `<h5 class="card-title">${medicinename}-${username}</h5>`;
-  code += `<p class="card-text">Quantity: ${quantity}</p>`;
-  code += `<p class="card-text status-text">Status: ${status}</p>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
-  code += '</div>';
-  code += '</div>';
-  return code;
+  const deleteButtonHtml = status === 'Waiting for Review'
+    ? `<div class="mt-3">
+         <button class="btn btn-primary text-white btn-delete" data-id="${id}">Delete</button>
+       </div>`
+    : `<div class="mt-3">
+       </div>`;
+
+  return `
+    <div class="card message-card" data-id="${id}">
+      <div class="card-body">
+        <h5 class="card-title">${medicinename}-${username}</h5>
+        <p class="card-text">Quantity: ${quantity}</p>
+        <p class="card-text status-text">Status: ${status}</p>
+        <span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>
+        ${deleteButtonHtml}
+      </div>
+    </div>`;
 };
 
 window.createMyRequestItem = createMyRequestItem;

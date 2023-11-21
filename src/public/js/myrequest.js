@@ -21,6 +21,13 @@ const connectSocket = (username) => {
       window.location = '/503page';
     }
   });
+
+  socket.on('deleteRequest', (data) => {
+    if (data.username === localStorage.getItem('username')) {
+      $(`#request-${data.requestId}`).remove();
+      console.log(`Request ${data.requestId} has been deleted.`);
+    }
+  });
 };
 
 $(window).on('load', () => {
@@ -48,6 +55,23 @@ $(window).on('load', () => {
   }
 
   connectSocket(myUsername);
+});
+
+$(document).on('click', '.btn-delete', function () {
+  const requestId = $(this).data('id');
+  axios.delete(`/requests/${requestId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+    .then(() => {
+      $(`.card.message-card[data-id="${requestId}"]`).remove();
+      console.log('hi');
+      console.log(requestId);
+    })
+    .catch((error) => {
+      console.error('Error deleting request:', error);
+    });
 });
 
 $(() => {

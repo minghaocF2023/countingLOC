@@ -54,6 +54,10 @@ const connectSocket = (username) => {
     }
   });
 
+  socket.on('medicineUpdated', (data) => {
+    $(`.card[data-medicinename="${data.medicinename}"] .medicine-quantity`).text(data.newQuantity);
+  });
+
 //   socket.on('startspeedtest', (user) => {
 //     if (localStorage.getItem('username') !== user) {
 //       window.location = '/503page';
@@ -77,8 +81,6 @@ $(window).on('load', () => {
     list = list.split('</div>').join('</div>');
     $('#market-list').html(list);
     availableMedicine = res.data.data.map((item) => item.medicinename);
-    // console.log(availableMedicine);
-    // console.log(res.data.data[0].medicinename);
   }).catch((err) => {
     if (err.response && err.response.data && err.response.data.message === 'User not logged in') {
       window.location = '/join';
@@ -93,8 +95,6 @@ $('#submit-medicine-btn').on('click', () => {
 
   // eslint-disable-next-line no-restricted-globals
   if (quantity <= 0) {
-    // console.error('Invalid medicine name or quantity');
-    // alert('Invalid medicine name or quantity.');
     return; // Prevent further execution
   }
 

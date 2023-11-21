@@ -80,9 +80,8 @@ class medicineController {
   }
 
   async deleteMedicine(req, res) {
-    this.medicineModel.findOneAndDelete({ medicinename: req.body.medicinename }).then(() => {
-      res.status(200).json({ message: 'deleted' });
-    });
+    await this.medicineModel.findOneAndDelete({ medicinename: req.body.medicinename });
+    res.status(200).json({ message: 'Medicine deleted successfully' });
   }
 }
 
