@@ -14,7 +14,7 @@ const EmergencyEventFactory = (connection) => {
       type: String,
       required: true,
     },
-    time: {
+    timestamp: {
       type: Number,
       required: true,
       default: Date.now(),
@@ -47,7 +47,8 @@ const EmergencyEventFactory = (connection) => {
     }
 
     static async create(data) {
-      const coordinates = (await EmergencyEvent.getLocationInfo(data.location))?.coordinates;
+      const coordinates = data.coordinates
+        || (await EmergencyEvent.getLocationInfo(data.location))?.coordinates;
       const event = new EmergencyEventModel({
         ...data,
         coordinates,
@@ -93,8 +94,8 @@ const EmergencyEventFactory = (connection) => {
       return this.description;
     }
 
-    getTime() {
-      return this.time;
+    getTimestamp() {
+      return this.timestamp;
     }
 
     getLocation() {
