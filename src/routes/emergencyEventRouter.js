@@ -13,10 +13,10 @@
  *           type: string
  *           description: The emergency event description
  *           example: "Flood in the city"
- *         time:
+ *         timestamp:
  *           type: number
- *           description: The emergency event time
- *           example: 1622512800
+ *           description: The emergency event timestamp
+ *           example: 1622512800000
  *         location:
  *           type: string
  *           description: The emergency event location

@@ -46,6 +46,10 @@ router.get('/announcement', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'announcement');
 });
 
+router.get('/emergencies', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'emergencyEvents');
+});
+
 router.get('/503page', (req, res) => {
   res.render('503page');
 });
