@@ -1,5 +1,5 @@
 /* global io, axios, notify, notifyAnnouncement, createEmergencyEventBlock */
-/* global iziToast */
+/* global iziToast, notifyGPSPermission, notifyEventHandler */
 
 const compareByTime = (a, b) => a.time - b.time;
 
@@ -16,6 +16,7 @@ const connectSocket = (username) => {
 
   socket.on('newAnnouncement', notifyAnnouncement);
   socket.on('privatemessage', notify);
+  socket.on('emergency', notifyEventHandler);
 };
 
 const showSuccess = (title, message, cb) => {
@@ -39,6 +40,7 @@ const setGPS = () => {
       },
       (error) => {
         console.error(error);
+        notifyGPSPermission();
       },
     );
   }
@@ -46,8 +48,8 @@ const setGPS = () => {
 
 const setTime = () => {
   const date = new Date();
-  // HH:mm:ss
-  $('#timestamp').val(date.toISOString().substring(11, 19));
+  // HH:mm
+  $('#time').val(date.toTimeString().substring(0, 5));
 };
 
 $(window).on('DOMContentLoaded', async () => {
@@ -89,8 +91,15 @@ $(window).on('DOMContentLoaded', async () => {
     e.preventDefault();
     $('#event-form button').attr('disabled', '');
     const data = Object.fromEntries(new FormData(e.target));
+    const { time } = data;
+    const [hours, minutes] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    data.timestamp = date.getTime();
+    delete data.time;
     if (data.lat && data.lng) {
-      data.coordinates = [data.lat, data.lng];
+      data.coordinates = [Number(data.lat), Number(data.lng)];
       delete data.lat;
       delete data.lng;
     }
