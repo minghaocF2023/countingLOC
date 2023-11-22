@@ -106,6 +106,7 @@ test('Update status of a request', async () => {
   const requestId = response.data.data[0]._id;
   const updateData = { status: 'Rejected' };
 
+  // hihi
   const getResponse = await axios.put(`${HOST}/requests/${requestId}`, updateData, {
     headers: { Authorization: `Bearer ${mockToken}` },
     params: { istest: 'true' },
