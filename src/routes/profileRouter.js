@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 /**
  * @swagger
  * components:
@@ -154,7 +155,9 @@ import express from 'express';
 import ProfileController from '../controllers/profileController.js';
 import {
   userModel,
+  testUserModel,
   ProfileModel,
+  testProfileModel,
 
 } from '../models/models.js';
 import authChecker from '../utils/authChecker.js';
@@ -164,6 +167,7 @@ const router = express.Router();
 const profile = new ProfileModel();
 // eslint-disable-next-line new-cap
 const profileController = new ProfileController(new userModel(), profile);
+const testProfileController = new ProfileController(new testUserModel(), new testProfileModel());
 
 router.use((req, res, next) => {
   const payload = authChecker.checkAuth(req, res);
@@ -221,7 +225,11 @@ router.use((req, res, next) => {
  *               message: User not logged in
  */
 router.get('/', (req, res) => {
-  profileController.getProfile(req, res);
+  if (req.query.istest === 'true') {
+    testProfileController.getProfile(req, res);
+  } else {
+    profileController.getProfile(req, res);
+  }
 });
 
 /**
@@ -271,7 +279,11 @@ router.get('/', (req, res) => {
    *               message: User not logged in
    */
 router.get('/:username', (req, res) => {
-  profileController.getContactProfile(req, res);
+  if (req.query.istest === 'true') {
+    testProfileController.getContactProfile(req, res);
+  } else {
+    profileController.getContactProfile(req, res);
+  }
 });
 
 /**
@@ -329,7 +341,11 @@ router.get('/:username', (req, res) => {
    *               message: User not logged in
    */
 router.post('/', (req, res) => {
-  profileController.postProfile(req, res);
+  if (req.query.istest === 'true') {
+    testProfileController.postProfile(req, res);
+  } else {
+    profileController.postProfile(req, res);
+  }
 });
 
 /**
@@ -387,7 +403,11 @@ router.post('/', (req, res) => {
    *               message: User not logged in
    */
 router.put('/', (req, res) => {
-  profileController.updateProfile(req, res);
+  if (req.query.istestt === 'true') {
+    testProfileController.updateProfile(req, res);
+  } else {
+    profileController.updateProfile(req, res);
+  }
 });
 
 /**
@@ -432,7 +452,11 @@ router.put('/', (req, res) => {
    *               message: User not logged in
    */
 router.delete('/', (req, res) => {
-  profileController.deleteProfile(req, res);
+  if (req.query.istestt === 'true') {
+    testProfileController.deleteProfile(req, res);
+  } else {
+    profileController.deleteProfile(req, res);
+  }
 });
 
 export default router;

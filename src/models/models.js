@@ -18,6 +18,7 @@ const testPublicMessageModel = PublicMessageFactory(testConnection);
 const announcementModel = AnnouncementFactory(realConnection);
 const testAnnouncementModel = AnnouncementFactory(testConnection);
 const ProfileModel = ProfileFactory(realConnection);
+const testProfileModel = ProfileFactory(testConnection);
 export {
   userModel,
   testUserModel,
@@ -26,6 +27,7 @@ export {
   privateMessageModel,
   testPrivateMessageModel,
   ProfileModel,
+  testProfileModel,
   publicMessageModel,
   testPublicMessageModel,
   announcementModel,

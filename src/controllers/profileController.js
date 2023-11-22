@@ -64,7 +64,8 @@ class ProfileController {
  */
   async updateProfile(req, res) {
     const username = authChecker.getAuthUsername(req, res);
-    const { profileId } = await this.userModel.getUserProfileId(username);
+    const response = await this.userModel.getUserProfileId(username);
+    const profileId = response ? response.profileId : null;
     if (!profileId) {
       res.status(404).json({ message: 'profile not found' });
       return;
@@ -79,7 +80,8 @@ class ProfileController {
    */
   async deleteProfile(req, res) {
     const username = authChecker.getAuthUsername(req, res);
-    const { profileId } = await this.userModel.getUserProfileId(username);
+    const response = await this.userModel.getUserProfileId(username);
+    const profileId = response ? response.profileId : null;
     if (!profileId) {
       res.status(404).json({ message: 'profile not found' });
       return;
