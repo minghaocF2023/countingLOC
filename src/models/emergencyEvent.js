@@ -51,11 +51,11 @@ const EmergencyEventFactory = (connection) => {
     }
 
     static async create(data) {
-      const coordinates = data.coordinates
-        || (await EmergencyEvent.getLocationInfo(data.location))?.coordinates;
+      // const coordinates = data.coordinates
+      //   || (await EmergencyEvent.getLocationInfo(data.location))?.coordinates;
       const event = new EmergencyEventModel({
         ...data,
-        coordinates,
+        // coordinates,
       });
       return event.save().then((ee) => new EmergencyEvent(ee));
     }

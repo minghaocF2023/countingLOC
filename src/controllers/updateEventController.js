@@ -22,7 +22,7 @@ class UpdateEventController {
     await this.emergencyEventModel.getById(id)
       .then((event) => {
         if (!event) {
-          res.status(404).json({ message: 'Event Not found' });
+          res.status(404).json({ message: 'Event Not Found' });
           return;
         }
         res.status(200).json({ message: 'OK', event });
@@ -47,7 +47,7 @@ class UpdateEventController {
     const { id } = req.params;
     const update = req.body;
 
-    if (!update) {
+    if (!update || Object.values(update).includes(undefined)) {
       res.status(400).json({ message: 'Invalid request' });
       return;
     }
@@ -56,7 +56,7 @@ class UpdateEventController {
     try {
       event = await this.emergencyEventModel.getById(id);
       if (!event) {
-        res.status(404).json({ message: 'Event Not found' });
+        res.status(404).json({ message: 'Event Not Found' });
         return;
       }
     } catch (error) {
@@ -90,7 +90,7 @@ class UpdateEventController {
     try {
       event = await this.emergencyEventModel.getById(id);
       if (!event) {
-        res.status(404).json({ message: 'Event Not found' });
+        res.status(404).json({ message: 'Event Not Found' });
         return;
       }
     } catch (error) {
