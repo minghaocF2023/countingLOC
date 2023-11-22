@@ -1,6 +1,9 @@
 import authChecker from '../utils/authChecker.js';
 import testChecker from '../utils/testChecker.js';
 
+/**
+ * Controller for updating emergency event
+ */
 class UpdateEventController {
   constructor(emergencyEventModel) {
     this.emergencyEventModel = emergencyEventModel;
