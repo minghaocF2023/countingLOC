@@ -67,7 +67,7 @@ class ProfileController {
     const response = await this.userModel.getUserProfileId(username);
     const profileId = response ? response.profileId : null;
     if (!profileId) {
-      res.status(404).json({ message: 'profile not found' });
+      res.status(204).json({ message: 'profile not found' });
       return;
     }
     const profileData = req.body.profile;
@@ -83,7 +83,7 @@ class ProfileController {
     const response = await this.userModel.getUserProfileId(username);
     const profileId = response ? response.profileId : null;
     if (!profileId) {
-      res.status(404).json({ message: 'profile not found' });
+      res.status(204).json({ message: 'profile not found' });
       return;
     }
     this.profileModel.deleteProfileById(profileId).then(() => {

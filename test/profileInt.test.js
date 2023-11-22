@@ -159,7 +159,7 @@ describe('Private Chat Integration Tests', () => {
           params: { istest: 'true' },
         },
       );
-      expect(getResponse.status).toBe(201);
+      expect(getResponse.status).toBe(204);
     });
   }, 20000);
 
@@ -180,7 +180,7 @@ describe('Private Chat Integration Tests', () => {
           params: { istest: 'true' },
         },
       );
-      expect(getResponse.status).toBe(201);
+      expect(getResponse.status).toBe(204);
     });
   }, 20000);
 
