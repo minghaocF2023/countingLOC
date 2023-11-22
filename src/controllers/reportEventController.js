@@ -18,12 +18,18 @@ class ReportEventController {
       return;
     }
 
-    await this.emergencyEventModel.create(req.body)
-      .then((event) => res.status(201).json({ message: 'OK', event }))
+    const event = await this.emergencyEventModel.create(req.body)
+      .then((ee) => res.status(201).json({ message: 'OK', event: ee }))
       .catch((err) => {
         console.error(err);
         res.status(500).json({ message: 'Internal server error' });
       });
+
+    const [lat, lng] = event.coordinates;
+    if (lat && lng) {
+      const socketServer = req.app.get('socketServer');
+      socketServer.publishEvent('emergency', event);
+    }
   }
 
   async getEmergencyEvents(req, res) {
