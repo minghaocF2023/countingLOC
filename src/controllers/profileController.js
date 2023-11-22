@@ -22,6 +22,16 @@ class ProfileController {
     res.status(200).json({ profile });
   }
 
+  async getContactProfile(req, res) {
+    const { profileId } = await this.userModel.getUserProfileId(req.params.username);
+    if (!profileId) {
+      res.status(404).json({ message: 'Profile not found.' });
+      return;
+    }
+    const profile = await this.profileModel.getOne(profileId);
+    res.status(200).json({ profile });
+  }
+
   /**
    * create new user profile
    */

@@ -199,7 +199,6 @@ const userFactory = (connection) => {
 
     static async getDoctors() {
       const list = await User.find({ profileId: { $exists: true, $ne: null } }, '_id username profileId');
-      console.log(list);
       return list;
     }
 

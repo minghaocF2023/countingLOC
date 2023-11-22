@@ -1,10 +1,14 @@
 /* eslint-disable no-undef */
 const getProfile = async () => {
-  const profile = await axios.get('/profile', {
+  const queries = new URLSearchParams(window.location.search);
+  const contact = queries.get('user');
+  console.log(contact);
+  const profile = await axios.get(`/profile/${contact}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   });
+  console.log(`profile:${profile.data}`);
 
   return profile.data;
 };
@@ -15,6 +19,7 @@ const setProfileData = (data) => {
   $('#birthdate').text(data.birthdate.split('T')[0]);
   $('#phone').text(data.phone);
   $('#mail').text(data.email);
+  console.log(data.profileImage);
   $('#imgArea').attr('src', data.profileImage);
   $('#docMail').text(data.doctorEmail);
 

@@ -11,7 +11,7 @@ router.post('/upload', (req, res) => {
   }
 
   if (!/^image/.test(image.mimetype)) {
-    res.status(400).json({ message: 'please upload image' });
+    res.status(400).json({ message: 'please upload imagev type' });
     return;
   }
 

@@ -114,8 +114,8 @@
 
                
                 <label for="gender">Pronoun</label>
-                <select class="form-select" id="pronoun">
-                    <option selected>Choose...</option>
+                <select class="form-select" id="pronoun" required>
+                    <option value="" selected>Choose...</option>
                     <option value="He/His">He/His</option>
                     <option value="She/Her">She/Her</option>
                     <option value="They/Their">They/Their</option>
@@ -127,12 +127,13 @@
             </div>
             <div class="col-6">
                 <label for="image">Profile Image
-                    <button type="button" id="uploadImg"  class="btn btn-primary text-white">Upload</button>
+                    
                     <input id="profileImg" class="d-none" type="file" name="image">
                 </label>
                 <div style="background-color:#eee; border-radius: 10px; width: 100%; aspect-ratio: 1 / 1;">
                     <img id="imageArea" src="images/ambulance.png" style="width: 100%; aspect-ratio: 1 / 1;"  alt="">
                 </div>
+                <button type="button" id="uploadImg" style="width:100%"  class="btn btn-primary text-white">Upload</button>
                 <p class="d-none" id="imgName"></p>
                 
             </div>
@@ -164,7 +165,7 @@
             <div class="col-6">
                 <label for="emergency">Emergency Contact</label>
                 <select class="form-select" id="emergency" required>
-                    <option id="default" value="default" selected>Choose...</option>
+                    <option id="default" value="" selected>Choose...</option>
 
                     
                 </select>
@@ -183,7 +184,7 @@
             <div class="col-12">
                 <label for="allergy">Drug Allergy</label>
                 <div class="d-flex">
-                    <input type="text" class="form-control me-2" id="allergy" placeholder="Allergy" required>
+                    <input type="text" class="form-control me-2" id="allergy" placeholder="Allergy">
                 <button id="allergyAdd" class="btn btn-primary text-white">Add</button>
                 </div>
                 
@@ -192,14 +193,14 @@
                 </div>
             </div>
             <div class="col-12">
-                <div class="block p-2" id="allergyArea" style="height: 5rem; background-color: #eee;">
+                <div class="block p-2 overflow-auto" id="allergyArea" style="height: 5rem; background-color: #eee;">
                 </div>
             </div>
 
             <div class="col-12">
                 <label for="health">Health Condition</label>
                 <div class="d-flex">
-                    <input type="text" class="form-control me-2" id="health" placeholder="Health Condition" required>
+                    <input type="text" class="form-control me-2" id="health" placeholder="Health Condition">
                     <button id="healthBtn" class="btn btn-primary text-white">Add</button>
                 </div>
                 
@@ -208,7 +209,7 @@
                 </div>
             </div>
             <div class="col-12">
-                <div class="block p-2" id="healthArea" style="height: 5rem; background-color: #eee;">
+                <div class="block p-2 overflow-auto" id="healthArea" style="height: 5rem; background-color: #eee;">
                 </div>
             </div>
 

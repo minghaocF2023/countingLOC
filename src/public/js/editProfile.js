@@ -1,6 +1,20 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-undef */
+
+const checkAllInput = () => {
+  const form = $('#profile');
+  if (!form.get(0).checkValidity()) {
+    form.addClass('was-validated');
+    return false;
+  }
+  return true;
+};
+
 const postNewProfile = async () => {
+  if (!checkAllInput()) {
+    console.log('hello');
+    return;
+  }
   const firstName = $('#firstName').val();
   const lastName = $('#lastName').val();
   const pronoun = $('#pronoun').val();
@@ -44,12 +58,14 @@ const postNewProfile = async () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
+    window.location = '/userprofile';
   } else {
     await axios.post('/profile', { profile: data }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
+    window.location = '/userprofile';
   }
 };
 
@@ -96,7 +112,6 @@ const setUserProfile = async () => {
 $('#update').on('click', async () => {
   // Format the plain form data as JSON
   await postNewProfile();
-  window.location = '/userprofile';
 });
 
 $('#delete').on('click', async () => {

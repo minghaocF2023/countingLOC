@@ -37,6 +37,9 @@ router.get('/announcement', (req, res) => {
 router.get('/userprofile', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'profile');
 });
+router.get('/contact', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'contactProfile');
+});
 
 router.get('/editprofile', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'profileEdit');

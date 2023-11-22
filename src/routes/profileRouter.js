@@ -168,7 +168,6 @@ const profileController = new ProfileController(new userModel(), profile);
 router.use((req, res, next) => {
   const payload = authChecker.checkAuth(req, res);
   if (!payload) {
-    console.log('not login');
     next('router');
   } else if (testChecker.isTest(res, payload)) {
     next('router');
@@ -271,8 +270,8 @@ router.get('/', (req, res) => {
    *             example:
    *               message: User not logged in
    */
-router.get('/profile/:username', (req, res) => {
-  res.status(501).json({ message: 'api not implemented' });
+router.get('/:username', (req, res) => {
+  profileController.getContactProfile(req, res);
 });
 
 /**

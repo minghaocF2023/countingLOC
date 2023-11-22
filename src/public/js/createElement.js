@@ -24,16 +24,22 @@ const createChatMessage = (senderName, status, content, timestamp) => {
 
 window.createChatMessage = createChatMessage;
 
-const createUserBlock = (username, onlineStatus, emergencyStatus) => {
+const createUserBlock = (username, onlineStatus, emergencyStatus, profileImage, isContact) => {
   const onlineStatusStr = onlineStatus ? 'online' : 'offline';
   const div = document.createElement('div');
   div.id = username;
   div.className = 'card mb-3 user-card';
-  div.innerHTML = '<div class="card-body">'
+
+  let content = profileImage ? '<div class="card-body d-flex align-items-center">'
+      + `<div><img class="me-2" style="height: 4rem; aspect-ratio: 1 / 1;" src="${profileImage}"></div>`
+      + '<div style="flex: 1">'
       + `<h5 class="card-title">${username} ${STATUS[emergencyStatus]}</h5>`
       + `<p class="card-text"><span class="status ${onlineStatusStr}">${onlineStatusStr}</span></p>`
-      + '</div>'
-      + '</div>';
+      + '</div>' : '<div class="card-body">'
+      + `<h5 class="card-title">${username} ${STATUS[emergencyStatus]}</h5>`
+      + `<p class="card-text"><span class="status ${onlineStatusStr}">${onlineStatusStr}</span></p>`;
+  content += isContact ? `<a href="/contact?user=${username}"><i style="font-size: 2rem;" class="bi bi-person-circle"></i></a></div></div>` : '</div></div>';
+  div.innerHTML = content;
   div.onclick = () => {
     window.location.href = `/privateChat?username=${username}`;
   };

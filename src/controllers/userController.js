@@ -1,7 +1,10 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 import crypto from 'crypto';
 import JWT from '../utils/jwt.js';
 import { isValidUsername, isValidPassword, isBannedUsername } from '../public/js/validation.js';
+import authChecker from '../utils/authChecker.js';
+import testChecker from '../utils/testChecker.js';
 
 class UserController {
   constructor(userModel, profileModel) {
@@ -11,11 +14,50 @@ class UserController {
 
   async getAllUsers(req, res) {
     await this.userModel.get({}).then((users) => {
-      res.status(200);
-      res.json({
-        message: 'OK',
-        users: users.map(({ username, isOnline, status }) => ({ username, isOnline, status })),
-        banned_users: this.userModel.BANNED_USERNAMES,
+      const payload = authChecker.checkAuth(req, res);
+      if (!payload) {
+        return;
+      }
+
+      if (testChecker.isTest(res, payload)) {
+        return;
+      }
+      const result = [];
+      const taskList = [];
+      this.userModel.getOne({ username: payload.username }).then(({ _id }) => {
+        users.forEach((user) => {
+          if (user.profileId) {
+            const task = this.profileModel.getOne({ _id: user.profileId }, 'profileImage doctorID').then((response) => {
+              result.push({
+                username: user.username,
+                isOnline: user.isOnline,
+                status: user.status,
+                profileImage: response.profileImage,
+                isContact: _id.equals(response.doctorID),
+              });
+            });
+            taskList.push(task);
+          } else {
+            result.push({
+              username: user.username,
+              isOnline: user.isOnline,
+              status: user.status,
+              isContact: false,
+            });
+          }
+        });
+        Promise.all(taskList).then(() => {
+          res.status(200);
+          res.json({
+            message: 'OK',
+            users: result,
+            banned_users: this.userModel.BANNED_USERNAMES,
+          });
+        }).catch((err) => {
+          console.error(err);
+          res.status(500);
+          res.json({ message: 'Server error' });
+        });
       });
     }).catch((e) => {
       console.error(e);
