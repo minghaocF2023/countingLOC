@@ -95,6 +95,12 @@ class ProfileController {
       res.status(500).json({ message: 'internal error' });
     });
   }
+
+  async deleteAllProfiles(req, res) {
+    this.profileModel.deleteAll().then(() => {
+      res.status(200).json({ message: 'OK' });
+    });
+  }
 }
 
 export default ProfileController;

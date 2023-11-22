@@ -459,4 +459,11 @@ router.delete('/', (req, res) => {
   }
 });
 
+router.delete('/all', (req, res) => {
+  if (req.query.istest === 'true') {
+    testProfileController.deleteAllProfiles(req, res);
+  } else {
+    console.log("don't call this");
+  }
+});
 export default router;

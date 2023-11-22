@@ -97,33 +97,12 @@ afterAll(async () => {
   await axios.delete(`${HOST}/users`, { data: { username: mockUser1.username }, params: { istest: 'true' } });
   await axios.delete(`${HOST}/users`, { data: { username: mockUser2.username }, params: { istest: 'true' } });
   await axios.delete(`${HOST}/users`, { data: { username: mockUser3.username }, params: { istest: 'true' } });
+
   await axios.delete(`${HOST}/users`, { data: { username: mockUser4.username }, params: { istest: 'true' } });
-  await axios.delete(
-    `${HOST}/profile/`,
-    {
-      headers: { Authorization: `Bearer ${mockToken1}` },
-      params: { istest: 'true' },
-    },
-  );
-  await axios.delete(
-    `${HOST}/profile/`,
-    {
-      headers: { Authorization: `Bearer ${mockToken2}` },
-      params: { istest: 'true' },
-    },
-  ); await axios.delete(
-    `${HOST}/profile/`,
-    {
-      headers: { Authorization: `Bearer ${mockToken3}` },
-      params: { istest: 'true' },
-    },
-  ); await axios.delete(
-    `${HOST}/profile/`,
-    {
-      headers: { Authorization: `Bearer ${mockToken4}` },
-      params: { istest: 'true' },
-    },
-  );
+  await axios.delete(`${HOST}/profile/all`, {
+    headers: { Authorization: `Bearer ${mockToken4}` },
+    params: { istest: 'true' },
+  });
   await mongoose.disconnect().then(() => {
     server.close();
   });

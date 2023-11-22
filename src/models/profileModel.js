@@ -85,6 +85,10 @@ const ProfileFactory = (connection) => {
       });
     }
 
+    async deleteAll() {
+      await Profile.deleteMany({});
+    }
+
     async updateProfileById(id, data) {
       const newProfile = await Profile.findOneAndUpdate({ _id: id }, data, {
         new: true,
