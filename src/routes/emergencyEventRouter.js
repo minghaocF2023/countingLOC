@@ -123,6 +123,11 @@
  *           description: Emergency event id
  *         required: true
  *         example: 650b635c9d39c281eac33bbf
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/EmergencyEvent'
  *     responses:
  *       200:
  *         description: Success
@@ -160,12 +165,15 @@
  */
 import express from 'express';
 import ReportEventController from '../controllers/reportEventController.js';
+import UpdateEventController from '../controllers/updateEventController.js';
 import { emergencyEventModel, testEmergencyEventModel } from '../models/models.js';
 
 const router = express.Router();
 
 const reportEventController = new ReportEventController(emergencyEventModel);
 const testReportEventController = new ReportEventController(testEmergencyEventModel);
+const updateEventController = new UpdateEventController(emergencyEventModel);
+const testUpdateEventController = new UpdateEventController(testEmergencyEventModel);
 
 router.get('/', (req, res) => {
   if (req.query.istest === 'true') {
@@ -180,6 +188,30 @@ router.post('/', (req, res) => {
     testReportEventController.createEmergencyEvent(req, res);
   } else {
     reportEventController.createEmergencyEvent(req, res);
+  }
+});
+
+router.get('/:id', (req, res) => {
+  if (req.query.istest === 'true') {
+    testUpdateEventController.getEmergencyEvent(req, res);
+  } else {
+    updateEventController.getEmergencyEvent(req, res);
+  }
+});
+
+router.put('/:id', (req, res) => {
+  if (req.query.istest === 'true') {
+    testUpdateEventController.updateEmergencyEvent(req, res);
+  } else {
+    updateEventController.updateEmergencyEvent(req, res);
+  }
+});
+
+router.delete('/:id', (req, res) => {
+  if (req.query.istest === 'true') {
+    testUpdateEventController.deleteEmergencyEvent(req, res);
+  } else {
+    updateEventController.deleteEmergencyEvent(req, res);
   }
 });
 

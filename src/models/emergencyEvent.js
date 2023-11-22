@@ -46,6 +46,10 @@ const EmergencyEventFactory = (connection) => {
         .then((emergencyEvents) => emergencyEvents.map((ee) => new EmergencyEvent(ee)));
     }
 
+    static async getById(id) {
+      return this.findById(id).then((ee) => (ee == null ? null : new EmergencyEvent(ee)));
+    }
+
     static async create(data) {
       const coordinates = data.coordinates
         || (await EmergencyEvent.getLocationInfo(data.location))?.coordinates;
