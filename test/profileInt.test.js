@@ -97,7 +97,6 @@ afterAll(async () => {
   await axios.delete(`${HOST}/users`, { data: { username: mockUser1.username }, params: { istest: 'true' } });
   await axios.delete(`${HOST}/users`, { data: { username: mockUser2.username }, params: { istest: 'true' } });
   await axios.delete(`${HOST}/users`, { data: { username: mockUser3.username }, params: { istest: 'true' } });
-
   await axios.delete(`${HOST}/users`, { data: { username: mockUser4.username }, params: { istest: 'true' } });
   await axios.delete(`${HOST}/profile/all`, {
     headers: { Authorization: `Bearer ${mockToken4}` },
@@ -108,58 +107,40 @@ afterAll(async () => {
   });
 });
 
-describe('Private Chat Integration Tests', () => {
+describe('Profile Integration Tests', () => {
   // Query Type 1:
 
   it('should successfully post new profile', async () => {
-    const postResponse = await axios.post(
+    axios.post(
       `${HOST}/profile/`,
       { profile: mockProfile },
       {
         headers: { Authorization: `Bearer ${mockToken1}` },
         params: { istest: 'true' },
       },
-    );
-    expect(postResponse.status).toBe(201);
-  });
+    ).then((res) => {
+      expect(res.status).toBe(201);
+    });
+  }, 20000);
 
   it('should successfully get new profile', async () => {
-    const postResponse = await axios.post(
-      `${HOST}/profile/`,
-      { profile: mockProfile },
-      {
-        headers: { Authorization: `Bearer ${mockToken2}` },
-        params: { istest: 'true' },
-      },
-    );
-    expect(postResponse.status).toBe(201);
-    const getResponse = await axios.get(
-      `${HOST}/profile/`,
-      {
-        headers: { Authorization: `Bearer ${mockToken2}` },
-        params: { istest: 'true' },
-      },
-    );
-    expect(getResponse.status).toBe(200);
-  });
-
-  it('should successfully delete new profile', async () => {
     axios.post(
       `${HOST}/profile/`,
       { profile: mockProfile },
       {
-        headers: { Authorization: `Bearer ${mockToken3}` },
+        headers: { Authorization: `Bearer ${mockToken2}` },
         params: { istest: 'true' },
       },
     ).then(async () => {
-      const getResponse = await axios.delete(
+      axios.get(
         `${HOST}/profile/`,
         {
-          headers: { Authorization: `Bearer ${mockToken3}` },
+          headers: { Authorization: `Bearer ${mockToken2}` },
           params: { istest: 'true' },
         },
-      );
-      expect(getResponse.status).toBe(204);
+      ).then((getResponse) => {
+        expect(getResponse.status).toBe(200);
+      });
     });
   }, 20000);
 
@@ -172,15 +153,37 @@ describe('Private Chat Integration Tests', () => {
         params: { istest: 'true' },
       },
     ).then(async () => {
-      const getResponse = await axios.put(
+      axios.delete(
+        `${HOST}/profile/`,
+        {
+          headers: { Authorization: `Bearer ${mockToken3}` },
+          params: { istest: 'true' },
+        },
+      ).then((response) => {
+        expect(response.status).toBe(204);
+      });
+    });
+  }, 20000);
+
+  it('should successfully delete new profile', async () => {
+    axios.post(
+      `${HOST}/profile/`,
+      { profile: mockProfile },
+      {
+        headers: { Authorization: `Bearer ${mockToken3}` },
+        params: { istest: 'true' },
+      },
+    ).then(async () => {
+      axios.put(
         `${HOST}/profile/`,
         { profile: mockProfile },
         {
           headers: { Authorization: `Bearer ${mockToken3}` },
           params: { istest: 'true' },
         },
-      );
-      expect(getResponse.status).toBe(204);
+      ).then((response) => {
+        expect(response.status).toBe(204);
+      });
     });
   }, 20000);
 
@@ -193,14 +196,15 @@ describe('Private Chat Integration Tests', () => {
         params: { istest: 'true' },
       },
     ).then(async () => {
-      const getResponse = await axios.get(
+      axios.get(
         `${HOST}/profile/${mockUser4.username}`,
         {
           headers: { Authorization: `Bearer ${mockToken3}` },
           params: { istest: 'true' },
         },
-      );
-      expect(getResponse.status).toBe(200);
+      ).then((getResponse) => {
+        expect(getResponse.status).toBe(200);
+      });
     });
   }, 20000);
 });

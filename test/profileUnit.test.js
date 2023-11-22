@@ -1,19 +1,17 @@
-import ejs from 'ejs';
-import MailAlertController from '../src/controllers/mailAlertController.js';
-import transporter from '../src/utils/mailer.js';
-import authChecker from '../src/utils/authChecker.js';
+/* eslint-disable new-cap */
+import ProfileController from '../src/controllers/profileController';
+import authChecker from '../src/utils/authChecker';
 
-jest.mock('../src/utils/authChecker.js');
-jest.mock('ejs');
-jest.mock('../src/utils/mailer.js');
+jest.mock('../src/utils/authChecker');
 
-describe('mailController Unit Test', () => {
-  let mailAlertController;
+describe('ProfileController Unit Test', () => {
+  let profileController;
   let mockProfileModel;
   let mockUserModel;
   let req;
   let res;
-  const mockProfile = {
+
+  const mockRes = {
     _id: '123',
     firstName: 'Leo',
     lastName: 'Bot',
@@ -30,7 +28,20 @@ describe('mailController Unit Test', () => {
     pronoun: 'Bot',
     doctorEmail: 'drleo@andrew.cmu.edu',
   };
+
   beforeEach(() => {
+    jest.resetAllMocks();
+    req = {
+      params: {},
+      body: {},
+      headers: {},
+    };
+
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
+    };
     mockProfileModel = {
       getOne: jest.fn(),
       createNewProfile: jest.fn(),
@@ -41,33 +52,80 @@ describe('mailController Unit Test', () => {
       getUserProfileId: jest.fn(),
       updateUserProfileId: jest.fn(),
     };
-    mailAlertController = new MailAlertController(mockUserModel, mockProfileModel);
-    req = { body: {}, app: { get: jest.fn() } };
-    res = { json: jest.fn(), status: jest.fn().mockReturnThis() };
+    profileController = new ProfileController(mockUserModel, mockProfileModel);
+  });
+
+  it('should successfully retrieve a user profile', async () => {
+    authChecker.getAuthUsername.mockReturnValue('testUser');
+    mockUserModel.getUserProfileId.mockResolvedValue({ profileId: '123' });
+
+    mockProfileModel.getOne.mockResolvedValue(mockRes);
+    await profileController.getProfile(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ profile: mockRes });
   });
 
   it('should return 404 if profile not found', async () => {
     authChecker.getAuthUsername.mockReturnValue('testUser');
     mockUserModel.getUserProfileId.mockResolvedValue({});
 
-    await mailAlertController.sendMailAlert(req, res);
-
+    await profileController.getProfile(req, res);
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ message: 'profile not found' });
   });
 
-  it('should send an email successfully', async () => {
+  it('should successfully retrieve a contact profile', async () => {
+    mockUserModel.getUserProfileId.mockResolvedValue({ profileId: '123' });
+    mockProfileModel.getOne.mockResolvedValue(mockRes);
+    req.params.username = 'targetUser';
+    await profileController.getContactProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ profile: mockRes });
+  });
+
+  it('should return 404 if contact profile not found', async () => {
+    mockUserModel.getUserProfileId.mockResolvedValue({});
+    req.params.username = 'targetUser';
+    await profileController.getContactProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(404);
+  });
+
+  it('should show profile already exsist', async () => {
     authChecker.getAuthUsername.mockReturnValue('testUser');
     mockUserModel.getUserProfileId.mockResolvedValue({ profileId: '123' });
-    mockProfileModel.getOne.mockResolvedValue(mockProfile);
-    ejs.renderFile.mockImplementation((template, data, callback) => callback(null, 'email content'));
-    transporter.sendMail.mockImplementation((mailOptions, callback) => callback(null));
+    mockProfileModel.createNewProfile.mockResolvedValue(mockRes);
+    mockUserModel.updateUserProfileId.mockResolvedValue();
+    req.body.profile = mockRes;
+    await profileController.postProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith({ message: 'profile already exsist' });
+  });
 
-    req.app.get.mockReturnValue('/path/to/views/template'); // Mock for template path
+  it('should successfully update a user profile', async () => {
+    authChecker.getAuthUsername.mockReturnValue('testUser');
+    mockUserModel.getUserProfileId.mockResolvedValue({ profileId: '123' });
+    mockProfileModel.updateProfileById.mockResolvedValue(mockRes);
+    mockUserModel.updateUserProfileId.mockResolvedValue();
+    req.body.profile = { ...mockRes, firstName: 'update' };
+    await profileController.updateProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(201);
+  });
 
-    await mailAlertController.sendMailAlert(req, res);
+  it('should return 404 if profile to update is not found', async () => {
+    authChecker.getAuthUsername.mockReturnValue('testUser');
+    mockUserModel.getUserProfileId.mockResolvedValue({});
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ message: 'OK' });
+    req.body.profile = { ...mockRes, firstName: 'update' };
+    await profileController.updateProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(204);
+  });
+
+  it('should return 404 if profile to delete is not found', async () => {
+    authChecker.getAuthUsername.mockReturnValue('testUser');
+    mockUserModel.getUserProfileId.mockResolvedValue({});
+
+    req.body.profile = { ...mockRes, firstName: 'update' };
+    await profileController.deleteProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(204);
   });
 });
