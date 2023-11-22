@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const STATUS = {
   OK: '<i class="fas fa-check-circle" style="color:green"></i>',
   Help: '<i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i>',
@@ -120,7 +121,9 @@ const createEmergencyEventBlock = (event) => {
   div.className = 'card mb-3 event-card';
   div.innerHTML = '<div class="card-body">'
       + '<div class="d-flex justify-content-between align-items-center">'
-      + `<h5 class="card-title d-inline-block">${event.title} <span class="badge text-bg-danger severity">Severity ${event.severity}</span></h5>`
+      + `<h5 class="card-title d-inline-block">${event.title}`
+      + `<a class="edit-button" data-id="${event._id}"><i class="bi bi-pencil-square"></i></a> `
+      + `<span class="badge text-bg-danger severity">Severity ${event.severity}</span></h5>`
       + `<span class="timestamp d-inline-block">${timestampToTime(event.timestamp)}</span>`
       + '</div>'
       + `<p class="card-text location"><span class="card-label">Location: </span>${event.location}</p>`

@@ -65,7 +65,7 @@ $(window).on('DOMContentLoaded', async () => {
   connectSocket(localStorage.getItem('username'));
 
   // get esn directory info
-  axios.get(
+  await axios.get(
     '/emergency/events',
     { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
   ).then((res) => {
@@ -75,6 +75,10 @@ $(window).on('DOMContentLoaded', async () => {
   });
 
   $('#report').on('click', () => {
+    $('#event-form')[0].reset();
+    $('#event-form button[type=submit]').text('Submit');
+    $('button#delete').addClass('d-none');
+    $('#event-form button').removeAttr('data-id');
     $('.emergency-events').addClass('d-none');
     $('.emergency-event-editor').removeClass('d-none');
     setGPS();
@@ -85,12 +89,53 @@ $(window).on('DOMContentLoaded', async () => {
     $('.emergency-events').removeClass('d-none');
     $('.emergency-event-editor').addClass('d-none');
     $('#event-form')[0].reset();
+    $('#event-form button[type=submit]').text('Submit');
+    $('button#delete').addClass('d-none');
+    $('#event-form button').removeAttr('data-id');
+  });
+
+  $('.edit-button').on('click', async (e) => {
+    const { id } = e.currentTarget.dataset;
+    const event = await axios.get(
+      `/emergency/events/${id}`,
+      { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
+    )
+      .then((res) => res.data.event)
+      .catch((err) => {
+        console.error(err);
+        return null;
+      });
+    if (!event) {
+      return;
+    }
+    $('.emergency-events').addClass('d-none');
+    $('#event-form')[0].reset();
+    $('input#title').val(event.title);
+    $('textarea#description').val(event.description);
+    $('input#location').val(event.location);
+    const [rangeAffected, unit] = event.range_affected.split(' ');
+    $('input#range_affected').val(rangeAffected);
+    $('select#unit').val(unit);
+    $('input#severity').val(event.severity);
+    const date = new Date(event.timestamp);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    $('input#time').val(`${hours}:${minutes}`);
+    if (event.coordinates) {
+      $('input#lat').val(event.coordinates[0]);
+      $('input#lng').val(event.coordinates[1]);
+    }
+    $('#event-form button').attr('data-id', id);
+    $('#event-form button[type=submit]').text('Update');
+    $('button#delete').removeClass('d-none');
+    $('.emergency-event-editor').removeClass('d-none');
   });
 
   $('#event-form').on('submit', async (e) => {
     e.preventDefault();
     $('#event-form button').attr('disabled', '');
     const data = Object.fromEntries(new FormData(e.target));
+    // time
     const { time } = data;
     const [hours, minutes] = time.split(':').map(Number);
     const date = new Date();
@@ -98,20 +143,44 @@ $(window).on('DOMContentLoaded', async () => {
     date.setMinutes(minutes);
     data.timestamp = date.getTime();
     delete data.time;
+    // range
+    // eslint-disable-next-line camelcase
+    const { range_affected, unit } = data;
+    // eslint-disable-next-line camelcase
+    data.range_affected = `${range_affected} ${unit}`;
+    delete data.unit;
+    // coordinates
     if (data.lat && data.lng) {
       data.coordinates = [Number(data.lat), Number(data.lng)];
       delete data.lat;
       delete data.lng;
     }
-    await axios.post(
-      '/emergency/events',
+
+    const { id } = e.originalEvent.submitter.dataset;
+    const method = id ? axios.put : axios.post;
+    const url = id ? `/emergency/events/${id}` : '/emergency/events';
+    const notification = id ? 'Event updated' : 'Event reported';
+    await method(
+      url,
       data,
       { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
     ).then(() => {
-      showSuccess('Success', 'Event reported', window.location.reload.bind(window.location));
+      showSuccess('Success', notification, window.location.reload.bind(window.location));
     }).catch((err) => {
       console.error(err);
       e.target.reset();
+    });
+  });
+
+  $('button#delete').on('click', async (e) => {
+    const { id } = e.currentTarget.dataset;
+    await axios.delete(
+      `/emergency/events/${id}`,
+      { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
+    ).then(() => {
+      showSuccess('Success', 'Event deleted', window.location.reload.bind(window.location));
+    }).catch((err) => {
+      console.error(err);
     });
   });
 });

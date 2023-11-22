@@ -29,10 +29,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .event-card:hover {
-            cursor: pointer;
-        }
-
         .card-label {
             padding: 4px 5px 0 0;
             font-weight: bold;
@@ -54,6 +50,15 @@
             font-weight: bold;
             padding: 4px 8px;
             border-radius: 8px;
+        }
+
+        .edit-button {
+            font-weight: bold;
+            padding: 2px 4px;
+        }
+
+        .edit-button:hover {
+            cursor: pointer;
         }
 
         .navbar-toggler {
@@ -119,7 +124,7 @@
                     <label for="title" class="col-form-label">Title</label>
                 </div>
                 <div class="col-9">
-                    <input type="text" class="form-control" id="title" name="title">
+                    <input type="text" class="form-control" id="title" name="title" required>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
@@ -127,7 +132,7 @@
                     <label for="location" class="col-form-label">Location</label>
                 </div>
                 <div class="col-9">
-                    <input type="text" class="form-control" id="location" name="location">
+                    <input type="text" class="form-control" id="location" name="location" required>
                     <input type="hidden" id="lat" name="lat">
                     <input type="hidden" id="lng" name="lng">
                 </div>
@@ -137,7 +142,7 @@
                     <label for="time" class="col-form-label">Time</label>
                 </div>
                 <div class="col-9">
-                    <input type="time" class="form-control" id="time" name="time">
+                    <input type="time" class="form-control" id="time" name="time" required>
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
@@ -147,7 +152,7 @@
                 <div class="col-9 row p-0">
                     <span class="col-auto p-0">0</span>
                     <span class="col-10">
-                        <input type="range" class="form-range" id="severity" min="0" max="10" name="severity">
+                        <input type="range" class="form-range" id="severity" min="0" max="10" name="severity" required>
                     </span>
                     <span class="col-auto p-0">10</span>
                 </div>
@@ -159,8 +164,8 @@
                 </div>
                 <div class="col-9">
                     <span class="input-group">
-                        <input type="number" class="form-control" id="range_affected" name="range_affected">
-                        <select class="form-select" name="unit">
+                        <input type="number" class="form-control" id="range_affected" name="range_affected" required>
+                        <select class="form-select" name="unit" id="unit" required>
                             <option value="foot" selected>feet</option>
                             <option value="mile">miles</option>
                         </select>
@@ -169,7 +174,7 @@
             </div>
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" style="height: 100px" name="description"></textarea>
+                <textarea class="form-control" id="description" style="height: 100px" name="description" required></textarea>
             </div>
             <!-- <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="exampleCheck1">
@@ -178,6 +183,7 @@
             <div class="d-flex justify-content-evenly mt-5">
                 <button type="submit" class="btn btn-info">Submit</button>
                 <button type="button" class="btn btn-secondary" id="cancel">Back</button>
+                <button type="button" class="btn btn-danger d-none" id="delete">Delete</button>
             </div>
         </form>
     </div>
