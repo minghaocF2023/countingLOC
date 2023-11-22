@@ -8,6 +8,8 @@ const STATUS = {
 
 window.STATUS = STATUS;
 
+const timestampToTime = (timestamp) => new Date(timestamp).toLocaleString('en-US', { hour12: false });
+
 const createChatMessage = (senderName, status, content, timestamp) => {
   const iconHTML = STATUS[status];
   const renderName = senderName === localStorage.getItem('username') ? 'Me' : senderName;
@@ -15,7 +17,7 @@ const createChatMessage = (senderName, status, content, timestamp) => {
   code += '<div class="card message-card">';
   code += '<div class="card-body">';
   code += `<h5 class="card-title">${renderName} ${iconHTML}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
+  code += `<span class="timestamp">${timestampToTime(timestamp)}</span>`;
   code += `<p class="card-text">${content}</p>`;
   code += '</div>';
   code += '</div>';
@@ -48,7 +50,7 @@ const createAnnouncementMessage = (senderName, content, timestamp) => {
   code += '<div class="card message-card">';
   code += '<div class="card-body">';
   code += `<h5 class="card-title flex-grow-1">${renderName}</h5>`;
-  code += `<span class="timestamp">${new Date(timestamp).toLocaleString('en-US', { hour12: false })}</span>`;
+  code += `<span class="timestamp">${timestampToTime(timestamp)}</span>`;
   code += `<p class="card-text">${content}</p>`;
   code += '</div>';
   code += '</div>';
@@ -113,3 +115,20 @@ const createMyRequestItem = (id, medicinename, quantity, username, status, times
 };
 
 window.createMyRequestItem = createMyRequestItem;
+const createEmergencyEventBlock = (event) => {
+  const div = document.createElement('div');
+  div.className = 'card mb-3 event-card';
+  div.innerHTML = '<div class="card-body">'
+      + '<div class="d-flex justify-content-between align-items-center">'
+      + `<h5 class="card-title d-inline-block">${event.title} <span class="badge text-bg-danger severity">Severity ${event.severity}</span></h5>`
+      + `<span class="timestamp d-inline-block">${timestampToTime(event.timestamp)}</span>`
+      + '</div>'
+      + `<p class="card-text location"><span class="card-label">Location: </span>${event.location}</p>`
+      + `<p class="card-text range"><span class="card-label">Range: </span>${event.range_affected}</p>`
+      + `<p class="card-text description"><span class="card-label">Description: </span>${event.description}</p>`
+      + '</div>'
+      + '</div>';
+  return div;
+};
+
+window.createEmergencyEventBlock = createEmergencyEventBlock;
