@@ -38,6 +38,14 @@ router.get('/503page', (req, res) => {
   res.render('503page');
 });
 
+router.get('/shelter', (req, res) => {
+  res.render('shelter');
+});
+
+router.get('/addShelter', (req, res) => {
+  res.render('addShelter');
+});
+
 // router.get('/messages/public', (req, res) => {
 //   res.render('chatwall');
 // });

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Shelter</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        .back-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button onclick="history.back()" class="btn btn-secondary back-button">Back</button>
+        <h2>Add Shelter Information</h2>
+        <form id="shelterForm">
+            <div class="form-group">
+                <label for="name">Shelter Name:</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="text" class="form-control" id="longitude" required>
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="text" class="form-control" id="latitude" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+            <button type="button" onclick="history.back()" class="btn btn-secondary">Cancel</button>
+        </form>
+    </div>
+
+    <script type="module" src="js/addShelter.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</body>
+</html>

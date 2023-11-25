@@ -95,7 +95,7 @@ const router = express.Router();
  *             example:
  *               message: User unauthorized
  *       401:
- *         description: User not logged in
+ *         description:  in
  *         content:
  *           application/json:
  *             schema:

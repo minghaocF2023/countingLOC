@@ -3,6 +3,7 @@ import ChatroomFactory from './chatroomModel.js';
 import PrivateMessageFactory from './privateMessageModel.js';
 import PublicMessageFactory from './publicMessageModel.js';
 import UserFactory from './userModel.js';
+import ShelterFactory from './shelterModel.js';
 
 import { realConnection, testConnection } from '../services/db.js';
 
@@ -16,6 +17,8 @@ const publicMessageModel = PublicMessageFactory(realConnection);
 const testPublicMessageModel = PublicMessageFactory(testConnection);
 const announcementModel = AnnouncementFactory(realConnection);
 const testAnnouncementModel = AnnouncementFactory(testConnection);
+const shelterModel = ShelterFactory(realConnection);
+const testShelterModel = ShelterFactory(testConnection);
 
 export {
   userModel,
@@ -28,4 +31,6 @@ export {
   testPublicMessageModel,
   announcementModel,
   testAnnouncementModel,
+  shelterModel,
+  testShelterModel,
 };

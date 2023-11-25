@@ -15,6 +15,7 @@ import adminRouter from './src/routes/adminRouter.js';
 import searchRouter from './src/routes/searchRouter.js';
 import SocketServer from './src/services/socket.js';
 import PrivateSocketServer from './src/services/privateSocket.js';
+import shelterRouter from './src/routes/shelterRouter.js';
 
 global.isTest = false;
 global.testUser = null;
@@ -91,6 +92,7 @@ app.use('/users/', userRouter);
 app.use('/messages/', messageRouter);
 app.use('/admin/', adminRouter);
 app.use('/search/', searchRouter);
+app.use('/shelters/', shelterRouter)
 app.use(
   '/docs',
   swaggerUi.serve,
