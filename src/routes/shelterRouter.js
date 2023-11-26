@@ -1,20 +1,3 @@
-/**
- * @swagger
- * /shelters/sheltername:
- *   put:
- *     tags: [shelters]
- *     summary: modify an existing shelter
- *     description: modify an existing shelter
- */
-
-/**
- * @swagger
- * /shelters/sheltername:
- *   delete:
- *     tags: [shelters]
- *     summary: delete a new shelter
- *     description: delete a new shelter
- */
 
 /**
  * @swagger
@@ -67,6 +50,53 @@ router.post('/', (req, res) => {
         testShelterController.createNewShelter(req, res);
     } else {
         shelterController.createNewShelter(req, res);
+    }
+});
+
+
+/**
+ * @swagger
+ * /shelters/shelterId:
+ *   put:
+ *     tags: [shelters]
+ *     summary: modify an existing shelter
+ *     description: modify an existing shelter
+ */
+router.put('/:shelterId', (req, res) => {
+    if (req.query.istest === 'true') {
+        testShelterController.updateShelter(req, res);
+    } else {
+        shelterController.updateShelter(req, res);
+    }
+});
+
+
+router.get('/:id/info', async (req, res) => {
+    try {
+        const shelterId = req.params.id;
+        const shelter = await shelterModel.findById(shelterId);
+        if (!shelter) {
+            return res.status(404).send('Shelter not found');
+        }
+        res.render('shelterInfo', { shelter }); // Render the shelter info page
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+/**
+ * @swagger
+ * /shelters/shelterID:
+ *   delete:
+ *     tags: [shelters]
+ *     summary: delete a new shelter
+ *     description: delete a new shelter
+ */
+router.delete('/:shelterId', (req, res) => {
+    if (req.query.istest === 'true') {
+        testShelterController.deleteShelter(req, res);
+    } else {
+        shelterController.deleteShelter(req, res);
     }
 });
 

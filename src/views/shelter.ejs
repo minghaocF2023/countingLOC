@@ -84,7 +84,7 @@
 
         #map {
             border: 2px solid #007bff;
-            margin-top: 100px;
+            margin-top: 40px;
             margin-bottom: 20px;
         }
 
@@ -103,6 +103,8 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            text-decoration: none; 
+            display: inline-block;
         }
 
         .shelter-button:hover {
@@ -114,11 +116,17 @@
 <body>
     <%- include('partials/navbar') %>
 
+    <!-- Location display-->
+    <div id="userLocationDisplay" style="text-align: center; margin-top: 80px">
+        <strong>Your Location:</strong> <span id="userLatitude"></span>, <span id="userLongitude"></span>
+    </div>
 
-<!-- map area -->
-<div id="map" style="height: 400px; width: 100%;"></div>
-<!-- offer shelter button-->
-<a href="/addShelter" class="center-button"><button class="shelter-button">Add Shelter</button></a>
+    <!-- map area -->
+    <div id="map" style="height: 600px; width: 100%"></div>
+    <!-- offer shelter button-->
+    <div class="center-button">
+        <a href="/addShelter" class="shelter-button">Add Shelter</a>
+    </div>
 
 </body> 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0qtJZZIfYUhKekvB5e37oD2Ri5n4AgqI" async defer></script>
