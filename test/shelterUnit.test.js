@@ -6,8 +6,6 @@ describe('Unit tests for shelter feature', () => {
     let ShelterModel;
     let mockReq, mockRes;
 
-    
-
     beforeEach(() => {
         ShelterModel = {
             find: jest.fn(),

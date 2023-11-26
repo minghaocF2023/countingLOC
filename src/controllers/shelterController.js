@@ -42,8 +42,8 @@ class ShelterController {
             longitude: req.body.longitude,
             latitude: req.body.latitude,
         };
-        // console.log('----data----:' + 
-        // `shelter name: ${data.shelterName}, latitude: ${data.latitude}, longitude: ${data.longitude}`);
+        console.log('----data----:' + 
+        `shelter name: ${data.shelterName}, latitude: ${data.latitude}, longitude: ${data.longitude}`);
         const newShelter = new this.shelterModel(data);
         await newShelter.save();
         res.status(201).json({ success: true, data: newShelter });
