@@ -29,8 +29,6 @@ document.getElementById('shelterForm').addEventListener('submit', function(event
     } catch (e) {
         console.log(e);
     }
-
-    // history.back();
 });
 
 function isValidLatitude(lat) {
@@ -43,7 +41,7 @@ function isValidLongitude(lng) {
 
 const addShelter = async (shelterName, longitude, latitude) => {
     try {
-        console.log('trying to save shelter data.....')
+        console.log('trying to save shelter data.....');
         await axios.post('/shelters', { shelterName, longitude, latitude }, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,

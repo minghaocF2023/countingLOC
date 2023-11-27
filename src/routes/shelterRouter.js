@@ -1,12 +1,3 @@
-
-/**
- * @swagger
- * /shelters/username:
- *   get:
- *     tags: [shelters]
- *     summary: get all nearby shelters of a user
- *     description: get all nearby shelters of a user
- */
 import express from 'express';
 import ShelterController from '../controllers/shelterController.js';
 import { 
@@ -18,8 +9,7 @@ import {
 
 const router = express.Router(); 
 const shelterController = new ShelterController(userModel, shelterModel);
-const testShelterController = new ShelterController(testUserModel, testShelterModel)
-// const testShelterController = new 
+const testShelterController = new ShelterController(testUserModel, testShelterModel); 
 
 /**
  * @swagger

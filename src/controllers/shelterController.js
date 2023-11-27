@@ -20,7 +20,6 @@ class ShelterController {
         }
         
         const shelters = await this.shelterModel.find({});
-        // console.log('------shelters: ' + shelters)
         res.status(200).json({ success: true, data: shelters });
     }
 
@@ -35,8 +34,8 @@ class ShelterController {
         if (testChecker.isTest(res, payload)) {
             return;
         }
+
         // create new shelter
-        
         const data = {
             shelterName: req.body.shelterName,
             longitude: req.body.longitude,

@@ -14,8 +14,6 @@ const ShelterFactory = (connection) => {
             type: String,
             required: true,
         },
-    
-        // add more fields
     });
 
     let ShelterModel;

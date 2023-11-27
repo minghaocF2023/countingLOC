@@ -1,4 +1,3 @@
-// const MAP_API_KEY = "AIzaSyD0qtJZZIfYUhKekvB5e37oD2Ri5n4AgqI";
 let userLocation;
 
 function requestUserLocation() {
@@ -97,7 +96,7 @@ async function initMap() {
                 center: userLocation
             });
             var marker = new google.maps.Marker({
-                position: userLocation, // 37.367598, -121.993069
+                position: userLocation, 
                 map: map,
                 title: 'Your Location',
             });

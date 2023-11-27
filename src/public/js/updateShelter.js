@@ -1,4 +1,3 @@
-// updateShelter.js
 document.addEventListener('DOMContentLoaded', function() {
     const editForm = document.getElementById('shelterEditForm');
     const shelterNameDisplay = document.querySelector('h1'); // Assuming the first h1 tag contains the shelter name
@@ -51,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => {
                     if(response.data.success) {
                         alert('Shelter deleted successfully');
-                        window.history.back(); // Redirect as needed
+                        window.history.back(); 
                     } else {
                         alert('Error deleting shelter');
                     }
