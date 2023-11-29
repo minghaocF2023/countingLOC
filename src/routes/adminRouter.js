@@ -2,6 +2,42 @@
  * @swagger
  * components:
  *   schemas:
+*     ProfileElements:
+ *       type: object
+ *       description: user profile element
+ *       properties:
+ *        accountStatus:
+ *          type: string
+ *          description: account status
+ *          example: Active
+ *        privilegeLevel:
+ *          type: string
+ *          description: user's privilege level
+ *          example: Administrator
+ *        username:
+ *          type: string
+ *          description: username
+ *          example: ESNAdmin
+ *     ProfileReq:
+ *       type: object
+ *       description: user profile update request
+ *       properties:
+ *        accountStatus:
+ *          type: string
+ *          description: account status
+ *          example: Active
+ *        privilegeLevel:
+ *          type: string
+ *          description: user's privilege level
+ *          example: Administrator
+ *        username:
+ *          type: string
+ *          description: username
+ *          example: ESNAdmin
+ *        password:
+ *          type: string
+ *          description: password
+ *          example: admin
  *     Report:
  *       type: object
  *       description: speed test report
@@ -48,6 +84,19 @@
  *           type: int
  *           description: test duration (ms)
  *           example: 1000
+ */
+
+/**
+ * @swagger
+ * parameters:
+ *   username:
+ *     name: username
+ *     in: path
+ *     description: username
+ *     required: true
+ *     schema:
+ *       type: string
+ *     example: randomuser
  */
 import express from 'express';
 import SpeedTestController from '../controllers/speedTestController.js';
@@ -159,6 +208,110 @@ router.post('/startspeedtest', (req, res) => {
 });
 router.get('/istest', (req, res) => {
   speedTestController.getIsTestState(req, res);
+});
+
+/**
+ * @swagger
+ * /admin/profile/{username}:
+ *   put:
+ *     tags: [Admin]
+ *     summary: update a user's profile elements
+ *     description: call a api for {duration} and with {interval} between every api call,
+ *      will broadcast {startspeedtest} & {finishspeedtest} socket when test begin and finish
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProfileReq'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       403:
+ *         description: User Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User unauthorized
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.get('/profile/:username', (req, res) => {
+  res.status(501).json({ message: 'Not implemented' });
+});
+
+/**
+ * @swagger
+ * /admin/profile/{username}:
+ *   get:
+ *     tags: [Admin]
+ *     summary: update a user's profile elements
+ *     description: call a api for {duration} and with {interval} between every api call,
+ *      will broadcast {startspeedtest} & {finishspeedtest} socket when test begin and finish
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+ *                   properties:
+ *                    profile:
+ *                      $ref: '#/components/schemas/ProfileElements'
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       403:
+ *         description: User Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User unauthorized
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.put('/profile/:username', (req, res) => {
+  res.status(501).json({ message: 'Not implemented' });
 });
 
 router.delete('/chatroom', (req, res) => {
