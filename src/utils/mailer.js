@@ -3,8 +3,8 @@ import smtpTransport from 'nodemailer-smtp-transport';
 import 'dotenv/config';
 
 const transporter = nodeMailer.createTransport(smtpTransport({
-  service: 'Gmail',
-  host: 'smtp.gmail.com',
+  service: process.env.EMAIL_SERVICE,
+  host: process.env.EMAIL_HOST,
   secureConnection: false, // TLS encryption
   auth: {
     user: process.env.EMAIL_ACCOUNT,

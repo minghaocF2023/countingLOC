@@ -2,6 +2,7 @@
 import ejs from 'ejs';
 import transporter from '../utils/mailer.js';
 import authChecker from '../utils/authChecker.js';
+import 'dotenv/config';
 
 class MailAlertController {
   constructor(userModel, profileModel) {
@@ -28,7 +29,7 @@ class MailAlertController {
       const mailOptions = {
         from: '"ESN Community" <esn.alert@gmail.com>',
         to: profile.doctorEmail,
-        cc: 'esn.alert@gmail.com',
+        cc: process.env.EMAIL_ACCOUNT,
         subject: '[Emergency] Emergency Alert from ESN',
         html: data,
         attachments: [
