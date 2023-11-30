@@ -56,7 +56,7 @@ const connectSocket = (username) => {
 
   socket.on('privatemessage', (msg) => notify(msg));
 
-  socket.on('emergency', notifyEventHandler);
+  socket.on('emergency', (event) => notifyEventHandler(event));
 };
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
