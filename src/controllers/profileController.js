@@ -13,7 +13,8 @@ class ProfileController {
    */
   async getProfile(req, res) {
     const username = authChecker.getAuthUsername(req, res);
-    const { profileId } = await this.userModel.getUserProfileId(username);
+    const response = await this.userModel.getUserProfileId(username);
+    const profileId = response ? response.profileId : null;
     if (!profileId) {
       res.status(404).json({ message: 'Profile not found.' });
       return;
@@ -23,7 +24,8 @@ class ProfileController {
   }
 
   async getContactProfile(req, res) {
-    const { profileId } = await this.userModel.getUserProfileId(req.params.username);
+    const response = await this.userModel.getUserProfileId(req.params.username);
+    const profileId = response ? response.profileId : null;
     if (!profileId) {
       res.status(404).json({ message: 'Profile not found.' });
       return;
@@ -43,7 +45,8 @@ class ProfileController {
       res.status(400).json({ message: 'Bad Request.' });
       return;
     }
-    const { profileId } = await this.userModel.getUserProfileId(username);
+    const response = await this.userModel.getUserProfileId(username);
+    const profileId = response ? response.profileId : null;
     if (profileId) {
       res.status(409).json({ message: 'profile already exsist' });
       return;
