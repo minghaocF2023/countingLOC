@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 const compareString = (a, b) => a.localeCompare(b);
 
-const appendNewUser = (div, username, isOnline, status) => {
+const appendNewUser = (div, username, isOnline, status, profileImage, isContact) => {
   // user already in div
   if (div.children(`#${username}`).length > 0) {
     return;
@@ -10,7 +10,7 @@ const appendNewUser = (div, username, isOnline, status) => {
   $(`#${username}`).remove();
   // add new online block
   const newList = div.children();
-  const newUser = createUserBlock(username, isOnline, status);
+  const newUser = createUserBlock(username, isOnline, status, profileImage, isContact);
   newList.push(newUser);
   // sort
   newList.sort((a, b) => compareString(a.id, b.id));
@@ -74,15 +74,32 @@ $(window).on('DOMContentLoaded', async () => {
   connectSocket(localStorage.getItem('username'));
 
   // get esn directory info
-  axios.get('/users').then((res) => {
+  axios.get('/users', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  }).then((res) => {
     const userOnlineStatus = res.data.users.sort(compareByUsername);
     const onlineList = [];
     const offlineList = [];
     userOnlineStatus.forEach((element) => {
       if (element.isOnline) {
-        onlineList.push(createUserBlock(element.username, element.isOnline, element.status));
+        onlineList.push(createUserBlock(
+          element.username,
+          element.isOnline,
+          element.status,
+          element.profileImage ? element.profileImage : null,
+          element.isContact,
+        ));
       } else {
-        offlineList.push(createUserBlock(element.username, element.isOnline, element.status));
+        offlineList.push(createUserBlock(
+          element.username,
+          element.isOnline,
+          element.status,
+          element.profileImage
+            ? element.profileImage : null,
+          element.isContact,
+        ));
       }
     });
 

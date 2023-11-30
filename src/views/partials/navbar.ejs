@@ -24,6 +24,28 @@
         <i id="cancel-icon" class="bi bi-x-lg d-none">Cancel</i>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
+        <div  class="bg-body-secondary p-2 py-1 rounded-pill d-flex justify-content-between my-2">
+            <div style="width: max-content;" class=" p-1 d-flex justify-content-center align-items-center rounded-pill">
+                <div class="overflow-hidden" style="background-color:#fff; border-radius: 50%; height: 2rem; aspect-ratio: 1 / 1;">
+                    <img id="navImg" src="images/ambulance.png" style="height: 2rem; aspect-ratio: 1 / 1;"  alt="">
+                </div>
+                <b class="ms-2" id="username">{username}</b>
+                <span class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">
+                        Undefined
+                    </button>
+                    <ul class="dropdown-menu mt-3 mb-3 p-2">
+                        <li class="ml-1"><a id="OK"><i class="fas fa-check-circle" style="color:green"></i> OK</a></li>
+                        <li class="ml-1"><a id="Help"><i class="fas fa-exclamation-circle" style="color:rgb(255, 230, 0)"></i> Help</a></li>
+                        <li class="ml-1"><a id="Emergency"><i class="fas fa-exclamation-triangle" style="color:red"></i> Emergency</a></li>
+                    </ul>
+                </span>
+            </div>
+            <a href="/userprofile" class="my-1 btn btn-outline-primary rounded-pill">
+                <i class="bi bi-person-circle"> User Profile</i>
+            </a>
+
+        </div>
         <ul class="navbar-nav mr-auto">
             <li class="nav-item mr-2">
                 <a class="nav-link esn-directory btn btn-outline-secondary" href="/esndirectory">ESN Directory</a>
@@ -55,21 +77,6 @@
             </li>
         </ul>
         <ul class="navbar-nav">
-            <li class="nav-item d-none">
-                <b id="username">{username}</b>
-                <span class="dropdown">
-                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">
-                        Undefined
-                    </button>
-                    <ul class="dropdown-menu mt-3 mb-3">
-                        <li class="ml-1"><a id="OK"><i class="fas fa-check-circle" style="color:green"></i> OK</a></li>
-                        <li class="ml-1"><a id="Help"><i class="fas fa-exclamation-circle"
-                                    style="color:rgb(255, 230, 0)"></i> Help</a></li>
-                        <li class="ml-1"><a id="Emergency"><i class="fas fa-exclamation-triangle" style="color:red"></i>
-                                Emergency</a></li>
-                    </ul>
-                </span>
-            </li>
             <li class="nav-item">
                 <a id="logout" class="nav-link btn btn-primary text-white active" href="/join">Logout</a>
             </li>
@@ -111,6 +118,25 @@
     document.addEventListener('DOMContentLoaded', () => {
         curUserIsDoctor().then(setAppointmentsLink);
     });
+
+    const getProfileImg = async () => {
+        const profile = await axios.get('/profile', {
+            headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        return profile.data;
+        };
+
+        $(window).on('load',()=>{
+            getProfileImg().then((data)=>{
+                $("#navImg").attr('src', data.profile.profileImage);
+            })
+            
+        })
+
+
     $("#search-btn").on("click", () => {
         if (!$("#search-navbar").hasClass("show")) {
             $("#search-icon").addClass("d-none");

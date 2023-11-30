@@ -12,6 +12,23 @@ const showInfo = (errorTitle, errorMessage, link) => {
   });
 };
 
+const showWarning = (errorTitle, errorMessage) => {
+  iziToast.warning({
+    title: errorTitle,
+    message: errorMessage,
+    color: 'red',
+    position: 'topRight',
+  });
+};
+
+const showSuccess = (title, message) => {
+  iziToast.success({
+    title,
+    message,
+    position: 'topRight',
+  });
+};
+
 const notify = (msg) => {
   const { senderName } = msg.content;
   showInfo(
@@ -77,6 +94,8 @@ window.getChattedUsers = getChattedUsers;
 window.notifyAnnouncement = notifyAnnouncement;
 window.notifyRequest = notifyRequest;
 
+window.showWarning = showWarning;
+window.showSuccess = showSuccess;
 (await getChattedUsers()).forEach(async (user) => {
   if (await hasUnreadMsg(user)) {
     alertMsgDuringOffline(user);

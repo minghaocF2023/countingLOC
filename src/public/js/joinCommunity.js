@@ -142,7 +142,7 @@ const roleSelect = document.getElementById('role');
 const addDoctorIdentity = (username) => {
   axios.post(`/users/${username}/adddoctoridentity`)
     .then(() => {
-      window.location.href = '/esndirectory'; // Redirect to the desired page on success
+      window.location.href = '/editprofile'; // Redirect to the desired page on success
     })
     .catch((error) => {
       console.error('Error setting user as doctor:', error);
@@ -156,7 +156,7 @@ if (roleForm) {
     if (isDoctor) {
       addDoctorIdentity(inputUsername);
     } else {
-      window.location.href = '/esndirectory';
+      window.location.href = '/editprofile';
     }
   });
 }

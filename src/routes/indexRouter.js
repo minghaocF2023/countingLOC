@@ -50,6 +50,17 @@ router.get('/emergencies', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'emergencyEvents');
 });
 
+router.get('/userprofile', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'profile');
+});
+router.get('/contact', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'contactProfile');
+});
+
+router.get('/editprofile', (req, res) => {
+  res.render(global.isTest === true ? '503page' : 'profileEdit');
+});
+
 router.get('/503page', (req, res) => {
   res.render('503page');
 });
@@ -60,6 +71,8 @@ router.get('/shelter', (req, res) => {
 
 router.get('/addShelter', (req, res) => {
   res.render('addShelter');
+});
+
 router.get('/market', (req, res) => {
   res.render(global.isTest === true ? '503page' : 'marketmedicine');
 });

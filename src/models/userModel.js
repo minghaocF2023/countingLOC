@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 // import * as fs from 'fs';
 // import path, { dirname } from 'path';
 // import { fileURLToPath } from 'url';
@@ -35,6 +36,10 @@ const userFactory = (connection) => {
     },
     chatrooms: {
       type: Array,
+      required: false,
+    },
+    profileId: {
+      type: mongoose.Types.ObjectId,
       required: false,
     },
     isOnline: {
@@ -190,6 +195,22 @@ const userFactory = (connection) => {
      */
     async setOffline() {
       await this.updateOne({ isOnline: false });
+    }
+
+    async getUserProfileId(username) {
+      const id = await User.findOne({ username }, 'profileId');
+      return id;
+    }
+
+    static async getDoctors() {
+      const list = await User.find({ profileId: { $exists: true, $ne: null } }, '_id username profileId');
+      return list;
+    }
+
+    async updateUserProfileId(username, id) {
+      User.findOneAndUpdate({ username }, { profileId: id }, { new: true }).catch(
+        (err) => console.error(err),
+      );
     }
 
     /**

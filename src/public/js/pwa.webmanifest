@@ -1,0 +1,22 @@
+{
+    "name": "Emergency Social Network",
+    "short_name": "ESN",
+    "description": "A social network that able users to ask for help during emergencies.",
+    "icons": [
+        {
+            "src": "/../images/apple-touch.png",
+            "sizes": "196x196",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/../images/splash-screen.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "fullscreen",
+    "theme_color": "#B9625D",
+    "background_color": "#FFF"
+  }
