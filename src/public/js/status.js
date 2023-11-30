@@ -6,8 +6,20 @@ const setStatus = async (status) => {
     `users/${localStorage.getItem('username')}/status/${status}`,
     null,
     { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
-  ).then((res) => {
-    // console.log(res.data);
+  ).then(async (res) => {
+    const currentStatus = res.data.status;
+    if (currentStatus === 'Emergency') {
+      axios.post(
+        'mail',
+        null,
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } },
+      ).then(() => {
+        console.log('Hi');
+        showWarning('Emergency email sent', 'An email is sent to your emergency contact.');
+      }).catch(() => {
+        showWarning('Emergency Email Fail', 'Fail to send an emergency email, please check your profile settings');
+      });
+    }
   }).catch((err) => {
     console.warn(err.response.data);
     // if navigate to chat wall without token, should back to join page

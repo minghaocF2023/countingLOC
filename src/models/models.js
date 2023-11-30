@@ -10,6 +10,7 @@ import RequestFactory from './requestModel.js';
 import EmergencyEventFactory from './emergencyEvent.js';
 
 import { realConnection, testConnection } from '../services/db.js';
+import ProfileFactory from './profileModel.js';
 
 const userModel = UserFactory(realConnection);
 const testUserModel = UserFactory(testConnection);
@@ -32,6 +33,8 @@ const testRequestModel = RequestFactory(testConnection);
 const emergencyEventModel = EmergencyEventFactory(realConnection);
 const testEmergencyEventModel = EmergencyEventFactory(testConnection);
 
+const ProfileModel = ProfileFactory(realConnection);
+const testProfileModel = ProfileFactory(testConnection);
 export {
   userModel,
   testUserModel,
@@ -39,6 +42,8 @@ export {
   testChatroomModel,
   privateMessageModel,
   testPrivateMessageModel,
+  ProfileModel,
+  testProfileModel,
   publicMessageModel,
   testPublicMessageModel,
   announcementModel,
