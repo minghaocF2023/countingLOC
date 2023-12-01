@@ -6,11 +6,11 @@
  *       type: object
  *       description: user profile element
  *       properties:
- *        accountStatus:
+ *        isActive:
  *          type: string
  *          description: account status
  *          example: Active
- *        privilegeLevel:
+ *        privilege:
  *          type: string
  *          description: user's privilege level
  *          example: Administrator
@@ -22,11 +22,11 @@
  *       type: object
  *       description: user profile update request
  *       properties:
- *        accountStatus:
- *          type: string
+ *        isActive:
+ *          type: boolean
  *          description: account status
- *          example: Active
- *        privilegeLevel:
+ *          example: true
+ *        privilege:
  *          type: string
  *          description: user's privilege level
  *          example: Administrator
@@ -100,9 +100,16 @@
  */
 import express from 'express';
 import SpeedTestController from '../controllers/speedTestController.js';
-import { testChatroomModel, testPublicMessageModel } from '../models/models.js';
+import AdminController from '../controllers/adminController.js';
+import {
+  userModel,
+  testUserModel,
+  testChatroomModel,
+  testPublicMessageModel,
+} from '../models/models.js';
 
 const speedTestController = new SpeedTestController(testPublicMessageModel);
+const adminController = new AdminController(userModel);
 const router = express.Router();
 
 /**
@@ -260,7 +267,8 @@ router.get('/istest', (req, res) => {
  *               message: User not logged in
  */
 router.get('/profile/:username', (req, res) => {
-  res.status(501).json({ message: 'Not implemented' });
+  adminController.getUserProfile(req, res);
+  // res.status(501).json({ message: 'Not implemented' });
 });
 
 /**
@@ -311,7 +319,7 @@ router.get('/profile/:username', (req, res) => {
  *               message: User not logged in
  */
 router.put('/profile/:username', (req, res) => {
-  res.status(501).json({ message: 'Not implemented' });
+  adminController.updateUserProfile(req, res);
 });
 
 router.delete('/chatroom', (req, res) => {

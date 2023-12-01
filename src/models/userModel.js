@@ -47,7 +47,6 @@ const userFactory = (connection) => {
       required: true,
       default: false,
     },
-    // TODO: status, isAdmin: false
     status: {
       type: String,
       default: 'Undefined',
@@ -61,6 +60,15 @@ const userFactory = (connection) => {
       type: Boolean,
       required: true,
       default: false,
+    },
+    privilege: {
+      type: String,
+      enum: ['Citizen', 'Coordinator', 'Administrator'],
+      default: 'Citizen',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   });
 
@@ -221,6 +229,20 @@ const userFactory = (connection) => {
     }
 
     /**
+     * Set user privilege level
+     * @param {string} privilege new privilege level
+     * @returns {Promise<void>}
+     */
+    async setPrivilege(privilege) {
+      const validPrivileges = ['Citizen', 'Coordinator', 'Administrator'];
+      if (!validPrivileges.includes(privilege)) {
+        throw new Error(`Invalid privilege: ${privilege}. Valid privileges are ${validPrivileges.join(', ')}.`);
+      }
+
+      await this.updateOne({ privilege });
+    }
+
+    /**
      * Get all online users
      * @returns {User[]} array of online users
      */
@@ -264,6 +286,10 @@ const userFactory = (connection) => {
 
     getIsDoctor() {
       return this.isDoctor;
+    }
+
+    getPrivilege() {
+      return this.privilege;
     }
   }
 
