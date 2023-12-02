@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 
+import { isValidUsername, isValidPassword, isBannedUsername } from '../public/js/validation.js';
+
 class AdminController {
   constructor(userModel) {
     this.userModel = userModel;
@@ -19,7 +21,21 @@ class AdminController {
     const { username } = req.params;
     const updateData = req.body;
 
+    // TODO: verify USERNAME, PASSWORD, PRIVILEGE
+    if (updateData.username !== username && (
+      this.userModel.isUsernameTaken(updateData.username)
+      || !isValidUsername(updateData.username)
+      || isBannedUsername(updateData.username)
+    )) {
+      res.status(400).json({ message: 'Invalid username' });
+      return;
+    }
+
     if (updateData.password) {
+      if (!isValidPassword(updateData.password)) {
+        res.status(400).json({ message: 'Invalid password' });
+        return;
+      }
       // password encrypt
       const salt = crypto.randomBytes(16);
       const hashedPassword = await this.userModel.hashPassword(updateData.password, salt);
@@ -37,6 +53,8 @@ class AdminController {
     res.status(200).json({ message: 'User profile successfully updated', userProfile });
 
     // TODO: handle INACTIVE
+
+    // TODO: handle NAME CHANGE
   }
 }
 
