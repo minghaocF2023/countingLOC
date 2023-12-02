@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 
 import { isValidUsername, isValidPassword, isBannedUsername } from '../public/js/validation.js';
+import authChecker from '../utils/authChecker.js';
 
 class AdminController {
   constructor(userModel) {
@@ -18,8 +19,12 @@ class AdminController {
   }
 
   async updateUserProfile(req, res) {
-    const { username } = req.params;
-    const updateData = req.body;
+    const updateData = {
+      ...req.body,
+      username: req.params.username,
+    };
+
+    const username = authChecker.getAuthUsername(req, res);
 
     // TODO: verify USERNAME, PASSWORD, PRIVILEGE
     if (updateData.username !== username && (
