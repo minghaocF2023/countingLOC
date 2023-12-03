@@ -266,12 +266,7 @@ router.get('/istest', (req, res) => {
  *             example:
  *               message: User not logged in
  */
-// router.get('/profile/:username', (req, res) => {
-//   adminController.getUserProfile(req, res);
-//   // res.status(501).json({ message: 'Not implemented' });
-// });
 router.get('/profile/:username', (req, res) => {
-  // userController.getUserByUsername(req, res);
   if (req.query.istest === 'true') {
     const testAdminController = new AdminController(testUserModel);
     testAdminController.getUserProfile(req, res);

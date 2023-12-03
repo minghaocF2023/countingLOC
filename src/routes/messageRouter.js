@@ -164,7 +164,6 @@ const testAnnouncementController = new AnnouncementController(
  *                       items:
  *                        $ref: '#/components/schemas/Message'
  */
-// router.get('/public', PublicChatController.getLatestMessages);
 router.get('/public', (req, res) => {
   if (req.query.istest === 'true') {
     testPublicChatController.getLatestMessages(req, res);
@@ -173,7 +172,6 @@ router.get('/public', (req, res) => {
   } else {
     publicChatController.getLatestMessages(req, res);
   }
-  // publicChatController.getLatestMessages(req, res);
 });
 
 // /**
@@ -361,9 +359,7 @@ router.post('/private', (req, res) => {
  *             example:
  *               message: User not logged in
  */
-// router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
 router.get('/private/:targetUser/:currentUser', (req, res) => {
-// router.get('/private/:userA/:userB', (req, res) => {
   if (req.query.istest === 'true') {
     testPrivateChatController.getLatestMessageBetweenUsers(req, res);
   } else {

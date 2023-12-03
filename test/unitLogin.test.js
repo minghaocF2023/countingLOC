@@ -19,6 +19,7 @@ describe('LoginController', () => {
 
   beforeAll(() => {
     mockUserModel = {
+      find: jest.fn(),
       validate: jest.fn(),
       getOne: jest.fn(),
     };
