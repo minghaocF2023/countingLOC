@@ -53,6 +53,15 @@ class AdminController {
       return;
     }
 
+    // handle at least one admin
+    if (updateData.privilege && updateData.privilege !== 'Administrator') {
+      const admins = await this.userModel.find({ privilege: 'Administrator' });
+      if (admins.length === 1 && admins[0].username === usernameOfProfile) {
+        res.status(400).json({ message: 'Cannot remove the only administrator' });
+        return;
+      }
+    }
+
     const userProfile = await this.userModel.findOne({ username: updateData.username }).select('-_id username isActive privilege');
     res.status(200).json({ message: 'User profile successfully updated', userProfile });
 
