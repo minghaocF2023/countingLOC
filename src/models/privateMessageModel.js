@@ -4,19 +4,28 @@ const PrivateMessageFactory = (connection) => {
   const PrivateMessageSchema = new mongoose.Schema({
     chatroomId: {
       type: mongoose.Types.ObjectId,
+      ref: 'Chatroom',
       required: true,
     },
     content: {
       type: String,
       required: true,
     },
-    senderName: {
-      type: String,
-      required: true,
+    // senderName: {
+    //   type: String,
+    // },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      // required: true,
     },
-    receiverName: {
-      type: String,
-      required: true,
+    // receiverName: {
+    //   type: String,
+    // },
+    receiver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      // required: true,
     },
     timestamp: {
       type: Number,
@@ -80,12 +89,12 @@ const PrivateMessageFactory = (connection) => {
       return this.content;
     }
 
-    getSenderName() {
-      return this.senderName;
+    async getSenderName() {
+      return (await this.populate('sender')).sender.username;
     }
 
-    getReceiverName() {
-      return this.receiverName;
+    async getReceiverName() {
+      return (await this.populate('receiver')).receiver.username;
     }
 
     getTimestamp() {
@@ -126,17 +135,17 @@ const PrivateMessageFactory = (connection) => {
       }
     }
 
-    /**
-     * @param {User} sender - sender
-     * @param {User} receiver - receiver
-     * Get all private messages between sender and receiver
-     * @returns {Promise<PrivateMessage[]>} A promise that resolves to an array of Message's
-     */
-    static async getMsgFromSenderReceiver(sender, receiver) {
-      return this.find({ senderName: sender.username, receiverName: receiver.username }).then(
-        (msgs) => msgs.map((msg) => new PrivateMessage(msg)),
-      );
-    }
+    // /**
+    //  * @param {User} sender - sender
+    //  * @param {User} receiver - receiver
+    //  * Get all private messages between sender and receiver
+    //  * @returns {Promise<PrivateMessage[]>} A promise that resolves to an array of Message's
+    //  */
+    // static async getMsgFromSenderReceiver(sender, receiver) {
+    //   return this.find({ senderName: sender.username, receiverName: receiver.username }).then(
+    //     (msgs) => msgs.map((msg) => new PrivateMessage(msg)),
+    //   );
+    // }
   }
 
   return PrivateMessage;

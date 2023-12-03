@@ -4,12 +4,20 @@ const ChatroomFactory = (connection) => {
   const ChatroomSchema = new mongoose.Schema({
     senderName: {
       type: String,
-      required: true,
     },
     receiverName: {
       type: String,
-      required: true,
     },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      // required: true,
+    },
+    receiver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      // required: true,
+    }
   });
 
   let ChatroomModel;
@@ -49,14 +57,6 @@ const ChatroomFactory = (connection) => {
       // eslint-disable-next-line no-underscore-dangle
       const idObject = new mongoose.Types.ObjectId(this._id);
       return idObject;
-    }
-
-    getSenderName() {
-      return this.senderName;
-    }
-
-    getReceiverName() {
-      return this.receiverName;
     }
   }
 

@@ -30,11 +30,11 @@ const showSuccess = (title, message) => {
 };
 
 const notify = (msg) => {
-  const { senderName } = msg.content;
+  const { username } = msg.content.sender;
   showInfo(
     'New message',
-    `You have a new message from ${senderName}`,
-    `/privateChat?username=${senderName}`,
+    `You have a new message from ${username}`,
+    `/privateChat?username=${username}`,
   );
 };
 

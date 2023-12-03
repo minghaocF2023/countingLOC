@@ -36,7 +36,7 @@ const userFactory = (connection) => {
       required: true,
     },
     chatrooms: {
-      type: Array,
+      type: [{ type: mongoose.Types.ObjectId, ref: 'Chatroom' }],
       required: false,
     },
     profileId: {
@@ -84,7 +84,12 @@ const userFactory = (connection) => {
     // static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
 
     static async getIdByUsername(username) {
-      return (await this.userModel.findOne({ username }))._id;
+      try {
+        return (await this.findOne({ username }))._id;
+      } catch (error) {
+        console.error(error);
+        console.error(`Error getting user id for username ${username}`);
+      }
     }
 
     /**
@@ -113,9 +118,9 @@ const userFactory = (connection) => {
 
     static async updateDoc(filter, projection, options) {
       return this.updateOne(filter, projection, options).then((user) => {
-        console.log(`updated: ${user}`);
+        console.error(`updated: ${user}`);
       }).catch((error) => {
-        console.log(`error while updating: ${error}`);
+        console.error(`error while updating: ${error}`);
       });
     }
 
