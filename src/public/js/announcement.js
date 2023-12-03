@@ -8,12 +8,12 @@ const connectSocket = (username) => {
   socket.auth = { username };
   socket.connect();
   socket.on('newAnnouncement', (msg) => {
-    const newMsg = createAnnouncementMessage(msg.senderName, msg.content, msg.timestamp);
-    console.log(msg.senderName);
+    const newMsg = createAnnouncementMessage(msg.sender.username, msg.content, msg.timestamp);
+    console.log(msg.sender.username);
     console.log(localStorage.getItem('username'));
-    if (msg.senderName !== localStorage.getItem('username')) {
+    if (msg.sender.username !== localStorage.getItem('username')) {
       $('#announce-list').prepend(newMsg);
-      notifyAnnouncement(msg.senderName);
+      notifyAnnouncement(msg.sender.username);
     }
   });
   socket.on('startspeedtest', (user) => {
@@ -38,7 +38,7 @@ $(window).on('load', () => {
   }).then((res) => {
     let list = '';
     res.data.data.forEach((element) => {
-      list += createAnnouncementMessage(element.senderName, element.content, element.timestamp);
+      list += createAnnouncementMessage(element.sender.username, element.content, element.timestamp);
     });
     // reverse the list
     list = list.split('</div>').reverse().join('</div>');

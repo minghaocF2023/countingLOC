@@ -9,8 +9,13 @@ const AnnouncementFactory = (connection) => {
       type: String,
       required: true,
     },
-    senderName: {
-      type: String,
+    // senderName: {
+    //   type: String,
+    //   // required: true,
+    // },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     timestamp: {
@@ -44,8 +49,8 @@ const AnnouncementFactory = (connection) => {
       return this.content;
     }
 
-    getSenderName() {
-      return this.senderName;
+    getSender() {
+      return this.populate('sender').sender;
     }
 
     getTimestamp() {
