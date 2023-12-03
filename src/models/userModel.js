@@ -130,15 +130,6 @@ const userFactory = (connection) => {
     }
 
     /**
-     * Check if username is banned
-     * @param {string} username in lowercase
-     * @returns {boolean} true if username is banned
-     */
-    // static isBannedUsername(username) {
-    //   return this.BANNED_USERNAMES.includes(username);
-    // }
-
-    /**
      * Check if username is taken
      * @param {string} username in lowercase
      * @returns {Promise<boolean>} true if username is taken
@@ -147,34 +138,10 @@ const userFactory = (connection) => {
       return this.exists({ username });
     }
 
-    /**
-     * Check if username is valid for registration. Does not check if username is taken.
-     * @param {string} username in lowercase
-     * @param {string} password plaintext password
-     * @returns {boolean} true if username is valid according to rules
-     */
-    // static isValidUsername(username) {
-    //   const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
-    //   return (
-    //     username.length >= 3
-    //     && !this.isBannedUsername(username)
-    //     && USERNAME_RULE.test(username)
-    //   );
-    // }
-
     static createUser(data) {
       const user = new this(data);
       return user;
     }
-
-    /**
-     * Check if password is valid
-     * @param {string} password plaintext password
-     * @returns {boolean} true if password is valid
-     */
-    // static isValidPassword(password) {
-    //   return password.length >= 4;
-    // }
 
     /**
      * Validate user credentials for login
