@@ -38,7 +38,12 @@ class LoginController {
     const jwt = new JWT(process.env.JWTSECRET);
     const token = jwt.generateToken(data.username);
 
-    const { privilege } = await this.userModel.getOne({ username: data.username });
+    const { isActive, privilege } = await this.userModel.getOne({ username: data.username });
+    if (!isActive) {
+      res.status(403);
+      res.json({ message: 'User is not active' });
+      return;
+    }
 
     res.status(200);
     res.json({ message: 'OK', token, privilege });

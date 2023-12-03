@@ -46,7 +46,7 @@ describe('requestController', () => {
   });
 
   describe('requests', () => {
-    it('return all requestss if authorized', async () => {
+    it('return all requests if authorized', async () => {
       authChecker.checkAuth.mockReturnValue({ username: 'admin' });
 
       await controller.getAllRequests(req, res);
