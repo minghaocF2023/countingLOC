@@ -22,7 +22,8 @@ class AdminController {
     const usernameOfProfile = req.params.username; // old username
 
     // if username is to be changed
-    if (updateData.username && updateData.username !== usernameOfProfile) {
+    if (updateData.username && updateData.username.toLowerCase() !== usernameOfProfile) {
+      updateData.username = updateData.username.toLowerCase();
       if (await this.userModel.isUsernameTaken(updateData.username)) {
         res.status(409).json({ message: 'Username already taken' });
         return;
