@@ -403,7 +403,7 @@ router.post('/', (req, res) => {
    *               message: User not logged in
    */
 router.put('/', (req, res) => {
-  if (req.query.istestt === 'true') {
+  if (req.query.istest === 'true') {
     testProfileController.updateProfile(req, res);
   } else {
     profileController.updateProfile(req, res);

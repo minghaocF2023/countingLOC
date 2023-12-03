@@ -32,6 +32,8 @@ beforeAll(async () => {
     isOnline: false,
     status: 'Undefined',
     statusTimestamp: new Date(),
+    isActive: true,
+    privilege: 'Citizen',
   };
 
   mockUser2 = {
@@ -42,6 +44,8 @@ beforeAll(async () => {
     isOnline: false,
     status: 'Undefined',
     statusTimestamp: new Date(),
+    isActive: true,
+    privilege: 'Citizen',
   };
   mockUser3 = {
     username: 'user3',
@@ -51,6 +55,8 @@ beforeAll(async () => {
     isOnline: false,
     status: 'Undefined',
     statusTimestamp: new Date(),
+    isActive: true,
+    privilege: 'Citizen',
   };
 
   mockUser4 = {
@@ -61,6 +67,8 @@ beforeAll(async () => {
     isOnline: false,
     status: 'Undefined',
     statusTimestamp: new Date(),
+    isActive: true,
+    privilege: 'Citizen',
   };
 
   mockProfile = {
@@ -182,7 +190,7 @@ describe('Profile Integration Tests', () => {
           params: { istest: 'true' },
         },
       ).then((response) => {
-        expect(response.status).toBe(204);
+        expect(response.status).toBe(201);
       });
     });
   }, 20000);
