@@ -23,7 +23,14 @@ const connectSocket = (username) => {
   });
 };
 
+const checkAuth = () => {
+  if (localStorage.getItem('role') === 'Administrator' || localStorage.getItem('role') === 'Coordinator') {
+    $('#new-announcement').removeClass('d-none');
+  }
+};
+
 $(window).on('load', () => {
+  checkAuth();
   axios.get('/messages/announcement', {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token')}`,

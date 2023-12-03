@@ -46,23 +46,28 @@ const createUserBlock = (username, onlineStatus, emergencyStatus, profileImage, 
   div.onclick = () => {
     window.location.href = `/privateChat?username=${username}`;
   };
+  const role = localStorage.getItem('role');
+  if (role === 'Administrator') {
+    const editButton = document.createElement('button');
+    editButton.id = `edit-${username}`;
+    editButton.className = 'profile-edit btn btn-primary btn-sm';
+    editButton.textContent = 'Edit';
+    editButton.style.color = 'white';
+    editButton.onclick = (event) => {
+      event.stopPropagation(); // Prevents the card's onclick event
+      $('#userEditModalLabel').text(`Edit Profile for ${username}`);
+      $('#editUserForm #username').val(username);
+      $('#hidden-username').val(username);
+      // TODO: Fetch and set the current user's account status and privilege level
+      // $('#editUserForm #accountStatus').val(currentUserAccountStatus);
+      // $('#editUserForm #privilegeLevel').val(currentUserPrivilegeLevel);
+      $('#userEditModal').modal('show');
+    };
 
-  const editButton = document.createElement('button');
-  editButton.className = 'btn btn-primary btn-sm';
-  editButton.textContent = 'Edit';
-  editButton.style.color = 'white';
-  editButton.onclick = (event) => {
-    event.stopPropagation(); // Prevents the card's onclick event
-    $('#userEditModalLabel').text(`Edit Profile for ${username}`);
-    $('#editUserForm #username').val(username);
-    // TODO: Fetch and set the current user's account status and privilege level
-    // $('#editUserForm #accountStatus').val(currentUserAccountStatus);
-    // $('#editUserForm #privilegeLevel').val(currentUserPrivilegeLevel);
-    $('#userEditModal').modal('show');
-  };
+    // Append the edit button to the user card
+    div.querySelector('.card-body').appendChild(editButton);
+  }
 
-  // Append the edit button to the user card
-  div.querySelector('.card-body').appendChild(editButton);
   return div;
 };
 

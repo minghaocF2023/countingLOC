@@ -35,6 +35,7 @@ const showWarning = (title, message) => {
 
 const setupUserInfo = (res, inputUsername) => new Promise((resolve) => {
   localStorage.setItem('token', res.data.token);
+  localStorage.setItem('role', res.data.privilege);
   localStorage.setItem('username', inputUsername.toLowerCase());
   showSuccess('Login', 'Login Successful');
   resolve();
@@ -54,6 +55,9 @@ const login = async (inputUsername, inputPassword, firstTime) => {
     if (err.response) {
       if (err.response.data.message === 'Incorrect username/password') {
         showError('Login failed', 'Incorrect username/password');
+      }
+      if (err.response.data.message === 'User is not active') {
+        showError('Inactive Account', 'Your account is not active yet!');
       }
     }
   });

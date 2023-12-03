@@ -1,5 +1,6 @@
 <!-- User Edit Modal -->
 <div class="modal fade" id="userEditModal" tabindex="-1" aria-labelledby="userEditModalLabel" aria-hidden="true">
+  <input id="hidden-username" class="d-none">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -18,9 +19,9 @@
             <div class="mb-3">
               <label for="privilegeLevel" class="form-label">Privilege Level</label>
               <select class="form-select" id="privilegeLevel">
-                <option value="citizen" selected>Citizen</option>
-                <option value="coordinator">Coordinator</option>
-                <option value="administrator">Administrator</option>
+                <option value="Citizen" selected>Citizen</option>
+                <option value="Coordinator">Coordinator</option>
+                <option value="Administrator">Administrator</option>
               </select>
             </div>
             <div class="mb-3">
@@ -35,7 +36,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" id="saveChanges">Save Changes</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="saveChanges">Save Changes</button>
         </div>
       </div>
     </div>
