@@ -266,9 +266,18 @@ router.get('/istest', (req, res) => {
  *             example:
  *               message: User not logged in
  */
+// router.get('/profile/:username', (req, res) => {
+//   adminController.getUserProfile(req, res);
+//   // res.status(501).json({ message: 'Not implemented' });
+// });
 router.get('/profile/:username', (req, res) => {
-  adminController.getUserProfile(req, res);
-  // res.status(501).json({ message: 'Not implemented' });
+  // userController.getUserByUsername(req, res);
+  if (req.query.istest === 'true') {
+    const testAdminController = new AdminController(testUserModel);
+    testAdminController.getUserProfile(req, res);
+  } else {
+    adminController.getUserProfile(req, res);
+  }
 });
 
 /**
@@ -319,7 +328,12 @@ router.get('/profile/:username', (req, res) => {
  *               message: User not logged in
  */
 router.put('/profile/:username', (req, res) => {
-  adminController.updateUserProfile(req, res);
+  if (req.query.istest === 'true') {
+    const testAdminController = new AdminController(testUserModel);
+    testAdminController.updateUserProfile(req, res);
+  } else {
+    adminController.updateUserProfile(req, res);
+  }
 });
 
 router.delete('/chatroom', (req, res) => {

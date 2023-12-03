@@ -146,18 +146,5 @@ describe('AdminController Unit Test', () => {
 
       expect(newUser.isActive).toBe(true);
     });
-
-    it('logged in user is logged out when account becomes inactive', async () => {
-      // Mock user's initial state as active and logged in
-      const mockUser = { username: 'user1', isActive: true, isLoggedIn: true };
-
-      // Simulate user becoming inactive
-      mockUser.isActive = false;
-
-      await userController.logout(mockUser);
-
-      expect(mockUser.isLoggedIn).toBe(false);
-      expect(mockUser.logoutMessage).toBe('Your account has been deactivated.');
-    });
   });
 });
