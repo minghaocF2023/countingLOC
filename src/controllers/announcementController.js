@@ -21,7 +21,13 @@ class announcementController {
     }
     // sort announcements by timestamp
     const announcements = await this.announcementModel.find({}).sort({ timeStamp: -1 });
-    res.status(200).json({ success: true, data: announcements });
+    // filter out announcements by inactive users
+    const users = await this.userModel.find({ isActive: true }).exec();
+    const usernames = users.map((user) => user.username);
+    const filteredAnnouncements = announcements.filter(
+      (announcement) => usernames.includes(announcement.senderName),
+    );
+    res.status(200).json({ success: true, data: filteredAnnouncements });
   }
 
   // post new announcement

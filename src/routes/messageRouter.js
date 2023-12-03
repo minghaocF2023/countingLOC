@@ -363,12 +363,12 @@ router.post('/private', (req, res) => {
  */
 // router.get('/private/:userA/:userB', privateChatController.getLatestMessageBetweenUsers);
 router.get('/private/:targetUser/:currentUser', (req, res) => {
+// router.get('/private/:userA/:userB', (req, res) => {
   if (req.query.istest === 'true') {
     testPrivateChatController.getLatestMessageBetweenUsers(req, res);
   } else {
     privateChatController.getLatestMessageBetweenUsers(req, res);
   }
-  // privateChatController.getLatestMessageBetweenUsers(req, res);
 });
 
 router.delete('/private', (req, res) => {

@@ -31,7 +31,12 @@ class publicChatController {
     }
     // sort messages by timestamp
     const messages = await this.publicChatModel.find({}).sort({ timeStamp: -1 });
-    res.status(200).json({ success: true, data: messages });
+    const users = await this.userModel.find({ isActive: true }).exec();
+    const usernames = users.map((user) => user.username);
+    const filteredPublicMessages = messages.filter(
+      (message) => usernames.includes(message.senderName),
+    );
+    res.status(200).json({ success: true, data: filteredPublicMessages });
   }
 
   // post new messages

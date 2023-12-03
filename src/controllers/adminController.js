@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 
-import { isValidUsername, isValidPassword, isBannedUsername } from '../public/js/validation.js';
-import authChecker from '../utils/authChecker.js';
+import { isValidUsername, isValidPassword } from '../public/js/validation.js';
 
 class AdminController {
   constructor(userModel) {

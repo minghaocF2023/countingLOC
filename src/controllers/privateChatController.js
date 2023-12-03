@@ -239,7 +239,9 @@ class privateChatController {
             if (chatroom) {
               const otherUser = chatroom.senderName
               === username ? chatroom.receiverName : chatroom.senderName;
-              if (!otherUsers.includes(otherUser)) {
+              if (!otherUsers.includes(otherUser)
+                // filter out inactive users
+                && (await this.userModel.getOne({ username: otherUser }))?.isActive) {
                 otherUsers.push(otherUser);
               }
             } else {
@@ -251,7 +253,7 @@ class privateChatController {
         taskList.push(task);
       });
 
-      Promise.all(taskList).then(() => {
+      Promise.all(taskList).then(async () => {
         res.status(200).json({ users: otherUsers });
       });
     });

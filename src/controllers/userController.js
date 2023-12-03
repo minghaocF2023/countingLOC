@@ -14,19 +14,23 @@ class UserController {
   }
 
   async getAllUsers(req, res) {
-    await this.userModel.get({}).then((users) => {
-      const payload = authChecker.checkAuth(req, res);
-      if (!payload) {
-        return;
-      }
+    const payload = authChecker.checkAuth(req, res);
+    if (!payload) {
+      return;
+    }
 
-      if (testChecker.isTest(res, payload)) {
-        return;
-      }
+    if (testChecker.isTest(res, payload)) {
+      return;
+    }
+    await this.userModel.get({}).then((users) => {
       const result = [];
       const taskList = [];
-      this.userModel.getOne({ username: payload.username }).then(({ _id }) => {
+      this.userModel.getOne({ username: payload.username }).then(({ privilege, _id }) => {
         users.forEach((user) => {
+          // filter out inactive users for non-admins
+          if (privilege !== 'Administrator' && !user.isActive) {
+            return;
+          }
           if (user.profileId) {
             const task = this.profileModel.getOne({ _id: user.profileId }, 'profileImage doctorID').then((response) => {
               result.push({
