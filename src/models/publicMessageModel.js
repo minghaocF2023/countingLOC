@@ -10,8 +10,13 @@ const PublicMessageFactory = (connection) => {
       type: String,
       required: true,
     },
-    senderName: {
-      type: String,
+    // senderName: {
+    //   type: String,
+    //   required: true,
+    // },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     timestamp: {
@@ -50,8 +55,8 @@ const PublicMessageFactory = (connection) => {
       return this.text;
     }
 
-    getSenderName() {
-      return this.senderName;
+    async getSender() {
+      return (await this.populate('sender')).sender;
     }
 
     getTimestamp() {

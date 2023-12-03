@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
 // import * as fs from 'fs';
 // import path, { dirname } from 'path';
@@ -81,6 +82,10 @@ const userFactory = (connection) => {
 
   class User extends UserModel {
     // static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
+
+    static async getIdByUsername(username) {
+      return (await this.userModel.findOne({ username }))._id;
+    }
 
     /**
      * Get all users

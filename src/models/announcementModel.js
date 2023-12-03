@@ -49,8 +49,8 @@ const AnnouncementFactory = (connection) => {
       return this.content;
     }
 
-    getSender() {
-      return this.populate('sender').sender;
+    async getSender() {
+      return (await this.populate('sender')).sender;
     }
 
     getTimestamp() {

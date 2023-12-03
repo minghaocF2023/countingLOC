@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import authChecker from '../utils/authChecker.js';
 import testChecker from '../utils/testChecker.js';
 
@@ -51,8 +52,7 @@ class announcementController {
     }
 
     const { content } = req.body;
-    const sender = (await this.userModel.findOne({ username: payload.username }))._id;
-    console.log(sender);
+    const sender = await this.userModel.getIdByUsername(payload.username);
     const data = {
       content,
       sender,
@@ -64,9 +64,10 @@ class announcementController {
     await newAnnouncement.save();
 
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('newAnnouncement', newAnnouncement);
+    const announcement = await newAnnouncement.populate('sender');
+    socketServer.publishEvent('newAnnouncement', announcement);
 
-    res.status(201).json({ success: true, data: newAnnouncement });
+    res.status(201).json({ success: true, data: announcement });
   }
 }
 

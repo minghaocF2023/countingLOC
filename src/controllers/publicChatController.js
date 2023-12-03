@@ -1,9 +1,10 @@
+/* eslint-disable no-underscore-dangle */
 import authChecker from '../utils/authChecker.js';
 import testChecker from '../utils/testChecker.js';
 
 /**
  * @typedef {{
- *  senderName: string,
+ *  sender: Object,
  *  content: string,
  *  status: string,
  *  timestamp: string
@@ -30,11 +31,9 @@ class publicChatController {
       return;
     }
     // sort messages by timestamp
-    const messages = await this.publicChatModel.find({}).sort({ timeStamp: -1 });
-    const users = await this.userModel.find({ isActive: true }).exec();
-    const usernames = users.map((user) => user.username);
+    const messages = await this.publicChatModel.find({}).populate('sender').sort({ timeStamp: -1 });
     const filteredPublicMessages = messages.filter(
-      (message) => usernames.includes(message.senderName),
+      (message) => message.sender.isActive,
     );
     res.status(200).json({ success: true, data: filteredPublicMessages });
   }
@@ -58,11 +57,12 @@ class publicChatController {
     }
 
     const { content } = req.body;
+    const sender = await this.userModel.getOne({ username: payload.username });
     const data = {
       content,
-      senderName: payload.username,
+      sender: sender._id,
       timestamp: Date.now(),
-      status: (await this.userModel.getOne({ username: payload.username })).status,
+      status: sender.status,
     };
     // random comment
     // const newMessage = new PublicMessage(data);
@@ -71,9 +71,10 @@ class publicChatController {
     await newMessage.save();
 
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('newMessage', newMessage);
+    const message = await newMessage.populate('sender');
+    socketServer.publishEvent('newMessage', message);
 
-    res.status(201).json({ success: true, data: newMessage });
+    res.status(201).json({ success: true, data: message });
   }
 }
 export default publicChatController;
