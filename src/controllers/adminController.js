@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import crypto from 'crypto';
 
+import JWT from '../utils/jwt.js';
 import { isValidUsername, isValidPassword } from '../public/js/validation.js';
 
 class AdminController {
@@ -69,9 +70,11 @@ class AdminController {
 
     // handle active/inactive
     const socketServer = req.app.get('socketServer');
+    const jwt = new JWT(process.env.JWTSECRET);
     socketServer.publishEvent('profileUpdate', {
       username: usernameOfProfile,
       newUsername: updateData.username || usernameOfProfile,
+      token: jwt.generateToken(updateData.username || usernameOfProfile),
       isActive: updateData.isActive,
     });
   }
