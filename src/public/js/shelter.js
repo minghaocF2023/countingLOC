@@ -114,6 +114,10 @@ async function initMap() {
     }
 }
 
+$(window).on('load', () => {
+    $('#search-icon').hide();
+  });
+  
 // Call the function to show the notification when the window loads
 if (window.onload) {
     requestUserLocation();
