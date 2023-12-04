@@ -94,6 +94,7 @@ class requestController {
     const { status } = req.body;
 
     const request = await this.requestModel.findById(requestId);
+    console.log(requestId);
     if (!request) {
       return res.status(404).json({ message: 'Request not found' });
     }

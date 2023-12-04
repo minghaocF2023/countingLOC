@@ -24,6 +24,7 @@ describe('AdminController Unit Test', () => {
     // Mock socketServer setup
     mockSocketServer = {
       publishEvent: jest.fn(),
+      sendToPrivate: jest.fn(),
     };
 
     req = {
@@ -78,7 +79,6 @@ describe('AdminController Unit Test', () => {
     announcementcontroller = new announcementController(mockAnnouncementModel, mockUserModel);
   });
 
-  // mock test unit test
   it('Test which return user profile if user exists', async () => {
     req.params = { username: 'testuser' };
 

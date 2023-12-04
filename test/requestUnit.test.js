@@ -9,28 +9,54 @@ describe('requestController', () => {
   let controller;
   let mockRequestModel;
   let mockMedicineModel;
+  let mockUserModel;
+  let mockRequest;
   let mockSave;
   let req;
   let res;
 
   beforeEach(() => {
     jest.resetAllMocks();
+
     const mockSort = jest.fn().mockResolvedValue([]);
+    const mockPopulate = jest.fn().mockReturnThis();
+    // const mockFind = {
+    //   populate: jest.fn().mockReturnThis(),
+    //   sort: jest.fn().mockReturnThis([]),
+    // };
     mockSave = jest.fn().mockResolvedValue(true);
     mockRequestModel = jest.fn().mockImplementation(() => ({ save: mockSave }));
-    mockRequestModel.find = jest.fn(() => ({ sort: mockSort }));
+    // mockRequestModel.findById = jest.fn().mockResolvedValue({
+    //   ...mockRequest,
+    //   populate: jest.fn().mockResolvedValue({}),
+    // });
+    mockRequestModel.populate = jest.fn().mockReturnThis();
+    mockRequestModel.find = jest.fn().mockImplementation(() => ({
+      populate: jest.fn().mockReturnThis(),
+      sort: jest.fn().mockResolvedValue([]),
+    }));
+    // mockRequestModel.find = jest.fn(() => ({ populate: mockPopulate, sort: mockSort }));
     mockRequestModel.findOne = jest.fn().mockResolvedValue(null);
     mockRequestModel.findOneAndUpdate = jest.fn().mockResolvedValue(null);
     mockRequestModel.findOneAndDelete = jest.fn().mockResolvedValue(null);
+    mockRequestModel.findById = jest.fn(() => ({
+      save: mockSave,
+      populate: mockPopulate,
+      toObject: jest.fn().mockReturnValue({}),
+    }));
 
     mockMedicineModel = jest.fn().mockImplementation(() => ({ save: mockSave }));
-    mockMedicineModel.find = jest.fn(() => ({ sort: mockSort }));
+    mockMedicineModel.find = jest.fn(() => ({ populate: mockPopulate, sort: mockSort }));
     mockMedicineModel.findOne = jest.fn().mockResolvedValue(null);
     mockMedicineModel.findOneAndUpdate = jest.fn().mockResolvedValue(null);
     mockMedicineModel.findOneAndDelete = jest.fn().mockResolvedValue(null);
 
+    mockUserModel = {
+      getIdByUsername: jest.fn().mockResolvedValue({ _id: 'mockedUserId', username: 'mockedUsername' }),
+    };
+
     // eslint-disable-next-line new-cap
-    controller = new requestController(mockRequestModel);
+    controller = new requestController(mockRequestModel, mockMedicineModel, mockUserModel);
 
     req = {
       headers: {},
