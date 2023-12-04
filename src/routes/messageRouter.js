@@ -130,7 +130,7 @@ const testPublicChatController = new PublicChatController(
 );
 const speedTestPublicChatController = new PublicChatController(
   testPublicMessageModel,
-  userModel,
+  testUserModel,
 );
 const testPrivateChatController = new PrivateChatController(
   testPrivateMessageModel,
