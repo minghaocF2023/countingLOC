@@ -179,8 +179,8 @@ class privateChatController {
       // if not found, create a new chatroom
       let targetChatroom = chatroom;
       if (!targetChatroom) {
-        // eslint-disable-next-line new-cap
         // better add try-catch clause for error handling
+        // eslint-disable-next-line new-cap
         const newChatroom = new this.chatroomModel({
           sender,
           receiver,
@@ -211,18 +211,29 @@ class privateChatController {
         await this.userModel.getOne({ _id: receiver }), // get receiver object
       );
 
-      // eslint-disable-next-line new-cap
       // create db obejct and save to private message db
+      // eslint-disable-next-line new-cap
       const newPrivateMessage = new this.privateChatModel(data);
       await newPrivateMessage.save();
 
       // broadcast to receiver
       const socketServer = req.app.get('socketServer');
-      const message = await newPrivateMessage.populate('sender receiver');
+      let message = await newPrivateMessage.populate('sender receiver');
+      message = {
+        ...message.toObject(),
+        senderName,
+        receiverName,
+      };
       socketServer.sendToPrivate('privatemessage', receiverName, message);
       await newPrivateMessage.updateOne({ isNotified: socketServer.isConnected(receiverName) });
 
-      res.status(201).json({ success: true, data: await newPrivateMessage.populate('sender receiver') });
+      message = await newPrivateMessage.populate('sender receiver');
+      message = {
+        ...message.toObject(),
+        senderName,
+        receiverName,
+      };
+      res.status(201).json({ success: true, data: message });
     });
   }
 

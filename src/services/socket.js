@@ -14,11 +14,11 @@ class SocketServer {
     // console.log(`private a user connected ${socket.id}...`);
     // console.log('Handshake data:', socket.handshake);
     userToSocket.set(username, socket.id);
-    // console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
+    console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
 
     socket.on('disconnect', () => {
-      // console.log(`a user disconnected ${socket.id}`);
       userToSocket.set(username, null);
+      console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
     });
 
     // socket.on('privatemessage', ({ content, to }) => {
@@ -36,6 +36,7 @@ class SocketServer {
 
   sendToPrivate(event, receiverName, content) {
     const receiverSocketId = this.userToSocket.get(receiverName);
+    console.log(`Sending private message to ${receiverName} at ${receiverSocketId}`);
     this.socketIO.to(receiverSocketId).emit(event, {
       content,
       from: this.socketIO.id,
