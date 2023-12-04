@@ -189,12 +189,26 @@
             if(msg.content.username === localStorage.getItem('username')){
                 // if user account become inactive, logout
                 if(msg.content.isActive === false ){
-                    await userLogout(localStorage.getItem('username')).then(() => {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('username');
-                        localStorage.removeItem('role');
-                        window.location = '/join';
-                    });
+                    const deactivate = () => {
+                        userLogout(localStorage.getItem('username')).then(() => {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('username');
+                            localStorage.removeItem('role');
+                            window.location = '/join';
+                        });
+                    }
+                    if (typeof iziToast !== 'undefined') {
+                        iziToast.warning({
+                            title: "Account Deactivated",
+                            message: "Your account has been deactivated by the administrator",
+                            color: 'red',
+                            position: 'center',
+                            onClosing: deactivate,
+                        });
+                    } else {
+                        window.alert('Your account has been deactivated by the administrator');
+                        await deactivate();
+                    }
                 }else{
                     // set new username and token
                     localStorage.setItem('username', msg.content.newUsername);
