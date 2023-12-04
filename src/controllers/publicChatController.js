@@ -35,7 +35,13 @@ class publicChatController {
     const filteredPublicMessages = messages.filter(
       (message) => message.sender.isActive,
     );
-    res.status(200).json({ success: true, data: filteredPublicMessages });
+    res.status(200).json({
+      success: true,
+      data: filteredPublicMessages.map((m) => ({
+        ...m.toObject(),
+        senderName: m.sender.username,
+      })),
+    });
   }
 
   // post new messages
@@ -71,7 +77,11 @@ class publicChatController {
     await newMessage.save();
 
     const socketServer = req.app.get('socketServer');
-    const message = await newMessage.populate('sender');
+    let message = await newMessage.populate('sender');
+    message = {
+      ...message.toObject(),
+      senderName: message.sender.username,
+    };
     socketServer.publishEvent('newMessage', message);
 
     res.status(201).json({ success: true, data: message });

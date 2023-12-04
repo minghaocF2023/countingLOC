@@ -27,7 +27,13 @@ class announcementController {
     const filteredAnnouncements = announcements.filter(
       (announcement) => announcement.sender.isActive,
     );
-    res.status(200).json({ success: true, data: filteredAnnouncements });
+    res.status(200).json({
+      success: true,
+      data: filteredAnnouncements.map((a) => ({
+        ...a.toObject(),
+        senderName: a.sender.username,
+      })),
+    });
   }
 
   // post new announcement
@@ -64,10 +70,17 @@ class announcementController {
     await newAnnouncement.save();
 
     const socketServer = req.app.get('socketServer');
-    const announcement = await newAnnouncement.populate('sender');
+    let announcement = await newAnnouncement.populate('sender');
+    announcement = {
+      ...announcement.toObject(),
+      senderName: announcement.sender.username,
+    };
     socketServer.publishEvent('newAnnouncement', announcement);
 
-    res.status(201).json({ success: true, data: announcement });
+    res.status(201).json({
+      success: true,
+      data: announcement,
+    });
   }
 }
 
