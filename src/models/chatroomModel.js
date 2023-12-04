@@ -2,22 +2,22 @@ import mongoose from 'mongoose';
 
 const ChatroomFactory = (connection) => {
   const ChatroomSchema = new mongoose.Schema({
-    senderName: {
-      type: String,
-    },
-    receiverName: {
-      type: String,
-    },
+    // senderName: {
+    //   type: String,
+    // },
+    // receiverName: {
+    //   type: String,
+    // },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      // required: true,
+      required: true,
     },
     receiver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      // required: true,
-    }
+      required: true,
+    },
   });
 
   let ChatroomModel;
