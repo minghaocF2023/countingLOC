@@ -27,6 +27,7 @@ const setProfileData = (data) => {
 };
 
 $(window).on('load', async () => {
+  $('#search-icon').hide();
   getProfile().then((res) => {
     setProfileData(res.profile);
   }).catch(() => {

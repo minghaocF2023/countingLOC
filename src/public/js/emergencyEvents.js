@@ -52,6 +52,10 @@ const setTime = () => {
   $('#time').val(date.toTimeString().substring(0, 5));
 };
 
+$(window).on('load', () => {
+  $('#search-icon').hide();
+});
+
 $(window).on('DOMContentLoaded', async () => {
   await axios.put(
     `users/${localStorage.getItem('username')}/online`,

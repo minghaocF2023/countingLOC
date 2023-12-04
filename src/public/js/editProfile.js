@@ -169,6 +169,7 @@ const setDoctorList = async () => {
 };
 
 $(window).on('load', async () => {
+  $('#search-icon').hide();
   const urlParams = new URLSearchParams(window.location.search);
   setDoctorList().then(async () => {
     if (urlParams.has('edit')) {

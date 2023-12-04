@@ -63,3 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+$(window).on('load', () => {
+  $('#search-icon').hide();
+});

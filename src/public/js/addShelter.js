@@ -62,3 +62,6 @@ const addShelter = async (shelterName, longitude, latitude) => {
     }
 };
 
+$(window).on('load', () => {
+  $('#search-icon').hide();
+});
