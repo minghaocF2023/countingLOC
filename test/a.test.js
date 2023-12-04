@@ -1,23 +1,17 @@
 /* eslint-disable new-cap */
 import AdminController from '../src/controllers/adminController';
 import LoginController from '../src/controllers/loginController';
-import publicChatController from '../src/controllers/publicChatController';
 import announcementController from '../src/controllers/announcementController';
-import UserController from '../src/controllers/userController';
 import authChecker from '../src/utils/authChecker';
-
-jest.mock('../src/models/publicMessageModel');
 
 jest.mock('../src/utils/authChecker');
 
 describe('AdminController Unit Test', () => {
   let adminController;
-  let loginController;
-  let publicchatcontroller;
-  let announcementcontroller;
   let userController;
+  let loginController;
+  let announcementcontroller;
   let mockUserModel;
-  let mockPublicChatModel;
   let mockAnnouncementModel;
   let mockSocketServer;
   let req;
@@ -74,33 +68,16 @@ describe('AdminController Unit Test', () => {
     adminController = new AdminController(mockUserModel);
     loginController = new LoginController(mockUserModel);
     announcementcontroller = new announcementController(mockAnnouncementModel, mockUserModel);
-    userController = new UserController(userController);
-
-    mockUserModel = {
-      findOneAndUpdate: jest.fn(),
-      findOne: jest.fn(),
-      validate: jest.fn(),
-      get: jest.fn(),
-      getOne: jest.fn(),
-    };
-
-    mockPublicChatModel = {
-      find: jest.fn(),
-      sort: jest.fn().mockReturnThis(),
-    };
-
-    adminController = new AdminController(mockUserModel);
-    loginController = new LoginController(mockUserModel);
-    publicchatcontroller = new publicChatController(mockPublicChatModel, mockUserModel);
   });
 
-  it('should return user profile if user exists', async () => {
+  // mock test unit test
+  it('Test which return user profile if user exists', async () => {
     req.params = { username: 'testuser' };
 
     const mockUserProfile = { username: 'testuser', isActive: true, privilege: 'User' };
     const mockSelect = jest.fn().mockResolvedValue(mockUserProfile);
     mockUserModel.findOne.mockReturnValue({ select: mockSelect });
-    mockUserModel.validate.mockReturnValue(true);
+
     await adminController.getUserProfile(req, res);
 
     expect(mockUserModel.findOne).toHaveBeenCalledWith({ username: 'testuser' });
@@ -172,6 +149,15 @@ describe('AdminController Unit Test', () => {
         userProfile: expect.any(Object),
       });
     });
+
+    it('Test that prevents admin to change user status', async () => {
+      req.body = { username: 'testuser', newStatus: 'Help' };
+      await adminController.updateUserEmergencyStatus(req, res);
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Admins do not have the right to change user status',
+      });
+    });
   });
 
   describe('6 Privilege Rule tests', () => {
@@ -196,7 +182,6 @@ describe('AdminController Unit Test', () => {
       req.params = { username: 'testuser' };
       req.body = { privilege: 'Citizen' };
       mockUserModel.findOneAndUpdate.mockResolvedValue({ privilege: 'Citizen' });
-      // Mocking findOne to return an object that includes a select method
       const mockSelect = jest.fn().mockResolvedValue({ username: 'testuser', isActive: true, privilege: 'Citizen' });
       mockUserModel.findOne.mockImplementation(() => ({ select: mockSelect }));
       mockUserModel.find.mockResolvedValue([{ username: 'otheradmin', privilege: 'Administrator' }]);
@@ -272,13 +257,11 @@ describe('AdminController Unit Test', () => {
         ...userData,
         isActive: userData.isActive !== undefined ? userData.isActive : true,
       }));
-
       const newUserDetails = { username: 'newuser', password: 'password123' };
       const newUser = mockUserModel.createUser(newUserDetails);
-
       expect(newUser.isActive).toBe(true);
     });
-
+    // Negative test
     it('inactive users login attempt should fail', async () => {
       const inactiveUser = { username: 'inactiveUser', password: 'password', isActive: false };
       mockUserModel.getOne = jest.fn().mockResolvedValue(inactiveUser);
@@ -288,30 +271,44 @@ describe('AdminController Unit Test', () => {
       await loginController.loginUser(req, res);
       expect(res.status).toHaveBeenCalledWith(403);
     });
-
     it('active users login attempt should succeed', async () => {
-      const inactiveUser = { username: 'inactiveUser', password: 'password', isActive: true };
+      const inactiveUser = { username: 'activeUser', password: 'password', isActive: true };
       mockUserModel.getOne = jest.fn().mockResolvedValue(inactiveUser);
       mockUserModel.validate = jest.fn().mockReturnValue(true);
-      req.body = { username: 'inactiveUser', password: 'password' };
-      req.params = { username: 'inactiveUser' };
+      req.body = { username: 'activeUser', password: 'password' };
+      req.params = { username: 'activeUser' };
       await loginController.loginUser(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
     });
-
-    it('should show messages from active users', async () => {
-      const activeUser = { username: 'activeUser', isActive: true };
-      const messages = [
-        { senderName: 'activeUser', content: 'Hello', timestamp: '2021-01-01' },
-      ];
-
-      mockUserModel.find = jest.fn().mockResolvedValue([activeUser]);
-      // mockPublicChatModel.find.mockResolvedValue(messages);
-      mockPublicChatModel.find = jest.fn().mockResolvedValue(messages);
-      await publicchatcontroller.getLatestMessages(req, res);
-
-      console.log(res);
+    it('Test user information visible to others when their account isActive', async () => {
+      req.params = { username: 'onlineUser' };
+      mockUserModel.findOne.mockImplementation(() => ({
+        select: jest.fn().mockResolvedValue(
+          {
+            username: 'onlineUser', isOnline: true, isActive: true, status: 'OK',
+          },
+        ),
+      }));
+      await adminController.getUserProfile(req, res);
       expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Success',
+        userProfile: {
+          isActive: true,
+          username: 'onlineUser',
+          isOnline: true,
+          status: 'OK',
+        },
+      });
     });
+
+    it('should not allow a regular user to see information of an inactive user', async () => {
+        req.params = { username: 'inactiveUser' };
+        req.user = { username: 'regularUser', privilege: 'Citizen' };
+        mockUserModel.findOne.mockResolvedValue({ username: 'inactiveUser', isActive: false });
+        await userController.getAllUsers(req, res);
+        expect(res.status).toHaveBeenCalledWith(403);
+        expect(res.json).toHaveBeenCalledWith({ message: 'Access denied' });
+      });
   });
 });

@@ -10,6 +10,7 @@ $('#logout').on('click', async () => {
   await userLogout(localStorage.getItem('username')).then(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
+    localStorage.removeItem('role');
     window.location.href('join');
   });
 });
