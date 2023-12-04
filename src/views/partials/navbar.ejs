@@ -169,6 +169,12 @@
         }
     })
 
+    const userLogout = async (username) => {
+        axios.put(`/users/${username}/offline`).then(() => {
+            console.log('offline');
+        });
+    };
+
     const connectSocket = (username) => {
 
         const socket = io(undefined, { autoConnect: false });
@@ -176,15 +182,17 @@
         socket.connect();
        
         // listen to admin profile update
-        socket.on('profileUpdate', (msg) => {
+        socket.on('profileUpdate', async (msg) => {
             console.log(msg);
             if(msg.username === localStorage.getItem('username')){
                 // if user account become inactive, logout
                 if(msg.isActive === false ){
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('username');
-                    localStorage.removeItem('role');
-                    window.location = '/join';
+                    await userLogout(localStorage.getItem('username')).then(() => {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('username');
+                        localStorage.removeItem('role');
+                        window.location = '/join';
+                    });
                 }else{
                     // set new username and token
                     localStorage.setItem('username', msg.newUsername);
