@@ -50,6 +50,8 @@ describe('AdminController Unit Test', () => {
       findOneAndUpdate: jest.fn(),
       findOne: jest.fn(),
       find: jest.fn(),
+      get: jest.fn(),
+      getOne: jest.fn(),
       exec: jest.fn().mockResolvedValue(),
     };
 
@@ -308,13 +310,33 @@ describe('AdminController Unit Test', () => {
       });
     });
 
-    it('should not allow a regular user to see information of an inactive user', async () => {
-        req.params = { username: 'inactiveUser' };
-        req.user = { username: 'regularUser', privilege: 'Citizen' };
-        mockUserModel.findOne.mockResolvedValue({ username: 'inactiveUser', isActive: false });
-        await userController.getAllUsers(req, res);
-        expect(res.status).toHaveBeenCalledWith(403);
-        expect(res.json).toHaveBeenCalledWith({ message: 'Access denied' });
-      });
+    it('Test that inactive users will not show up to non-administrators', async () => {
+      const mockUsers = [
+        {
+          username: 'activeUser', isActive: true, isOnline: true, status: 'OK',
+        },
+        {
+          username: 'inactiveUser', isActive: false, isOnline: false, status: 'OK',
+        },
+      ];
+      mockUserModel.get.mockResolvedValue(mockUsers);
+      const nonAdminPayload = { username: 'nonAdminUser', privilege: 'Citizen' };
+      authChecker.checkAuth.mockReturnValue(nonAdminPayload);
+      mockUserModel.getOne.mockResolvedValue({ privilege: 'Citizen', _id: 'nonAdminUserId' });
+      await userController.getAllUsers(req, res);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+        users: expect.arrayContaining([
+          expect.objectContaining({
+            username: 'activeUser',
+            isOnline: true,
+            status: 'OK',
+          }),
+        ]),
+      }));
+      expect(res.json.mock.calls[0][0].users).not.toContainEqual(
+        expect.objectContaining({ username: 'inactiveUser' }),
+      );
+    });
   });
 });
