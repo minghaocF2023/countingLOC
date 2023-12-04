@@ -33,7 +33,7 @@ const appointmentFactory = (connection) => {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       // required: true,
-    }
+    },
   });
 
   let AppointmentModel;

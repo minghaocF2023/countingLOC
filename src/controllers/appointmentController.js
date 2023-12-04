@@ -171,14 +171,13 @@ class appointmentController {
     }
     const { date } = req.query;
     const appointments = await this.appointmentModel.find({ date, patient: { $exists: 0 } }).populate('doctor');
-
     const doctorsAvailability = new Map();
 
     appointments.forEach((appointment) => {
-      if (!doctorsAvailability.has(appointment.doctorUsername)) {
-        doctorsAvailability.set(appointment.doctorUsername, [appointment.startTime]);
+      if (!doctorsAvailability.has(appointment.doctor.username)) {
+        doctorsAvailability.set(appointment.doctor.username, [appointment.startTime]);
       } else {
-        doctorsAvailability.get(appointment.doctorUsername).push(appointment.startTime);
+        doctorsAvailability.get(appointment.doctor.username).push(appointment.startTime);
       }
     });
 
