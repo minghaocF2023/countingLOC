@@ -90,6 +90,7 @@ const userFactory = (connection) => {
         console.error(error);
         console.error(`Error getting user id for username ${username}`);
       }
+      return null;
     }
 
     /**
