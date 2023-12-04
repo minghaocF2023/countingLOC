@@ -1,6 +1,7 @@
 /* eslint-disable new-cap */
 import AdminController from '../src/controllers/adminController';
 import LoginController from '../src/controllers/loginController';
+import UserController from '../src/controllers/userController';
 import announcementController from '../src/controllers/announcementController';
 import authChecker from '../src/utils/authChecker';
 
@@ -58,6 +59,10 @@ describe('AdminController Unit Test', () => {
       exec: jest.fn(),
     };
 
+    const mockProfileModel = {
+
+    };
+
     mockUserModel.find.mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue([
         { username: 'activeUser', isActive: true },
@@ -67,6 +72,7 @@ describe('AdminController Unit Test', () => {
 
     adminController = new AdminController(mockUserModel);
     loginController = new LoginController(mockUserModel);
+    userController = new UserController(mockUserModel, mockProfileModel);
     announcementcontroller = new announcementController(mockAnnouncementModel, mockUserModel);
   });
 
