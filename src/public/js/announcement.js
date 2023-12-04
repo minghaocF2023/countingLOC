@@ -21,6 +21,7 @@ const connectSocket = (username) => {
       window.location = '/503page';
     }
   });
+  socket.on('privatemessage', (msg) => notify(msg));
 };
 
 const checkAuth = () => {

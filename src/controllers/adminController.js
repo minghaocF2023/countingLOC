@@ -74,7 +74,7 @@ class AdminController {
     // handle active/inactive
     const socketServer = req.app.get('socketServer');
     const jwt = new JWT(process.env.JWTSECRET);
-    socketServer.publishEvent('profileUpdate', {
+    socketServer.sendToPrivate('profileUpdate', usernameOfProfile, {
       username: usernameOfProfile,
       newUsername: updateData.username || usernameOfProfile,
       token: jwt.generateToken(updateData.username || usernameOfProfile),

@@ -11,14 +11,21 @@ class SocketServer {
 
   static handleConnection(socket, userToSocket) {
     const { username } = socket.handshake.auth;
-    // console.log(`private a user connected ${socket.id}...`);
-    // console.log('Handshake data:', socket.handshake);
-    userToSocket.set(username, socket.id);
-    console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
+    const sockets = userToSocket.get(username) || [];
+    if (!sockets.includes(socket.id)) {
+      sockets.push(socket.id);
+    }
+    userToSocket.set(username, sockets);
+    // console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
 
     socket.on('disconnect', () => {
-      userToSocket.set(username, null);
-      console.log(`socketID for ${username} in list: ${userToSocket.get(username)}`);
+      const existingSocket = userToSocket.get(username);
+      if (existingSocket.length === 1) {
+        userToSocket.delete(username);
+      } else {
+        const newSocketList = existingSocket.filter((id) => id !== socket.id);
+        userToSocket.set(username, newSocketList);
+      }
     });
 
     // socket.on('privatemessage', ({ content, to }) => {
@@ -27,7 +34,8 @@ class SocketServer {
   }
 
   isConnected(username) {
-    return this.userToSocket.get(username) !== null;
+    const sockets = this.userToSocket.get(username);
+    return sockets && sockets.length > 0;
   }
 
   publishEvent(event, data) {
@@ -35,11 +43,17 @@ class SocketServer {
   }
 
   sendToPrivate(event, receiverName, content) {
-    const receiverSocketId = this.userToSocket.get(receiverName);
-    console.log(`Sending private message to ${receiverName} at ${receiverSocketId}`);
-    this.socketIO.to(receiverSocketId).emit(event, {
-      content,
-      from: this.socketIO.id,
+    const socketIds = this.userToSocket.get(receiverName);
+    if (!socketIds) {
+      console.info(`User ${receiverName} is not online`);
+      return;
+    }
+    console.log(`Sending private message to ${receiverName} at ${socketIds}`);
+    socketIds.forEach((socketId) => {
+      this.socketIO.to(socketId).emit(event, {
+        content,
+        from: this.socketIO.id,
+      });
     });
   }
 }
