@@ -13,17 +13,27 @@ const appointmentFactory = (connection) => {
       type: Number,
       required: true,
     },
-    doctorUsername: {
-      type: String,
-      required: true,
+    // doctorUsername: {
+    //   type: String,
+    //   required: true,
+    // },
+    // patientUsername: {
+    //   type: String,
+    //   required() {
+    //     return this.patientUsername !== '';
+    //   },
+    //   default: '',
+    // },
+    doctor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      // required: true,
     },
-    patientUsername: {
-      type: String,
-      required() {
-        return this.patientUsername !== '';
-      },
-      default: '',
-    },
+    patient: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      // required: true,
+    }
   });
 
   let AppointmentModel;
@@ -54,12 +64,12 @@ const appointmentFactory = (connection) => {
       return this.startTime;
     }
 
-    getDoctorUsername() {
-      return this.doctorUsername;
+    async getDoctorUsername() {
+      return (await this.populate('doctor')).doctor.username;
     }
 
-    getPatientUsername() {
-      return this.patientUsername;
+    async getPatientUsername() {
+      return (await this.populate('patient'))?.patient.username || '';
     }
 
     setDate(date) {
@@ -68,14 +78,6 @@ const appointmentFactory = (connection) => {
 
     setStartTime(startTime) {
       this.startTime = startTime;
-    }
-
-    setDoctorUsername(doctorUsername) {
-      this.doctorUsername = doctorUsername;
-    }
-
-    setPatientUsername(patientUsername) {
-      this.patientUsername = patientUsername;
     }
 
     static async createAppointment(data) {
