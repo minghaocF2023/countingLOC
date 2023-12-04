@@ -107,10 +107,23 @@ import {
   testChatroomModel,
   testPublicMessageModel,
 } from '../models/models.js';
+// import authChecker from '../utils/authChecker.js';
+// import testChecker from '../utils/testChecker.js';
 
 const speedTestController = new SpeedTestController(testPublicMessageModel);
 const adminController = new AdminController(userModel);
 const router = express.Router();
+
+// router.use((req, res, next) => {
+//   const payload = authChecker.checkAuth(req, res);
+//   if (!payload) {
+//     next('router');
+//   } else if (testChecker.isTest(res, payload)) {
+//     next('router');
+//   } else {
+//     next();
+//   }
+// });
 
 /**
  * @swagger

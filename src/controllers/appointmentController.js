@@ -175,10 +175,10 @@ class appointmentController {
     const doctorsAvailability = new Map();
 
     appointments.forEach((appointment) => {
-      if (!doctorsAvailability.has(appointment.doctor.username)) {
-        doctorsAvailability.set(appointment.doctor.username, [appointment.startTime]);
+      if (!doctorsAvailability.has(appointment.doctorUsername)) {
+        doctorsAvailability.set(appointment.doctorUsername, [appointment.startTime]);
       } else {
-        doctorsAvailability.get(appointment.doctor.username).push(appointment.startTime);
+        doctorsAvailability.get(appointment.doctorUsername).push(appointment.startTime);
       }
     });
 

@@ -11,6 +11,7 @@ describe('requestController', () => {
   let mockMedicineModel;
   let mockUserModel;
   let mockRequest;
+  let mockPopulate;
   let mockSave;
   let req;
   let res;
@@ -18,8 +19,8 @@ describe('requestController', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    const mockSort = jest.fn().mockResolvedValue([]);
-    const mockPopulate = jest.fn().mockReturnThis();
+    const mockSort = jest.fn().mockResolvedValue([1, 2, 3]);
+
     // const mockFind = {
     //   populate: jest.fn().mockReturnThis(),
     //   sort: jest.fn().mockReturnThis([]),
@@ -32,7 +33,7 @@ describe('requestController', () => {
     // });
     mockRequestModel.populate = jest.fn().mockReturnThis();
     mockRequestModel.find = jest.fn().mockImplementation(() => ({
-      populate: jest.fn().mockReturnThis(),
+      populate: mockPopulate,
       sort: jest.fn().mockResolvedValue([]),
     }));
     // mockRequestModel.find = jest.fn(() => ({ populate: mockPopulate, sort: mockSort }));
@@ -96,6 +97,7 @@ describe('requestController', () => {
 
     it('post a new request if authorized', async () => {
       req.headers.authorization = 'Bearer valid-token';
+      mockPopulate = jest.fn().mockResolvedValue({ username: 'admin' });
       authChecker.checkAuth.mockReturnValue({ username: 'admin' });
       testChecker.isTest.mockReturnValue(false);
 
@@ -162,6 +164,12 @@ describe('requestController', () => {
 
     it('should successfully update the request status', async () => {
       const mockRequestId = '12345';
+      const mockRequestObject = {
+        toObject: jest.fn().mockReturnValue({ username: 'admin' }),
+        user: { username: 'admin' },
+      };
+
+      mockPopulate = jest.fn().mockResolvedValue(mockRequestObject);
       const mockRequest = {
         _id: mockRequestId,
         medicinename: 'test',
@@ -171,15 +179,14 @@ describe('requestController', () => {
         timestamp: Date.now(),
         save: jest.fn().mockResolvedValue(true),
       };
+      const mockStatus = { toLowerCase: jest.fn().mockReturnValue('rejected') };
+      req.params = jest.fn().mockReturnValue({ requestId: mockRequestId });
+      req.body = jest.fn().mockReturnValue({ status: 'Rejected' });
 
-      req.params = { requestId: mockRequestId };
-      req.body = { status: 'Rejected' };
+      const response = await controller.updateRequest(req, res);
+      console.log(response);
 
-      mockRequestModel.findById = jest.fn().mockResolvedValue(mockRequest);
-
-      await controller.updateRequest(req, res);
-
-      expect(mockRequest.status).toBe('Rejected');
+      expect(response.data.status).toBe('Rejected');
       expect(mockRequest.save).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({

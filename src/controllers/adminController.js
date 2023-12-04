@@ -10,6 +10,30 @@ dotenv.config();
 class AdminController {
   constructor(userModel) {
     this.userModel = userModel;
+    this.createInitialAdmin();
+  }
+
+  async createInitialAdmin() {
+    this.userModel.find({ privilege: 'Administrator' }).then((admins) => {
+      if (admins.length === 0) {
+        console.log(admins.length);
+        const salt = crypto.randomBytes(16);
+        this.userModel.hashPassword('admin', salt).then((hashedPassword) => {
+          this.userModel.findOneAndUpdate({ username: 'esnadmin' }, {
+            username: 'esnadmin',
+            password: hashedPassword,
+            salt: salt.toString('base64'),
+            privilege: 'Administrator',
+            isActive: true,
+            status: 'OK',
+            isOnline: false,
+            isDoctor: false,
+          }, { upsert: true, new: true }).then((admin) => {
+            console.log(admin);
+          });
+        });
+      }
+    });
   }
 
   async getUserProfile(req, res) {

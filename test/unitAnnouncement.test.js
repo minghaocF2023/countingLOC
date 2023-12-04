@@ -19,6 +19,8 @@ describe('announcementController', () => {
       find: jest.fn().mockReturnThis(),
       sort: jest.fn().mockResolvedValue([]),
       save: jest.fn().mockResolvedValue(true),
+      populate: jest.fn().mockReturnThis(),
+      isActive: true,
     };
     mockUserModel = {
       find: jest.fn().mockReturnThis(),
