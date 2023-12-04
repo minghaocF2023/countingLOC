@@ -105,18 +105,6 @@ $(window).on('DOMContentLoaded', async () => {
 
     $('#online-user-list').append(onlineList);
     $('#offline-user-list').append(offlineList);
-
-    $('#saveChanges').click(() => {
-      const updatedUsername = $('#editUserForm #username').val();
-      const updatedPassword = $('#editUserForm #password').val();
-      const updatedAccountStatus = $('#editUserForm #accountStatus').val();
-      const updatedPrivilegeLevel = $('#editUserForm #privilegeLevel').val();
-
-      // TODO: Axios calls to implement updating the user profile with these details
-      // ...
-
-      $('#userEditModal').modal('hide');
-    });
   });
 });
 

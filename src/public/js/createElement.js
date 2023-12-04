@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-underscore-dangle */
 const STATUS = {
   OK: '<i class="fas fa-check-circle" style="color:green"></i>',
@@ -58,6 +59,21 @@ const createUserBlock = (username, onlineStatus, emergencyStatus, profileImage, 
       $('#userEditModalLabel').text(`Edit Profile for ${username}`);
       $('#editUserForm #username').val(username);
       $('#hidden-username').val(username);
+      axios.get(`/admin/profile/${username}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }).then((res) => {
+        console.log(res.data);
+        const { userProfile } = res.data;
+        if (userProfile.isActive === true) {
+          $('#accountStatus').val('active');
+        } else {
+          $('#accountStatus').val('inactive');
+        }
+
+        $('#privilegeLevel').val(userProfile.privilege);
+      });
       // TODO: Fetch and set the current user's account status and privilege level
       // $('#editUserForm #accountStatus').val(currentUserAccountStatus);
       // $('#editUserForm #privilegeLevel').val(currentUserPrivilegeLevel);

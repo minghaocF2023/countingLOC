@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import crypto from 'crypto';
 
 import { isValidUsername, isValidPassword } from '../public/js/validation.js';
@@ -47,13 +48,6 @@ class AdminController {
       updateData.salt = salt.toString('base64');
     }
 
-    // eslint-disable-next-line max-len
-    const oldUser = await this.userModel.findOneAndUpdate({ username: usernameOfProfile }, updateData);
-    if (!oldUser) {
-      res.status(404).json({ message: 'User not found' });
-      return;
-    }
-
     // handle at least one admin
     if (updateData.privilege && updateData.privilege !== 'Administrator') {
       const admins = await this.userModel.find({ privilege: 'Administrator' });
@@ -61,6 +55,13 @@ class AdminController {
         res.status(400).json({ message: 'Cannot remove the only administrator' });
         return;
       }
+    }
+
+    // eslint-disable-next-line max-len
+    const oldUser = await this.userModel.findOneAndUpdate({ username: usernameOfProfile }, updateData);
+    if (!oldUser) {
+      res.status(404).json({ message: 'User not found' });
+      return;
     }
 
     const userProfile = await this.userModel.findOne({ username: updateData.username }).select('-_id username isActive privilege');
@@ -73,8 +74,10 @@ class AdminController {
       newUsername: updateData.username || usernameOfProfile,
       isActive: updateData.isActive,
     });
+  }
 
-    // TODO: handle NAME CHANGE
+  async updateUserEmergencyStatus(req, res) {
+    res.status(403).json({ message: 'Admins do not have the right to change user status' });
   }
 }
 
