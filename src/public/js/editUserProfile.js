@@ -28,4 +28,5 @@ const editUserProfile = () => {
 
 $('#saveChanges').on('click', () => {
   editUserProfile();
+  window.location.reload();
 });
