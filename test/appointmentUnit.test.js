@@ -12,17 +12,42 @@ describe('appointmentController', () => {
   let mockSave;
   let req;
   let res;
+  let mockUserModel;
+  let mockAppointment;
 
   beforeEach(() => {
     jest.resetAllMocks();
     mockSave = jest.fn().mockResolvedValue(true);
+
+    mockAppointment = () => ({
+      _id: 'testId',
+      date: '2023-12-04',
+      startTime: 9,
+      doctor: { name: 'testdoctor' },
+      toObject() {
+        return {
+          _id: this._id,
+          date: this.date,
+          startTime: this.startTime,
+          doctor: this.doctor,
+        };
+      },
+    });
+
     mockAppointmentModel = jest.fn().mockImplementation(() => ({ save: mockSave }));
-    mockAppointmentModel.find = jest.fn().mockResolvedValue([]);
-    mockAppointmentModel.findOne = jest.fn().mockResolvedValue(null);
-    mockAppointmentModel.findOneAndUpdate = jest.fn().mockResolvedValue(null);
+    mockAppointmentModel.find = jest.fn().mockImplementation(() => ({
+      populate: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue([mockAppointment()]), // Array of mock appointments
+    }));
+    mockAppointmentModel.findOne = jest.fn().mockResolvedValue(mockAppointment());
+    mockAppointmentModel.findOneAndUpdate = jest.fn().mockResolvedValue(mockAppointment());
+
+    mockUserModel = {
+      getIdByUsername: jest.fn().mockResolvedValue('testId'),
+    };
 
     // eslint-disable-next-line new-cap
-    controller = new appointmentController(mockAppointmentModel, {});
+    controller = new appointmentController(mockAppointmentModel, mockUserModel);
 
     req = {
       headers: {},

@@ -1,11 +1,35 @@
 /* eslint-disable class-methods-use-this */
 import crypto from 'crypto';
+import dotenv from 'dotenv';
 
+import JWT from '../utils/jwt.js';
 import { isValidUsername, isValidPassword } from '../public/js/validation.js';
+
+dotenv.config();
 
 class AdminController {
   constructor(userModel) {
     this.userModel = userModel;
+    this.createInitialAdmin();
+  }
+
+  async createInitialAdmin() {
+    const admins = await this.userModel.find({ privilege: 'Administrator' });
+    if (admins.length === 0) {
+      console.log(admins.length);
+      const salt = crypto.randomBytes(16);
+      const hashedPassword = await this.userModel.hashPassword('admin', salt);
+      await this.userModel.findOneAndUpdate({ username: 'esnadmin' }, {
+        username: 'esnadmin',
+        password: hashedPassword,
+        salt: salt.toString('base64'),
+        privilege: 'Administrator',
+        isActive: true,
+        status: 'OK',
+        isOnline: false,
+        isDoctor: false,
+      }, { upsert: true, new: true });
+    }
   }
 
   async getUserProfile(req, res) {
@@ -69,9 +93,11 @@ class AdminController {
 
     // handle active/inactive
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('profileUpdate', {
+    const jwt = new JWT(process.env.JWTSECRET);
+    socketServer.sendToPrivate('profileUpdate', usernameOfProfile, {
       username: usernameOfProfile,
       newUsername: updateData.username || usernameOfProfile,
+      token: jwt.generateToken(updateData.username || usernameOfProfile),
       isActive: updateData.isActive,
     });
   }

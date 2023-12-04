@@ -1,24 +1,29 @@
 /* eslint-disable new-cap */
 import AdminController from '../src/controllers/adminController';
 import LoginController from '../src/controllers/loginController';
+import UserController from '../src/controllers/userController';
+import announcementController from '../src/controllers/announcementController';
 import authChecker from '../src/utils/authChecker';
 
 jest.mock('../src/utils/authChecker');
 
 describe('AdminController Unit Test', () => {
   let adminController;
+  let userController;
   let loginController;
+  let announcementcontroller;
   let mockUserModel;
+  let mockAnnouncementModel;
   let mockSocketServer;
   let req;
   let res;
 
   beforeEach(() => {
     jest.resetAllMocks();
-
     // Mock socketServer setup
     mockSocketServer = {
       publishEvent: jest.fn(),
+      sendToPrivate: jest.fn(),
     };
 
     req = {
@@ -43,14 +48,60 @@ describe('AdminController Unit Test', () => {
 
     mockUserModel = {
       findOneAndUpdate: jest.fn(),
-      findOne: jest.fn(),
+      findOne: jest.fn().mockImplementation((query) => {
+        if (query.username === 'singleadmin') {
+          return Promise.resolve({ username: 'singleadmin', privilege: 'Administrator' });
+        }
+        return Promise.resolve(null);
+      }),
+      find: jest.fn().mockImplementation((query) => {
+        if (query.privilege === 'Administrator') {
+          // Simulate only one administrator in the system
+          return Promise.resolve([{ username: 'singleadmin', privilege: 'Administrator' }]);
+        }
+        return Promise.resolve([]);
+      }),
+      get: jest.fn(),
+      getOne: jest.fn(),
+      exec: jest.fn().mockResolvedValue(),
+      hashPassword: jest.fn().mockResolvedValue('hashedPassword'),
+      // hashPassword: jest.fn().mockImplementation(() => Promise.resolve('hashedPassword')),
+    };
+
+    mockAnnouncementModel = {
+      find: jest.fn().mockReturnThis(),
+      sort: jest.fn(),
+      exec: jest.fn(),
+    };
+
+    const mockProfileModel = {
+
     };
 
     adminController = new AdminController(mockUserModel);
     loginController = new LoginController(mockUserModel);
+    userController = new UserController(mockUserModel, mockProfileModel);
+    announcementcontroller = new announcementController(mockAnnouncementModel, mockUserModel);
   });
 
-  it('should return user profile if user exists', async () => {
+  it('Test at least one administrator rule', async () => {
+    req.params = { username: 'singleadmin' };
+    req.body = { privilege: 'Citizen' }; // Attempt to change privilege to 'Citizen'
+    await adminController.updateUserProfile(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Cannot remove the only administrator' });
+  });
+
+  it('Test initial administator rule', async () => {
+    mockUserModel.find.mockResolvedValue([]);
+    mockUserModel.hashPassword.mockResolvedValue('hashedPassword');
+    adminController = new AdminController(mockUserModel);
+    await adminController.createInitialAdmin();
+    expect(mockUserModel.hashPassword).toHaveBeenCalled();
+    expect(mockUserModel.findOneAndUpdate).toHaveBeenCalled();
+  });
+
+  it('Test which return user profile if user exists', async () => {
     req.params = { username: 'testuser' };
 
     const mockUserProfile = { username: 'testuser', isActive: true, privilege: 'User' };
@@ -128,10 +179,106 @@ describe('AdminController Unit Test', () => {
         userProfile: expect.any(Object),
       });
     });
+
+    it('Test that prevents admin to change user status', async () => {
+      req.body = { username: 'testuser', newStatus: 'Help' };
+      await adminController.updateUserEmergencyStatus(req, res);
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Admins do not have the right to change user status',
+      });
+    });
   });
 
   describe('6 Privilege Rule tests', () => {
-    // TODO
+    it('Test updating user privilege to Administrator', async () => {
+      req.params = { username: 'testuser' };
+      req.body = { privilege: 'Administrator' };
+      mockUserModel.findOneAndUpdate.mockResolvedValue({ privilege: 'Administrator' });
+      const mockSelect = jest.fn().mockResolvedValue({ username: 'testuser', isActive: true, privilege: 'Administrator' });
+      mockUserModel.findOne.mockImplementation(() => ({ select: mockSelect }));
+      await adminController.updateUserProfile(req, res);
+      expect(mockUserModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { username: 'testuser' },
+        { privilege: 'Administrator' },
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'User profile successfully updated',
+        userProfile: expect.any(Object),
+      });
+    });
+    it('Test updating user privilege to Citizen', async () => {
+      req.params = { username: 'testuser' };
+      req.body = { privilege: 'Citizen' };
+      mockUserModel.findOneAndUpdate.mockResolvedValue({ privilege: 'Citizen' });
+      const mockSelect = jest.fn().mockResolvedValue({ username: 'testuser', isActive: true, privilege: 'Citizen' });
+      mockUserModel.findOne.mockImplementation(() => ({ select: mockSelect }));
+      mockUserModel.find.mockResolvedValue([{ username: 'otheradmin', privilege: 'Administrator' }]);
+      await adminController.updateUserProfile(req, res);
+      expect(mockUserModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { username: 'testuser' },
+        { privilege: 'Citizen' },
+      );
+      expect(mockSelect).toHaveBeenCalledWith('-_id username isActive privilege');
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expect.anything());
+    });
+    it('Test updating privilege without changing the existing privilege', async () => {
+      req.params = { username: 'testuser' };
+      req.body = { privilege: 'Administrator' };
+      mockUserModel.findOneAndUpdate.mockResolvedValue({ privilege: 'Administrator' });
+      const mockSelect = jest.fn().mockResolvedValue({ username: 'testuser', isActive: true, privilege: 'Administrator' });
+      mockUserModel.findOne.mockImplementation(() => ({ select: mockSelect }));
+      await adminController.updateUserProfile(req, res);
+      expect(mockUserModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { username: 'testuser' },
+        { privilege: 'Administrator' },
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expect.anything());
+    });
+    it('Test updating privilege of a non-existing user', async () => {
+      req.params = { username: 'nonexistentuser' };
+      req.body = { privilege: 'Administrator' };
+      mockUserModel.findOneAndUpdate.mockResolvedValue(null);
+      await adminController.updateUserProfile(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ message: 'User not found' });
+    });
+    it('Test privilege update with valid privilege and additional non-privilege data', async () => {
+      req.params = { username: 'testuser' };
+      req.body = { privilege: 'Citizen', unrelatedField: 'someValue' };
+      const mockSelect = jest.fn().mockResolvedValue({ username: 'testuser', isActive: true, privilege: 'Citizen' });
+      mockUserModel.findOne.mockImplementation(() => ({ select: mockSelect }));
+      mockUserModel.find.mockResolvedValue([{ username: 'anotheradmin', privilege: 'Administrator' }, { username: 'testuser', privilege: 'Citizen' }]);
+      mockUserModel.findOneAndUpdate.mockResolvedValue({ privilege: 'Citizen', unrelatedField: 'someValue' });
+      await adminController.updateUserProfile(req, res);
+      expect(mockUserModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { username: 'testuser' },
+        expect.objectContaining({ privilege: 'Citizen', unrelatedField: 'someValue' }),
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expect.anything());
+    });
+    it('Test promoting a user from Citizen to Coordinator', async () => {
+      req.params = { username: 'citizenuser' };
+      req.body = { privilege: 'Coordinator' };
+      mockUserModel.findOneAndUpdate.mockResolvedValue({ username: 'citizenuser', privilege: 'Coordinator' });
+      const mockSelect = jest.fn().mockResolvedValue({ username: 'citizenuser', isActive: true, privilege: 'Coordinator' });
+      mockUserModel.findOne.mockImplementation(() => ({ select: mockSelect }));
+      await adminController.updateUserProfile(req, res);
+      expect(mockUserModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { username: 'citizenuser' },
+        { privilege: 'Coordinator' },
+      );
+      expect(mockSelect).toHaveBeenCalledWith('-_id username isActive privilege');
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'User profile successfully updated',
+        userProfile: expect.any(Object),
+      });
+    });
   });
 
   describe('5 Active/Inactive Rule tests', () => {
@@ -140,11 +287,78 @@ describe('AdminController Unit Test', () => {
         ...userData,
         isActive: userData.isActive !== undefined ? userData.isActive : true,
       }));
-
       const newUserDetails = { username: 'newuser', password: 'password123' };
       const newUser = mockUserModel.createUser(newUserDetails);
-
       expect(newUser.isActive).toBe(true);
+    });
+    // Negative test
+    it('inactive users login attempt should fail', async () => {
+      const inactiveUser = { username: 'inactiveUser', password: 'password', isActive: false };
+      mockUserModel.getOne = jest.fn().mockResolvedValue(inactiveUser);
+      mockUserModel.validate = jest.fn().mockReturnValue(true);
+      req.body = { username: 'inactiveUser', password: 'password' };
+      req.params = { username: 'inactiveUser' };
+      await loginController.loginUser(req, res);
+      expect(res.status).toHaveBeenCalledWith(403);
+    });
+    it('active users login attempt should succeed', async () => {
+      const inactiveUser = { username: 'activeUser', password: 'password', isActive: true };
+      mockUserModel.getOne = jest.fn().mockResolvedValue(inactiveUser);
+      mockUserModel.validate = jest.fn().mockReturnValue(true);
+      req.body = { username: 'activeUser', password: 'password' };
+      req.params = { username: 'activeUser' };
+      await loginController.loginUser(req, res);
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
+    it('Test user information visible to others when their account isActive', async () => {
+      req.params = { username: 'onlineUser' };
+      mockUserModel.findOne.mockImplementation(() => ({
+        select: jest.fn().mockResolvedValue(
+          {
+            username: 'onlineUser', isOnline: true, isActive: true, status: 'OK',
+          },
+        ),
+      }));
+      await adminController.getUserProfile(req, res);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'Success',
+        userProfile: {
+          isActive: true,
+          username: 'onlineUser',
+          isOnline: true,
+          status: 'OK',
+        },
+      });
+    });
+
+    it('Test that inactive users will not show up to non-administrators', async () => {
+      const mockUsers = [
+        {
+          username: 'activeUser', isActive: true, isOnline: true, status: 'OK',
+        },
+        {
+          username: 'inactiveUser', isActive: false, isOnline: false, status: 'OK',
+        },
+      ];
+      mockUserModel.get.mockResolvedValue(mockUsers);
+      const nonAdminPayload = { username: 'nonAdminUser', privilege: 'Citizen' };
+      authChecker.checkAuth.mockReturnValue(nonAdminPayload);
+      mockUserModel.getOne.mockResolvedValue({ privilege: 'Citizen', _id: 'nonAdminUserId' });
+      await userController.getAllUsers(req, res);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+        users: expect.arrayContaining([
+          expect.objectContaining({
+            username: 'activeUser',
+            isOnline: true,
+            status: 'OK',
+          }),
+        ]),
+      }));
+      expect(res.json.mock.calls[0][0].users).not.toContainEqual(
+        expect.objectContaining({ username: 'inactiveUser' }),
+      );
     });
   });
 });

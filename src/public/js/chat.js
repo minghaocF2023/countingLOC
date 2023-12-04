@@ -11,7 +11,7 @@ const connectSocket = (username) => {
   socket.auth = { username };
   socket.connect();
   socket.on('newMessage', (msg) => {
-    const newMsg = createChatMessage(msg.senderName, msg.status, msg.content, msg.timestamp);
+    const newMsg = createChatMessage(msg.sender.username, msg.status, msg.content, msg.timestamp);
     $('#chat-list').append(newMsg);
     scrollToBottom();
   });
@@ -66,7 +66,7 @@ $(window).on('load', () => {
   }).then((res) => {
     let list = '';
     res.data.data.forEach((element) => {
-      list += createChatMessage(element.senderName, element.status, element.content, element.timestamp);
+      list += createChatMessage(element.sender.username, element.status, element.content, element.timestamp);
     });
 
     $('#chat-list').html(list);

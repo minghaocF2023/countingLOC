@@ -9,28 +9,55 @@ describe('requestController', () => {
   let controller;
   let mockRequestModel;
   let mockMedicineModel;
+  let mockUserModel;
+  let mockRequest;
+  let mockPopulate;
   let mockSave;
   let req;
   let res;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    const mockSort = jest.fn().mockResolvedValue([]);
+
+    const mockSort = jest.fn().mockResolvedValue([1, 2, 3]);
+
+    // const mockFind = {
+    //   populate: jest.fn().mockReturnThis(),
+    //   sort: jest.fn().mockReturnThis([]),
+    // };
     mockSave = jest.fn().mockResolvedValue(true);
     mockRequestModel = jest.fn().mockImplementation(() => ({ save: mockSave }));
-    mockRequestModel.find = jest.fn(() => ({ sort: mockSort }));
+    // mockRequestModel.findById = jest.fn().mockResolvedValue({
+    //   ...mockRequest,
+    //   populate: jest.fn().mockResolvedValue({}),
+    // });
+    mockRequestModel.populate = jest.fn().mockReturnThis();
+    mockRequestModel.find = jest.fn().mockImplementation(() => ({
+      populate: mockPopulate,
+      sort: jest.fn().mockResolvedValue([]),
+    }));
+    // mockRequestModel.find = jest.fn(() => ({ populate: mockPopulate, sort: mockSort }));
     mockRequestModel.findOne = jest.fn().mockResolvedValue(null);
     mockRequestModel.findOneAndUpdate = jest.fn().mockResolvedValue(null);
     mockRequestModel.findOneAndDelete = jest.fn().mockResolvedValue(null);
+    mockRequestModel.findById = jest.fn(() => ({
+      save: mockSave,
+      populate: mockPopulate,
+      toObject: jest.fn().mockReturnValue({}),
+    }));
 
     mockMedicineModel = jest.fn().mockImplementation(() => ({ save: mockSave }));
-    mockMedicineModel.find = jest.fn(() => ({ sort: mockSort }));
+    mockMedicineModel.find = jest.fn(() => ({ populate: mockPopulate, sort: mockSort }));
     mockMedicineModel.findOne = jest.fn().mockResolvedValue(null);
     mockMedicineModel.findOneAndUpdate = jest.fn().mockResolvedValue(null);
     mockMedicineModel.findOneAndDelete = jest.fn().mockResolvedValue(null);
 
+    mockUserModel = {
+      getIdByUsername: jest.fn().mockResolvedValue({ _id: 'mockedUserId', username: 'mockedUsername' }),
+    };
+
     // eslint-disable-next-line new-cap
-    controller = new requestController(mockRequestModel);
+    controller = new requestController(mockRequestModel, mockMedicineModel, mockUserModel);
 
     req = {
       headers: {},
@@ -70,6 +97,7 @@ describe('requestController', () => {
 
     it('post a new request if authorized', async () => {
       req.headers.authorization = 'Bearer valid-token';
+      mockPopulate = jest.fn().mockResolvedValue({ username: 'admin' });
       authChecker.checkAuth.mockReturnValue({ username: 'admin' });
       testChecker.isTest.mockReturnValue(false);
 
@@ -136,6 +164,12 @@ describe('requestController', () => {
 
     it('should successfully update the request status', async () => {
       const mockRequestId = '12345';
+      const mockRequestObject = {
+        toObject: jest.fn().mockReturnValue({ username: 'admin' }),
+        user: { username: 'admin' },
+      };
+
+      mockPopulate = jest.fn().mockResolvedValue(mockRequestObject);
       const mockRequest = {
         _id: mockRequestId,
         medicinename: 'test',
@@ -145,15 +179,14 @@ describe('requestController', () => {
         timestamp: Date.now(),
         save: jest.fn().mockResolvedValue(true),
       };
+      const mockStatus = { toLowerCase: jest.fn().mockReturnValue('rejected') };
+      req.params = jest.fn().mockReturnValue({ requestId: mockRequestId });
+      req.body = jest.fn().mockReturnValue({ status: 'Rejected' });
 
-      req.params = { requestId: mockRequestId };
-      req.body = { status: 'Rejected' };
+      const response = await controller.updateRequest(req, res);
+      console.log(response);
 
-      mockRequestModel.findById = jest.fn().mockResolvedValue(mockRequest);
-
-      await controller.updateRequest(req, res);
-
-      expect(mockRequest.status).toBe('Rejected');
+      expect(response.data.status).toBe('Rejected');
       expect(mockRequest.save).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({

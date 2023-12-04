@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 import authChecker from '../utils/authChecker.js';
@@ -21,8 +22,13 @@ class appointmentController {
     if (testChecker.isTest(res, payload)) {
       return;
     }
-    const appointments = await this.appointmentModel.find({});
-    res.status(200).json({ success: true, appointments });
+    const appointments = await this.appointmentModel.find({}).populate('doctor patient');
+    const data = appointments.map((appointment) => ({
+      ...appointment.toObject(),
+      doctorUsername: appointment.doctor.username,
+      patientUsername: appointment.patient?.username || '',
+    }));
+    res.status(200).json({ success: true, appointments: data });
   }
 
   /**
@@ -39,9 +45,14 @@ class appointmentController {
     }
     const doctorUsername = payload.username.toLowerCase();
     const { date } = req.query;
-    const appointments = await this.appointmentModel.find({ doctorUsername, date });
-    // console.log(appointments);
-    res.status(200).json({ success: true, appointments });
+    const doctor = await this.userModel.getIdByUsername(doctorUsername);
+    const appointments = await this.appointmentModel.find({ doctor, date }).populate('doctor patient');
+    const data = appointments.map((appointment) => ({
+      ...appointment.toObject(),
+      doctorUsername: appointment.doctor.username,
+      patientUsername: appointment.patient?.username || '',
+    }));
+    res.status(200).json({ success: true, appointments: data });
   }
 
   /**
@@ -57,7 +68,8 @@ class appointmentController {
     }
     const doctorUsername = payload.username.toLowerCase();
     const { date } = req.query;
-    const appointments = await this.appointmentModel.find({ doctorUsername, date });
+    const doctor = await this.userModel.getIdByUsername(doctorUsername);
+    const appointments = await this.appointmentModel.find({ doctor, date });
     // console.log(appointments);
     const selectedTimeSlots = [];
     appointments.forEach((appointment) => {
@@ -86,6 +98,7 @@ class appointmentController {
     try {
       const { date, startTimes } = req.body;
       const doctorUsername = payload.username.toLowerCase();
+      const doctor = await this.userModel.getIdByUsername(doctorUsername);
 
       // Ensure startTimes is an array
       // console.log(startTimes);
@@ -99,13 +112,18 @@ class appointmentController {
         const newAvailability = new this.appointmentModel({
           date,
           startTime,
-          doctorUsername,
-          patientUsername: '',
+          doctor,
+          // patientUsername: '',
         });
         return newAvailability.save();
       }));
 
-      res.status(201).json({ success: true, data: availabilities });
+      const data = availabilities.map((appointment) => ({
+        ...appointment.toObject(),
+        doctorUsername,
+        patientUsername: '',
+      }));
+      res.status(201).json({ success: true, data });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, message: 'Failed to create new availabilities' });
@@ -124,9 +142,19 @@ class appointmentController {
       return;
     }
     const patientUsername = payload.username.toLowerCase();
+    const patient = await this.userModel.getIdByUsername(patientUsername);
+    if (!patient) {
+      res.status(404).json({ success: false, message: 'Patient not found.' });
+      return;
+    }
     const { date } = req.query;
-    const appointments = await this.appointmentModel.find({ patientUsername, date });
-    res.status(200).json({ success: true, appointments });
+    const appointments = await this.appointmentModel.find({ patient, date }).populate('doctor patient');
+    const data = appointments.map((appointment) => ({
+      ...appointment.toObject(),
+      doctorUsername: appointment.doctor.username,
+      patientUsername,
+    }));
+    res.status(200).json({ success: true, appointments: data });
   }
 
   /**
@@ -142,7 +170,7 @@ class appointmentController {
       return;
     }
     const { date } = req.query;
-    const appointments = await this.appointmentModel.find({ date, patientUsername: '' });
+    const appointments = await this.appointmentModel.find({ date, patient: { $exists: 0 } }).populate('doctor');
 
     const doctorsAvailability = new Map();
 
@@ -176,20 +204,31 @@ class appointmentController {
     } = req.body;
 
     const patientUsername = payload.username.toLowerCase();
+
+    const doctor = await this.userModel.getIdByUsername(doctorUsername);
+    if (!doctor) {
+      res.status(404).json({ success: false, message: 'Doctor not found.' });
+      return;
+    }
+    const patient = await this.userModel.getIdByUsername(patientUsername);
+    if (!patient) {
+      res.status(404).json({ success: false, message: 'Patient not found.' });
+      return;
+    }
     // console.log(patientUsername);
     try {
       const appointment = await this.appointmentModel.findOne({
         date,
         startTime,
-        doctorUsername,
-        patientUsername: '',
+        doctor,
+        patient: { $exists: 0 },
       });
 
       if (!appointment) {
         res.status(404).json({ success: false, message: 'Appointment not available.' });
         return;
       }
-      appointment.patientUsername = patientUsername;
+      appointment.patient = patient;
       await appointment.save();
       res.status(200).json({ success: true, message: 'Appointment booked successfully.' });
     } catch (error) {
@@ -216,12 +255,23 @@ class appointmentController {
 
     const patientUsername = payload.username.toLowerCase();
 
+    const doctor = await this.userModel.getIdByUsername(doctorUsername);
+    if (!doctor) {
+      res.status(404).json({ success: false, message: 'Doctor not found.' });
+      return;
+    }
+    const patient = await this.userModel.getIdByUsername(patientUsername);
+    if (!patient) {
+      res.status(404).json({ success: false, message: 'Patient not found.' });
+      return;
+    }
+
     try {
       const appointment = await this.appointmentModel.findOne({
         date,
         startTime,
-        doctorUsername,
-        patientUsername,
+        doctor,
+        patient,
       });
 
       if (!appointment) {
@@ -229,7 +279,7 @@ class appointmentController {
         return;
       }
 
-      appointment.patientUsername = '';
+      appointment.patient = undefined;
       await appointment.save();
 
       res.status(200).json({ success: true, message: 'Appointment canceled successfully.' });
@@ -257,12 +307,28 @@ class appointmentController {
 
     const patientUsername = payload.username.toLowerCase();
 
+    const doctorOld = await this.userModel.getIdByUsername(doctorUsernameOld);
+    if (!doctorOld) {
+      res.status(404).json({ success: false, message: 'Old doctor not found.' });
+      return;
+    }
+    const doctorNew = await this.userModel.getIdByUsername(doctorUsernameNew);
+    if (!doctorNew) {
+      res.status(404).json({ success: false, message: 'New doctor not found.' });
+      return;
+    }
+    const patient = await this.userModel.getIdByUsername(patientUsername);
+    if (!patient) {
+      res.status(404).json({ success: false, message: 'Patient not found.' });
+      return;
+    }
+
     try {
       const targetAppointment = await this.appointmentModel.findOne({
         date: dateNew,
         startTime: startTimeNew,
-        doctorUsername: doctorUsernameNew,
-        patientUsername: '',
+        doctor: doctorNew,
+        patient: { $exists: 0 },
       });
 
       if (!targetAppointment) {
@@ -270,18 +336,24 @@ class appointmentController {
         return;
       }
 
-      targetAppointment.patientUsername = patientUsername;
+      targetAppointment.patient = patient;
       await targetAppointment.save();
 
       await this.appointmentModel.findOneAndUpdate(
         {
-          date: dateOld, startTime: startTimeOld, doctorUsername: doctorUsernameOld, patientUsername,
+          date: dateOld, startTime: startTimeOld, doctor: doctorOld, patient,
         },
-        { patientUsername: '' },
+        { $unset: { patient: 1 } },
         { new: true },
       );
 
-      res.status(200).json({ success: true, updatedAppointment: targetAppointment });
+      const data = {
+        ...targetAppointment.toObject(),
+        doctorUsername: doctorUsernameNew,
+        patientUsername,
+      };
+
+      res.status(200).json({ success: true, updatedAppointment: data });
     } catch (error) {
       // console.error('Error updating appointment:', error);
       res.status(500).json({ success: false, message: 'Internal server error.' });

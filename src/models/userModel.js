@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
 // import * as fs from 'fs';
 // import path, { dirname } from 'path';
@@ -35,7 +36,7 @@ const userFactory = (connection) => {
       required: true,
     },
     chatrooms: {
-      type: Array,
+      type: [{ type: mongoose.Types.ObjectId, ref: 'Chatroom' }],
       required: false,
     },
     profileId: {
@@ -82,6 +83,16 @@ const userFactory = (connection) => {
   class User extends UserModel {
     // static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
 
+    static async getIdByUsername(username) {
+      try {
+        return (await this.findOne({ username }))._id;
+      } catch (error) {
+        console.error(error);
+        console.error(`Error getting user id for username ${username}`);
+      }
+      return null;
+    }
+
     /**
      * Get all users
      * @param {mongoose.FilterQuery<User>} filter
@@ -108,9 +119,9 @@ const userFactory = (connection) => {
 
     static async updateDoc(filter, projection, options) {
       return this.updateOne(filter, projection, options).then((user) => {
-        console.log(`updated: ${user}`);
+        console.error(`updated: ${user}`);
       }).catch((error) => {
-        console.log(`error while updating: ${error}`);
+        console.error(`error while updating: ${error}`);
       });
     }
 
