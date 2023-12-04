@@ -186,10 +186,14 @@
                     localStorage.removeItem('role');
                     window.location = '/join';
                 }else{
-                    // set new username
+                    // set new username and token
                     localStorage.setItem('username', msg.newUsername);
+                    localStorage.setItem('token', msg.token);
+                    window.location.reload();
                 }
+                
             } 
+            
         });
 
     };
