@@ -42,7 +42,8 @@ afterEach(async () => {
 
 afterAll(async () => {
   await axios.delete(`${HOST}/users`, { data: { username: mockUser.username }, params: { istest: 'true' } });
-  await axios.delete(`${HOST}/users`, { data: { username: 'everNew' }, params: { istest: 'true' } });
+  await axios.delete(`${HOST}/users`, { data: { username: 'evernew' }, params: { istest: 'true' } });
+  await axios.delete(`${HOST}/users`, { data: { username: 'esnadmin' }, params: { istest: 'true' } });
   await mongoose.disconnect().then(async () => {
     // console.log('stop database');
     await server.close();

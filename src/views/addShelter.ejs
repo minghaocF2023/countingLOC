@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
     <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
     <style>
         .container {
             margin-top: 20px;
@@ -20,7 +21,6 @@
 </head>
 <body>
     <div class="container">
-        <button onclick="history.back()" class="btn btn-secondary back-button">Back</button>
         <h2>Add Shelter Information</h2>
         <form id="shelterForm">
             <div class="form-group">
@@ -35,7 +35,7 @@
                 <label for="latitude">Latitude:</label>
                 <input type="text" class="form-control" id="latitude" required>
             </div>
-            <button type="submit" class="btn btn-primary">Confirm</button>
+            <button type="submit" class="btn btn-primary text-white">Confirm</button>
             <button type="button" onclick="history.back()" class="btn btn-secondary">Cancel</button>
         </form>
     </div>
