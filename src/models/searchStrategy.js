@@ -102,12 +102,18 @@ export class SearchAnnouncements extends SearchStrategy {
       content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
     };
 
-    const result = this.announcementModel.find(searchQuery)
+    const results = await this.announcementModel.find(searchQuery)
       .sort({ timestamp: -1 })
       .skip((pageNum - 1) * pageSize)
-      .limit(pageSize);
+      .limit(pageSize)
+      .populate('sender');
 
-    return result;
+    const ret = results.map((r) => ({
+      ...r.toObject(),
+      senderName: r.sender.username,
+    }));
+
+    return ret;
   }
 }
 
@@ -137,17 +143,26 @@ export class SearchPublicMessage extends SearchStrategy {
     };
 
     // Execute the query and return the results.
-    return this.publicMessageModel.find(searchQuery)
+    const results = await this.publicMessageModel.find(searchQuery)
       .sort({ timestamp: -1 }) // Ensure messages are returned in reverse chronological order.
       .skip((pageNum - 1) * pageSize) // Skip the correct number of documents for pagination.
-      .limit(pageSize); // Limit the number of documents returned to the page size.
+      .limit(pageSize) // Limit the number of documents returned to the page size.
+      .populate('sender');
+
+    const ret = results.map((r) => ({
+      ...r.toObject(),
+      senderName: r.sender.username,
+    }));
+
+    return ret;
   }
 }
 
 export class SearchPrivateMessage extends SearchStrategy {
-  constructor(privateMessageModel) {
+  constructor(privateMessageModel, userModel) {
     super();
     this.privateMessageModel = privateMessageModel;
+    this.userModel = userModel;
   }
 
   /**
@@ -164,13 +179,19 @@ export class SearchPrivateMessage extends SearchStrategy {
       return [];
     }
 
+    const userAId = await this.userModel.getIdByUsername(userA);
+    const userBId = await this.userModel.getIdByUsername(userB);
+    if (!userAId || !userBId) {
+      return [];
+    }
+
     // Construct the regex search query.
     const searchQuery = isSearchingStatus
-      ? { senderName: userA, receiverName: userB }
+      ? { sender: userAId, receiver: userBId }
       : {
         $or: [
-          { senderName: userA, receiverName: userB },
-          { senderName: userB, receiverName: userA },
+          { sender: userAId, receiver: userBId },
+          { sender: userBId, receiver: userAId },
         ],
         content: SearchStrategy.createRE(searchWords.join('|'), 'i'),
       };
@@ -179,16 +200,23 @@ export class SearchPrivateMessage extends SearchStrategy {
     const result = await this.privateMessageModel.find(searchQuery)
       .sort({ timestamp: -1 })
       .skip((pageNum - 1) * pageSize)
-      .limit(pageSize);
+      .limit(pageSize)
+      .populate('sender receiver');
 
     const statusList = [];
-
     if (isSearchingStatus) {
       result.forEach(({ status, timestamp }) => {
         statusList.push({ status, timestamp });
       });
       return statusList;
     }
-    return result;
+
+    const ret = result.map((r) => ({
+      ...r.toObject(),
+      senderName: r.sender.username,
+      receiverName: r.receiver.username,
+    }));
+
+    return ret;
   }
 }

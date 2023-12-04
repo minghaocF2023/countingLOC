@@ -37,8 +37,9 @@ const setupUserInfo = (res, inputUsername) => new Promise((resolve) => {
   localStorage.setItem('token', res.data.token);
   localStorage.setItem('role', res.data.privilege);
   localStorage.setItem('username', inputUsername.toLowerCase());
+  localStorage.setItem('isDoctor', res.data.isDoctor || false);
   showSuccess('Login', 'Login Successful');
-  resolve();
+  setTimeout(() => { resolve(); }, 700);
 });
 /**
  * user login

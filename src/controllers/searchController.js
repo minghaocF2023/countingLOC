@@ -14,7 +14,7 @@ class SearchController {
     this.searchStrategies = {
       user: new SearchCitizens(userModel),
       public: new SearchPublicMessage(publicChatModel),
-      private: new SearchPrivateMessage(privateChatModel),
+      private: new SearchPrivateMessage(privateChatModel, userModel),
       announcement: new SearchAnnouncements(announcementModel),
     };
   }

@@ -67,7 +67,7 @@
                 <a class="nav-link public-chat btn btn-outline-secondary" href="/market">Market</a>
             </li>
             <li class="nav-item mr-2">
-                <a class="nav-link speed-test btn btn-outline-secondary" href="/request">Request List</a>
+                <a class="nav-link speed-test btn btn-outline-secondary" id="requestLink" href=""></a>
             </li>
             <li  class="nav-item mr-2">
                 <a id="speedtest" class="nav-link speed-test btn btn-outline-secondary d-none" href="/speedtest">Speed Test</a>
@@ -116,8 +116,23 @@
             appointmentsLink.setAttribute('href', '/patientAppointment');
         }
     }
+
+    const setRequestLink = (isDoctor) => {
+        const requestLink = document.getElementById('requestLink');
+        if (isDoctor) {
+            requestLink.setAttribute('href', '/request');
+            requestLink.textContent = 'Request List';
+        } else {
+            requestLink.setAttribute('href', '/myrequest');
+            requestLink.textContent = 'My Request';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-        curUserIsDoctor().then(setAppointmentsLink);
+        curUserIsDoctor().then((isDoctor) => {
+            setAppointmentsLink(isDoctor);
+            setRequestLink(isDoctor);
+        });
     });
 
     const getProfileImg = async () => {
