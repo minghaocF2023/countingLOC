@@ -63,7 +63,12 @@ class publicChatController {
     }
 
     const { content } = req.body;
-    const sender = await this.userModel.getOne({ username: payload.username });
+    let sender;
+    if (req.query.isspeedtest === 'true') {
+      sender = await this.userModel.getOne({ username: 'testUser' });
+    } else {
+      sender = await this.userModel.getOne({ username: payload.username });
+    }
     const data = {
       content,
       sender: sender._id,
