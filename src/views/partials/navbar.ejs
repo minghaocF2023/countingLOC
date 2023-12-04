@@ -69,8 +69,8 @@
             <li class="nav-item mr-2">
                 <a class="nav-link speed-test btn btn-outline-secondary" href="/request">Request List</a>
             </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link speed-test btn btn-outline-secondary" href="/speedtest">Speed Test</a>
+            <li  class="nav-item mr-2">
+                <a id="speedtest" class="nav-link speed-test btn btn-outline-secondary d-none" href="/speedtest">Speed Test</a>
             </li>
             <li class="nav-item mr-2">
                 <a class="nav-link public-chat btn btn-outline-secondary" href="/emergencies">Emergency Events</a>
@@ -96,6 +96,7 @@
 
     </div>
 </nav>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
     const curUserIsDoctor = async () => {
         // Endpoint 'users/:username/isdoctor' returns a JSON object with a boolean property 'isDoctor'
@@ -130,9 +131,14 @@
         };
 
         $(window).on('load',()=>{
+            connectSocket(localStorage.getItem('username'));
             getProfileImg().then((data)=>{
                 $("#navImg").attr('src', data.profile.profileImage);
             })
+
+            if(localStorage.getItem('role') === 'Administrator'){
+                $("#speedtest").removeClass('d-none');
+            }
             
         })
 
@@ -162,4 +168,32 @@
             window.location.reload();
         }
     })
+
+    const connectSocket = (username) => {
+
+        const socket = io(undefined, { autoConnect: false });
+        socket.auth = { username };
+        socket.connect();
+       
+        // listen to admin profile update
+        socket.on('profileUpdate', (msg) => {
+            console.log(msg);
+            if(msg.username === localStorage.getItem('username')){
+                // if user account become inactive, logout
+                if(msg.isActive === false ){
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('role');
+                    window.location = '/join';
+                }else{
+                    // set new username
+                    localStorage.setItem('username', msg.newUsername);
+                }
+            } 
+        });
+
+    };
+
+
+
 </script>
