@@ -1,8 +1,11 @@
 /* eslint-disable class-methods-use-this */
 import crypto from 'crypto';
+import dotenv from 'dotenv';
 
 import JWT from '../utils/jwt.js';
 import { isValidUsername, isValidPassword } from '../public/js/validation.js';
+
+dotenv.config();
 
 class AdminController {
   constructor(userModel) {
