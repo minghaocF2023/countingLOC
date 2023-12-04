@@ -20,6 +20,10 @@ class JWT {
     try {
       return jwt.verify(token, this.TOKEN_SECRET);
     } catch (err) {
+      if (err instanceof jwt.TokenExpiredError) {
+        console.warn('%s: %s', err.message, token);
+        return null;
+      }
       console.error(token);
       console.error(err);
       return null;

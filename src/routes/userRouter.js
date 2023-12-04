@@ -6,6 +6,14 @@
  *       type: string
  *       description: User's username
  *       example: testUser
+ *     Allergy:
+ *       type: string
+ *       description: Allergy
+ *       example: ibuprofen
+ *     Health:
+ *       type: string
+ *       description: Health condition
+ *       example: Lung Cancer
  *     StatusHistory:
  *       type: object
  *       description: User's status
@@ -18,7 +26,44 @@
  *           type: string
  *           description: status code
  *           example: "GREEN"
- *
+ *     Profile:
+ *       type: object
+ *       description: user profile
+ *       properties:
+ *         firstName:
+ *           type: string
+ *           description: first name
+ *           example: Leo
+ *         lastName:
+ *           type: string
+ *           description: last name
+ *           example: Bot
+ *         profileImage:
+ *           type: string
+ *           description: profile image url
+ *           example: https://cdn.custom-cursor.com/cursors/pack2195.png
+ *         birthdate:
+ *           type: string
+ *           description: user birthdate
+ *           example: 01/01/2023
+ *         phone:
+ *           type: string
+ *           description: user phone number
+ *           example: 6500000000
+ *         email:
+ *           type: string
+ *           description: user email
+ *           example: leobot@andrew.cmu.edu
+ *         drugAllergy:
+ *           type: array
+ *           description: drug allergy list
+ *           items:
+ *             $ref: '#/components/schemas/Allergy'
+ *         healthCondition:
+ *           type: array
+ *           description: health condition list
+ *           items:
+ *             $ref: '#/components/schemas/Health'
  *     UserPassword:
  *       type: string
  *       description: User's password
@@ -109,10 +154,11 @@ import {
   testChatroomModel,
   privateMessageModel,
   testPrivateMessageModel,
+  ProfileModel,
 } from '../models/models.js';
 
 const router = express.Router();
-const userController = new UserController(userModel);
+const userController = new UserController(userModel, new ProfileModel());
 const loginController = new LoginController(userModel);
 const statusController = new StatusController(userModel);
 const privateChatController = new PrivateChatController(
@@ -164,6 +210,41 @@ router.get('/', (req, res) => {
   } else {
     userController.getAllUsers(req, res);
   }
+});
+
+/**
+ * @swagger
+ * /users/doctors:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get all doctors
+ *     description: Get a list of doctors
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+ *                   properties:
+ *                     users:
+ *                       $ref: '#/components/schemas/UserList'
+ *                       description: List of registered usernames
+ *                     banned_users:
+ *                       $ref: '#/components/schemas/UsernameList'
+ *                       description: List of banned usernames
+ *             example:
+ *               message: OK
+ *               users: [
+ *                 {username: testUser1, isOnline: true},
+ *                 {username: testUser2, isOnline: false}
+ *               ]
+ *               banned_users: [bannedUser1, bannedUser2]
+ */
+router.get('/doctors', (req, res) => {
+  userController.getDoctorUsers(req, res);
 });
 
 /**
@@ -336,7 +417,6 @@ router.post('/:username', (req, res) => {
   // loginController.loginUser(req, res);
   if (req.query.istest === 'true') {
     const testLoginController = new LoginController(testUserModel);
-    console.log('add test user!!!!!!!!!!!!!!!!!!');
     testLoginController.loginUser(req, res);
   } else {
     loginController.loginUser(req, res);
@@ -358,12 +438,12 @@ router.post('/:username', (req, res) => {
  *         content:
  *           application/json:
  *             schema:
- *              allOf:
+ *               allOf:
  *                - $ref: '#/components/schemas/Response'
  *                - type: object
  *                  properties:
  *                    user:
- *                      $ref: '#/components/schemas/Username'
+ *                    $ref: '#/components/schemas/Username'
  *       400:
  *         description: Invalid request
  *         content:
@@ -568,6 +648,112 @@ router.post('/:username/status/:status', (req, res) => {
     testStatusController.updateStatus(req, res);
   } else {
     statusController.updateStatus(req, res);
+  }
+});
+
+/**
+ * @swagger
+ * /users/{username}/addDoctorIdentity:
+ *   post:
+ *     tags: [Users]
+ *     summary: Add Doctor Identity
+ *     description: Add doctor identity
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+  *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.post('/:username/adddoctoridentity', (req, res) => {
+  if (req.query.istest === 'true') {
+    // const testStatusController = new StatusController(testUserModel);
+    // testStatusController.updateStatus(req, res);
+  } else {
+    const { username } = req.params;
+    userController.addDoctorIdentity(req, res, username);
+  }
+});
+
+/**
+ * @swagger
+ * /users/{username}/isdoctor:
+ *   get:
+ *     tags: [Users]
+ *     summary: Get Doctor Identity of Current User
+ *     description: if current user is doctor
+ *     parameters:
+ *       - $ref: '#/parameters/username'
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Response'
+ *                 - type: object
+  *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: Invalid request
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not found
+ *       401:
+ *         description: User not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Response'
+ *             example:
+ *               message: User not logged in
+ */
+router.get('/:username/isdoctor', (req, res) => {
+  if (req.query.istest === 'true') {
+    // const testStatusController = new StatusController(testUserModel);
+    // testStatusController.updateStatus(req, res);
+  } else {
+    const { username } = req.params;
+    userController.getDoctorIdentity(req, res, username);
   }
 });
 

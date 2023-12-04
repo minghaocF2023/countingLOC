@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable class-methods-use-this */
 // import * as fs from 'fs';
 // import path, { dirname } from 'path';
 // import { fileURLToPath } from 'url';
@@ -34,7 +36,11 @@ const userFactory = (connection) => {
       required: true,
     },
     chatrooms: {
-      type: Array,
+      type: [{ type: mongoose.Types.ObjectId, ref: 'Chatroom' }],
+      required: false,
+    },
+    profileId: {
+      type: mongoose.Types.ObjectId,
       required: false,
     },
     isOnline: {
@@ -42,7 +48,6 @@ const userFactory = (connection) => {
       required: true,
       default: false,
     },
-    // TODO: status, isAdmin: false
     status: {
       type: String,
       default: 'Undefined',
@@ -51,6 +56,20 @@ const userFactory = (connection) => {
     statusTimestamp: {
       type: Date,
       default: Date.now,
+    },
+    isDoctor: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    privilege: {
+      type: String,
+      enum: ['Citizen', 'Coordinator', 'Administrator'],
+      default: 'Citizen',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   });
 
@@ -63,6 +82,16 @@ const userFactory = (connection) => {
 
   class User extends UserModel {
     // static BANNED_USERNAMES = JSON.parse(fs.readFileSync(FILE_PATH));
+
+    static async getIdByUsername(username) {
+      try {
+        return (await this.findOne({ username }))._id;
+      } catch (error) {
+        console.error(error);
+        console.error(`Error getting user id for username ${username}`);
+      }
+      return null;
+    }
 
     /**
      * Get all users
@@ -90,9 +119,9 @@ const userFactory = (connection) => {
 
     static async updateDoc(filter, projection, options) {
       return this.updateOne(filter, projection, options).then((user) => {
-        console.log(`updated: ${user}`);
+        console.error(`updated: ${user}`);
       }).catch((error) => {
-        console.log(`error while updating: ${error}`);
+        console.error(`error while updating: ${error}`);
       });
     }
 
@@ -112,15 +141,6 @@ const userFactory = (connection) => {
     }
 
     /**
-     * Check if username is banned
-     * @param {string} username in lowercase
-     * @returns {boolean} true if username is banned
-     */
-    // static isBannedUsername(username) {
-    //   return this.BANNED_USERNAMES.includes(username);
-    // }
-
-    /**
      * Check if username is taken
      * @param {string} username in lowercase
      * @returns {Promise<boolean>} true if username is taken
@@ -129,34 +149,10 @@ const userFactory = (connection) => {
       return this.exists({ username });
     }
 
-    /**
-     * Check if username is valid for registration. Does not check if username is taken.
-     * @param {string} username in lowercase
-     * @param {string} password plaintext password
-     * @returns {boolean} true if username is valid according to rules
-     */
-    // static isValidUsername(username) {
-    //   const USERNAME_RULE = /^\w[a-zA-Z0-9_-]{2,}$/;
-    //   return (
-    //     username.length >= 3
-    //     && !this.isBannedUsername(username)
-    //     && USERNAME_RULE.test(username)
-    //   );
-    // }
-
     static createUser(data) {
       const user = new this(data);
       return user;
     }
-
-    /**
-     * Check if password is valid
-     * @param {string} password plaintext password
-     * @returns {boolean} true if password is valid
-     */
-    // static isValidPassword(password) {
-    //   return password.length >= 4;
-    // }
 
     /**
      * Validate user credentials for login
@@ -185,6 +181,43 @@ const userFactory = (connection) => {
      */
     async setOffline() {
       await this.updateOne({ isOnline: false });
+    }
+
+    async getUserProfileId(username) {
+      const id = await User.findOne({ username }, 'profileId');
+      return id;
+    }
+
+    static async getDoctors() {
+      const list = await User.find({ profileId: { $exists: true, $ne: null } }, '_id username profileId');
+      return list;
+    }
+
+    async updateUserProfileId(username, id) {
+      User.findOneAndUpdate({ username }, { profileId: id }, { new: true }).catch(
+        (err) => console.error(err),
+      );
+    }
+
+    /**
+     * Set user doctor status
+     */
+    async setDoctor() {
+      await this.updateOne({ isDoctor: true });
+    }
+
+    /**
+     * Set user privilege level
+     * @param {string} privilege new privilege level
+     * @returns {Promise<void>}
+     */
+    async setPrivilege(privilege) {
+      const validPrivileges = ['Citizen', 'Coordinator', 'Administrator'];
+      if (!validPrivileges.includes(privilege)) {
+        throw new Error(`Invalid privilege: ${privilege}. Valid privileges are ${validPrivileges.join(', ')}.`);
+      }
+
+      await this.updateOne({ privilege });
     }
 
     /**
@@ -227,6 +260,14 @@ const userFactory = (connection) => {
 
     getIsOnline() {
       return this.isOnline;
+    }
+
+    getIsDoctor() {
+      return this.isDoctor;
+    }
+
+    getPrivilege() {
+      return this.privilege;
     }
   }
 

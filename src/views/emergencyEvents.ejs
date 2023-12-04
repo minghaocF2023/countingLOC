@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Wall</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
+    <style>
+        .event-card p {
+            margin-bottom: 0;
+        }
+
+        .nav-link.active {
+            font-weight: bold;
+        }
+
+        .event-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-label {
+            padding: 4px 5px 0 0;
+            font-weight: bold;
+        }
+
+        .severity {
+            padding: 4px 5px;
+            font-weight: bold;
+            font-size: small;
+        }
+
+        .timestamp {
+            font-size: 0.85em;
+            padding-bottom: var(--bs-card-title-spacer-y);
+        }
+
+        .header #report {
+            font-size: 14px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .edit-button {
+            font-weight: bold;
+            padding: 2px 4px;
+        }
+
+        .edit-button:hover {
+            cursor: pointer;
+        }
+
+        .navbar-toggler {
+            outline: 2px solid rgb(178, 212, 216);
+            outline-offset: -2px;
+        }
+        
+        .navbar-nav .dropdown-menu a {
+            cursor: pointer;
+        }
+        .search{
+            width: max-content;
+        }
+        .search-margin{
+            margin-top: 1.5rem;
+        }
+        .search-margin-expand{
+            margin-top: 4.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 1.5rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        @keyframes expand-search {
+            0% {margin-top: 1.5rem;}
+            100% {margin-top: 4.5rem;}
+        }
+
+        @keyframes fold-search {
+            0% {margin-top: 4.5rem;}
+            100% {margin-top: 1.5rem;}
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+
+<div id="container" class="container search-margin">
+    <div class="emergency-events" style="padding-top:50px">
+        <div class="mb-3 header d-flex justify-content-between align-items-center">
+            <h4>Emergency Events</h4>
+            <button id="report" class="nav-link btn btn-danger text-white active">
+                <i class="fas fa-plus-circle"></i> Report
+            </button>
+        </div>
+        <div id="emergency-event-list"></div>
+        <!-- Dynamically Append events here. -->
+    </div>
+
+    <!-- event editor -->
+    <div class="emergency-event-editor d-none" style="padding-top:50px">
+        <div class="mb-3 header"><h4>Report Emergency Event</h4></div>
+        
+        <form id="event-form" class="mt-4" method="post">
+            <div class="mb-3 row align-items-center">
+                <div class="col">
+                    <label for="title" class="col-form-label">Title</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+            </div>
+            <div class="mb-3 row align-items-center">
+                <div class="col">
+                    <label for="location" class="col-form-label">Location</label>
+                </div>
+                <div class="col-9">
+                    <input type="text" class="form-control" id="location" name="location" required>
+                    <input type="hidden" id="lat" name="lat">
+                    <input type="hidden" id="lng" name="lng">
+                </div>
+            </div>
+            <div class="mb-3 row align-items-center">
+                <div class="col">
+                    <label for="time" class="col-form-label">Time</label>
+                </div>
+                <div class="col-9">
+                    <input type="time" class="form-control" id="time" name="time" required>
+                </div>
+            </div>
+            <div class="mb-3 row align-items-center">
+                <div class="col">
+                    <label for="severity" class="col-form-label">Severity</label>
+                </div>
+                <div class="col-9 row p-0">
+                    <span class="col-auto p-0">0</span>
+                    <span class="col-10">
+                        <input type="range" class="form-range" id="severity" min="0" max="10" name="severity" required>
+                    </span>
+                    <span class="col-auto p-0">10</span>
+                </div>
+                <div id="emailHelp" class="form-text">Higher value means more severe condition.</div>
+            </div>
+            <div class="mb-3 row align-items-center">
+                <div class="col">
+                    <label for="range_affected" class="col-form-label">Range</label>
+                </div>
+                <div class="col-9">
+                    <span class="input-group">
+                        <input type="number" class="form-control" id="range_affected" name="range_affected" required>
+                        <select class="form-select" name="unit" id="unit" required>
+                            <option value="foot" selected>feet</option>
+                            <option value="mile">miles</option>
+                        </select>
+                    </span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" style="height: 100px" name="description" required></textarea>
+            </div>
+            <!-- <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+            </div> -->
+            <div class="d-flex justify-content-evenly mt-5">
+                <button type="submit" class="btn btn-info">Submit</button>
+                <button type="button" class="btn btn-secondary" id="cancel">Back</button>
+                <button type="button" class="btn btn-danger d-none" id="delete">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+<script type="module" src="js/createElement.js"></script>
+<script type="module" src="js/notification.js"></script>
+<script type="module" src="js/eventNotify.js"></script>
+<script type="module" src="js/emergencyEvents.js"></script>
+<script type="module" src="js/status.js"></script>
+<script type="module" src="js/logout.js"></script>
+<script type="module" src="js/search.js"></script>
+</html>

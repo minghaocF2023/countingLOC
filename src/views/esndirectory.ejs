@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESN Directory</title>
-    
+    <link rel="manifest" href="/js/pwa.webmanifest">
+    <link rel="apple-touch-icon" href="/images/apple-touch.png">
+    <link rel="apple-touch-startup-image" href="/images/splash-screen.png"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -104,7 +106,10 @@
     </div>
 </div>
 
+    <%- include('partials/editUserProfileModal') %>
+
 </body>
+<script type="module" src="js/eventNotify.js"></script>
 <script type="module" src="js/createElement.js"></script>
 <script type="module" src="js/notification.js"></script>
 <script type="module" src="js/status.js"></script>
@@ -112,4 +117,7 @@
 <script type="module" src="js/esndirectory.js"></script>
 <script type="module" src="js/logout.js"></script>
 <script type="module" src="js/search.js"></script>
+<script type="module" src="js/medicine.js"></script>
+<script type="module" src="js/request.js"></script>
+<script type="module" src="js/editUserProfile.js"></script>
 </html>

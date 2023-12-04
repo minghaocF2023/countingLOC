@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import authChecker from '../utils/authChecker.js';
 import testChecker from '../utils/testChecker.js';
 
@@ -20,8 +21,19 @@ class announcementController {
       return;
     }
     // sort announcements by timestamp
-    const announcements = await this.announcementModel.find({}).sort({ timeStamp: -1 });
-    res.status(200).json({ success: true, data: announcements });
+    const announcements = await this.announcementModel.find({}).populate('sender').sort({ timeStamp: -1 });
+
+    // filter out announcements by inactive users
+    const filteredAnnouncements = announcements.filter(
+      (announcement) => announcement.sender.isActive,
+    );
+    res.status(200).json({
+      success: true,
+      data: filteredAnnouncements.map((a) => ({
+        ...a.toObject(),
+        senderName: a.sender.username,
+      })),
+    });
   }
 
   // post new announcement
@@ -46,9 +58,10 @@ class announcementController {
     }
 
     const { content } = req.body;
+    const sender = await this.userModel.getIdByUsername(payload.username);
     const data = {
       content,
-      senderName: payload.username,
+      sender,
       timestamp: Date.now(),
     };
 
@@ -57,9 +70,17 @@ class announcementController {
     await newAnnouncement.save();
 
     const socketServer = req.app.get('socketServer');
-    socketServer.publishEvent('newAnnouncement', newAnnouncement);
+    let announcement = await newAnnouncement.populate('sender');
+    announcement = {
+      ...announcement.toObject(),
+      senderName: announcement.sender.username,
+    };
+    socketServer.publishEvent('newAnnouncement', announcement);
 
-    res.status(201).json({ success: true, data: newAnnouncement });
+    res.status(201).json({
+      success: true,
+      data: announcement,
+    });
   }
 }
 

@@ -12,12 +12,29 @@ const showInfo = (errorTitle, errorMessage, link) => {
   });
 };
 
+const showWarning = (errorTitle, errorMessage) => {
+  iziToast.warning({
+    title: errorTitle,
+    message: errorMessage,
+    color: 'red',
+    position: 'topRight',
+  });
+};
+
+const showSuccess = (title, message) => {
+  iziToast.success({
+    title,
+    message,
+    position: 'topRight',
+  });
+};
+
 const notify = (msg) => {
-  const { senderName } = msg.content;
+  const { username } = msg.content.sender;
   showInfo(
     'New message',
-    `You have a new message from ${senderName}`,
-    `/privateChat?username=${senderName}`,
+    `You have a new message from ${username}`,
+    `/privateChat?username=${username}`,
   );
 };
 
@@ -29,6 +46,20 @@ const notifyAnnouncement = () => {
     buttons: [
       ['<button>View</button>', () => {
         window.location = '/announcement';
+      }],
+    ],
+  });
+};
+
+const notifyRequest = () => {
+  iziToast.info({
+    title: 'New request',
+    message: 'Click to view ->',
+    position: 'topRight',
+    timeout: 5000,
+    buttons: [
+      ['<button>View</button>', () => {
+        window.location = '/request';
       }],
     ],
   });
@@ -61,7 +92,10 @@ const hasUnreadMsg = async (user) => axios.get(
 window.notify = notify;
 window.getChattedUsers = getChattedUsers;
 window.notifyAnnouncement = notifyAnnouncement;
+window.notifyRequest = notifyRequest;
 
+window.showWarning = showWarning;
+window.showSuccess = showSuccess;
 (await getChattedUsers()).forEach(async (user) => {
   if (await hasUnreadMsg(user)) {
     alertMsgDuringOffline(user);

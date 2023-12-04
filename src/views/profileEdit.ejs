@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="manifest" href="/js/pwa.webmanifest">
+    <link rel="apple-touch-icon" href="/images/apple-touch.png">
+    <link rel="apple-touch-startup-image" href="/images/splash-screen.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
+    <style>
+        .nav-link.active {
+            font-weight: bold;
+        }
+
+        .user-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-card:hover {
+            cursor: pointer;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status.online {
+            color: white;
+            background-color: #4CAF50;
+        }
+
+        .status.offline{
+            color: white;
+            background-color: #f44336;
+        }
+
+        .navbar-toggler {
+            outline: 2px solid rgb(178, 212, 216);
+            outline-offset: -2px;
+        }
+        
+        .navbar-nav .dropdown-menu a {
+            cursor: pointer;
+        }
+        .search{
+            width: max-content;
+        }
+        .search-margin{
+            margin-top: 4.5rem;
+        }
+        .search-margin-expand{
+            margin-top: 7.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 1.5rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        @keyframes expand-search {
+            0% {margin-top: 1.5rem;}
+            100% {margin-top: 4.5rem;}
+        }
+
+        @keyframes fold-search {
+            0% {margin-top: 4.5rem;}
+            100% {margin-top: 1.5rem;}
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+
+<!-- Individual User -->
+<div id="container"  class="container search-margin">
+   
+    <form id="profile" class="needs-validation" novalidate>
+        <div class="row g-2 ">
+            <div class="col-12 d-flex justify-content-center">
+                <h3>Edit Profile</h3>
+            </div>
+            
+            <div class="col-6">
+                <label for="firstName">First Name</label>
+                <input type="text" class="mb-2 form-control" id="firstName" placeholder="First Name" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+
+                <label for="lastName">Last Name</label>
+                <input type="text" class="mb-2 form-control" id="lastName" placeholder="Last Name" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+
+               
+                <label for="gender">Pronoun</label>
+                <select class="form-select" id="pronoun" required>
+                    <option value="" selected>Choose...</option>
+                    <option value="He/His">He/His</option>
+                    <option value="She/Her">She/Her</option>
+                    <option value="They/Their">They/Their</option>
+                </select>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                
+            </div>
+            <div class="col-6">
+                <label for="image">Profile Image
+                    
+                    <input id="profileImg" class="d-none" type="file" name="image">
+                </label>
+                <div style="background-color:#eee; border-radius: 10px; width: 100%; aspect-ratio: 1 / 1;">
+                    <img id="imageArea" src="images/ambulance.png" style="width: 100%; aspect-ratio: 1 / 1;"  alt="">
+                </div>
+                <button type="button" id="uploadImg" style="width:100%"  class="btn btn-primary text-white">Upload</button>
+                <p class="d-none" id="imgName"></p>
+                
+            </div>
+        
+            <div class="col-6">
+                <label for="birthdate">Birthdate</label>
+                <input id="birthdate" class="form-control" type="date" required/>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            
+    
+       
+            <div class="col-6">
+                <label for="phone">Phone</label>
+                <input type="text" class="form-control" id="phone" placeholder="Phone" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-12">
+                <label for="mail">Email</label>
+                <input type="email" class="form-control" id="mail" placeholder="Email" required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-6">
+                <label for="emergency">Emergency Contact</label>
+                <select class="form-select" id="emergency" required>
+                    <option id="default" value="" selected>Choose...</option>
+
+                    
+                </select>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-6">
+                <label for="docEmail">Doctor Email</label>
+                <input type="text" class="form-control" id="docEmail" placeholder="Email" disabled required>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <hr>
+            <div class="col-12">
+                <label for="allergy">Drug Allergy</label>
+                <div class="d-flex">
+                    <input type="text" class="form-control me-2" id="allergy" placeholder="Allergy">
+                <button id="allergyAdd" class="btn btn-primary text-white">Add</button>
+                </div>
+                
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="block p-2 overflow-auto" id="allergyArea" style="height: 5rem; background-color: #eee;">
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label for="health">Health Condition</label>
+                <div class="d-flex">
+                    <input type="text" class="form-control me-2" id="health" placeholder="Health Condition">
+                    <button id="healthBtn" class="btn btn-primary text-white">Add</button>
+                </div>
+                
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="block p-2 overflow-auto" id="healthArea" style="height: 5rem; background-color: #eee;">
+                </div>
+            </div>
+
+  
+ 
+            <button id="delete" type="button" class="my-3 btn btn-outline-danger">Delete Profile</button>
+            <button id="update" type="button"  class="btn btn-primary text-white">Update</button>
+            <button id="back" type="button"  class="btn btn-outline-secondary">Back</button>
+
+
+
+            
+
+        </div>
+    </form>
+</div>
+
+
+
+</body>
+<script type="module" src="js/createElement.js"></script>
+<script type="module" src="js/notification.js"></script>
+<script type="module" src="js/status.js"></script>
+<script type="module" src="js/createElement.js"></script>
+<script type="module" src="js/esndirectory.js"></script>
+<script type="module" src="js/logout.js"></script>
+<script type="module" src="js/search.js"></script>
+
+<script type="module" src="/js/editProfile.js"></script>
+<script>
+    $("#emergency").on('change', ()=>{
+        if($("#emergency").val() === ''){
+        $("#docEmail").removeAttr("disabled");
+    }else{
+        $("#docEmail").attr('disabled', 'disabled');
+    }
+    })
+    
+</script>
+</html>

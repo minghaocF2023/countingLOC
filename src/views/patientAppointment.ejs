@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments</title>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css">
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
+        <style>
+            body,
+            html {
+                height: 100%;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .page-container {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding-top: 70px;
+                /* Adjust this value based on your navbar's height */
+            }
+
+            .appointments-container {
+                overflow-y: auto;
+                flex: 1;
+                padding: 0 20px;
+                padding-bottom: 50px;
+                padding-top: 10px;
+            }
+
+            #addAvailabilityButton {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 50px;
+                /* Height of the footer */
+            }
+
+            .selected-date {
+                background-color: rgb(236, 200, 127);
+            }
+
+            #calendar {
+                max-width: 600px;
+            }
+
+            #bookMoreButton {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 50px;
+                /* Height of the footer */
+            }
+
+            .doctor-separator {
+                margin-top: 15px;
+                margin-bottom: 15px;
+                border: 0;
+                border-top: 1px solid #eee;
+                /* Light grey line */
+            }
+
+            .modal-content {
+                overflow-y: auto;
+                background-color: #fff;
+                /* Ensure solid background for the entire modal content */
+            }
+
+            .nav-link.active {
+                font-weight: bold;
+            }
+
+            .user-card {
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .user-card:hover {
+                cursor: pointer;
+            }
+
+            .status {
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-size: 0.8em;
+                font-weight: bold;
+            }
+
+            .status.online {
+                color: white;
+                background-color: #4CAF50;
+            }
+
+            .status.offline {
+                color: white;
+                background-color: #f44336;
+            }
+
+            .navbar-toggler {
+                outline: 2px solid rgb(178, 212, 216);
+                outline-offset: -2px;
+            }
+
+            .navbar-nav .dropdown-menu a {
+                cursor: pointer;
+            }
+        </style>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+        <div class="page-container">
+            <div id='calendar'></div>
+            <div class="appointments-container">
+                <h8>Please note that each appointment is one hour.</h8>
+                <h7 id="title-date-selected"></h7>
+                <div class="booked-section">
+                    <h4 class="mb-3">Booked</h4>
+                    <div id="booked-list">
+                        <!-- Dynamically filled with booked appointments -->
+                    </div>
+                </div>
+            </div>
+            <button id="bookMoreButton" class="nav-link btn btn-primary text-white active" data-bs-toggle="modal"
+                data-bs-target="#bookMoreModal">BOOK MORE</button>
+        </div>
+        <%- include('partials/patientModal') %>
+            <script type="module" src="js/createElement.js"></script>
+            <script type="module" src="js/status.js"></script>
+            <script type="module" src="js/logout.js"></script>
+            <script type="module" src="js/patientAppointment.js"></script>
+</body>
+
+</html>

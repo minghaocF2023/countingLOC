@@ -35,6 +35,7 @@ const showWarning = (title, message) => {
 
 const setupUserInfo = (res, inputUsername) => new Promise((resolve) => {
   localStorage.setItem('token', res.data.token);
+  localStorage.setItem('role', res.data.privilege);
   localStorage.setItem('username', inputUsername.toLowerCase());
   showSuccess('Login', 'Login Successful');
   resolve();
@@ -54,6 +55,9 @@ const login = async (inputUsername, inputPassword, firstTime) => {
     if (err.response) {
       if (err.response.data.message === 'Incorrect username/password') {
         showError('Login failed', 'Incorrect username/password');
+      }
+      if (err.response.data.message === 'User is not active') {
+        showError('Inactive Account', 'Your account is not active yet!');
       }
     }
   });
@@ -136,6 +140,31 @@ const joinCommunity = async (inputUsername, inputPassword) => {
 };
 
 // ================= DOM controll ========================
+const roleForm = document.getElementById('roleForm');
+const roleSelect = document.getElementById('role');
+
+const addDoctorIdentity = (username) => {
+  axios.post(`/users/${username}/adddoctoridentity`)
+    .then(() => {
+      window.location.href = '/editprofile'; // Redirect to the desired page on success
+    })
+    .catch((error) => {
+      console.error('Error setting user as doctor:', error);
+    });
+};
+if (roleForm) {
+  roleForm.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevent the default form submission
+    const isDoctor = roleSelect.value === 'yes';
+    const inputUsername = localStorage.getItem('username');
+    if (isDoctor) {
+      addDoctorIdentity(inputUsername);
+    } else {
+      window.location.href = '/editprofile';
+    }
+  });
+}
+
 const registerButton = document.getElementById('register_button');
 if (registerButton) {
   registerButton.addEventListener('click', () => {

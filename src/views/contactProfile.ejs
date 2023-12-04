@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="manifest" href="/js/pwa.webmanifest">
+    <link rel="apple-touch-icon" href="/images/apple-touch.png">
+    <link rel="apple-touch-startup-image" href="/images/splash-screen.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
+    <style>
+        .nav-link.active {
+            font-weight: bold;
+        }
+
+        .user-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-card:hover {
+            cursor: pointer;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status.online {
+            color: white;
+            background-color: #4CAF50;
+        }
+
+        .status.offline{
+            color: white;
+            background-color: #f44336;
+        }
+
+        .navbar-toggler {
+            outline: 2px solid rgb(178, 212, 216);
+            outline-offset: -2px;
+        }
+        
+        .navbar-nav .dropdown-menu a {
+            cursor: pointer;
+        }
+        .search{
+            width: max-content;
+        }
+        .search-margin{
+            margin-top: 4.5rem;
+        }
+        .search-margin-expand{
+            margin-top: 7.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 1.5rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        @keyframes expand-search {
+            0% {margin-top: 1.5rem;}
+            100% {margin-top: 4.5rem;}
+        }
+
+        @keyframes fold-search {
+            0% {margin-top: 4.5rem;}
+            100% {margin-top: 1.5rem;}
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+
+<!-- Individual User -->
+<div id="container"  class="container search-margin ">
+    
+    <div id="noProfile" class="d-none text-center px-3">
+        
+        <img src="/images/noContent.gif" style="width: 100%;">
+        <h3>No Profile Yet. Create One?</h3>
+        <a href="/editprofile" style="width: 100%;" class="my-3 btn btn-primary text-white">Create Profile</a>
+        <a href="/esndirectory"style="width: 100%;"  class="btn btn-outline-secondary">Back to ESN Directory</a>
+    </div>
+    <form id="profile" class="needs-validation" novalidate >
+        <div class="row g-2 ">
+            <div class="col-12">
+                <h3>Profile</h3>
+            </div>
+            <div class="col-6 bg-body-secondary p-2 ">
+
+                <div style="background-color:#fff; overflow: hidden; border-radius: 50%; width: 80%; aspect-ratio: 1 / 1;">
+                    <img id="imgArea" src="images/ambulance.png" style="width: 100%; aspect-ratio: 1 / 1;"  alt="">
+                </div>
+                
+            </div>
+            <div class="col-6 bg-body-secondary p-2 d-flex flex-column justify-content-center">
+                <h3 id="titlePrimary"></h3>
+ 
+                <h6 id="titleSecondary" class="text-secondary"></h6>
+            </div>
+            
+        
+            <div class="col-6">
+                <label for="birthdate"><h6>Birthdate</h6></label>
+                <p class="text-secondary" id="birthdate"></p>
+            </div>
+            
+    
+       
+            <div class="col-6">
+                <label for="phone"><h6>Phone</h6></label>
+                <p class="text-secondary" id="phone"></p>
+            </div>
+            <div class="col-12">
+                <label for="mail"><h6>Email</h6></label>
+                <p class="text-secondary" id="mail"></p>
+            </div>
+            <div class="col-12">
+                <label for="docMail"><h6>Emergency Contact</h6></label>
+                <p class="text-secondary" id="docMail"></p>
+            </div>
+            <div class="col-12">
+                <label for="allergy"><h6>Drug Allergy</h6></label>
+            </div>
+            <div class="col-12">
+                <div class="block p-2 bg-body-secondary" id="allergy" style="height: 5rem;">
+                    <!-- placeholder -->
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label for="health"><h6>Health Condition</h6></label>
+            </div>
+            <div class="col-12 ">
+                <div class="block p-2 bg-body-secondary" id="health" style="height: 5rem;">
+                    <!-- placeholder -->
+                </div>
+            </div>
+
+  
+            <a href="/esndirectory"  class="btn btn-outline-secondary">Back to ESN Directory</a>
+
+
+
+            
+
+        </div>
+    </form>
+</div>
+
+
+
+</body>
+<script type="module" src="js/createElement.js"></script>
+<script type="module" src="js/notification.js"></script>
+<script type="module" src="js/status.js"></script>
+<script type="module" src="js/esndirectory.js"></script>
+<script type="module" src="js/logout.js"></script>
+<script type="module" src="js/search.js"></script>
+<script type="module" src="js/contactProfile.js"></script>
+<script>
+    $("#emergency").on('change', ()=>{
+        if($("#emergency").val() === 'other'){
+        $("#docEmail").removeAttr("disabled");
+    }else{
+        $("#docEmail").attr('disabled', 'disabled');
+    }
+    })
+    
+</script>
+</html>

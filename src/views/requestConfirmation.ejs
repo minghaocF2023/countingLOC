@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
+    <style>
+        .nav-link.active {
+            font-weight: bold;
+        }
+
+        .message-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .timestamp {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .navbar-toggler {
+            outline: 2px solid rgb(178, 212, 216);
+            outline-offset: -2px;
+        }
+
+        .navbar-nav .dropdown-menu a {
+            cursor: pointer;
+        }
+        .search-margin{
+            margin-top: 4rem;
+        }
+        .search-margin-expand{
+            margin-top: 7.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 4rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        @keyframes expand-search {
+            0% {margin-top: 4rem;}
+            100% {margin-top: 7.5rem;}
+        }
+
+        @keyframes fold-search {
+            0% {margin-top: 7.5rem;}
+            100% {margin-top: 4rem;}
+        }
+    </style>
+</head>
+
+<body>
+
+    <%- include('partials/navbar') %>
+
+    <div class="text-center mt-5 py-3 px-5" >
+        <img class="logo" src="images/ambulance.png">
+        <h1 class="mt-2 mb-5 font-weight-normal">Request Sent</h1>
+        <p>Your request has been sent successfully. Go back to market or check requests.</p>
+        <a id="make-request" href="/myrequest" class="btn btn-primary text-white" style="height: 100%">To My Request</a>
+        <a id="make-request" href="/market" class="btn btn-primary text-white" style="height: 100%">To Market</a>
+     </div>
+
+          <!-- <a href="login.ejs" class="btn btn-primary" role="button">Sign In</a> -->
+        <!-- <div class="text-center">
+            <a id="make-request" href="/myrequest" class="btn btn-primary text-white" style="height: 100%">To My Request</a>
+            <a id="make-request" href="/market" class="btn btn-primary text-white" style="height: 100%">To Market</a>
+        </div> -->
+        
+
+    </div>
+    <%- include('partials/searchModal2') %>
+    <%- include('partials/searchModal3') %>
+    <script type="module" src="js/createElement.js"></script>
+    <script type="module" src="js/logout.js"></script>
+    <script type="module" src="js/notification.js"></script>
+    <script type="module" src="js/status.js"></script>
+    <script type="module" src="js/announcement.js"></script>
+    <script type="module" src="js/search.js"></script>
+    <script type="module" src="js/medicine.js"></script>
+    <script type="module" src="js/request.js"></script>
+    <script type="module" src="js/myrequest.js"></script>
+    
+</body>
+
+</html>

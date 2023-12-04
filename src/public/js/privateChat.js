@@ -17,9 +17,11 @@ const fetchMessages = async (username) => axios.get(
 
 const observePrivateMessage = (socket, username) => {
   socket.on('privatemessage', (msg) => {
+    console.log('private message received');
     const {
-      senderName, status, content, timestamp,
+      sender, status, content, timestamp,
     } = msg.content;
+    const senderName = sender.username;
     if (senderName === receiver) {
       const newMsg = createChatMessage(senderName, status, content, timestamp);
       $('#chat-list').append(newMsg);

@@ -9,7 +9,8 @@ const userLogout = async (username) => {
 $('#logout').on('click', async () => {
   await userLogout(localStorage.getItem('username')).then(() => {
     localStorage.removeItem('token');
-    localStorage.remoteItem('username');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
     window.location.href('join');
   });
 });

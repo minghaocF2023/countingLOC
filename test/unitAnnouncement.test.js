@@ -19,8 +19,13 @@ describe('announcementController', () => {
       find: jest.fn().mockReturnThis(),
       sort: jest.fn().mockResolvedValue([]),
       save: jest.fn().mockResolvedValue(true),
+      populate: jest.fn().mockReturnThis(),
+      isActive: true,
     };
-    mockUserModel = {};
+    mockUserModel = {
+      find: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue([{ username: 'user1', isActive: true }]),
+    };
 
     // instance of the controller
     // eslint-disable-next-line new-cap

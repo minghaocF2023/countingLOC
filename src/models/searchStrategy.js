@@ -106,8 +106,8 @@ export class SearchAnnouncements extends SearchStrategy {
       .sort({ timestamp: -1 })
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
-    
-    return result
+
+    return result;
   }
 }
 

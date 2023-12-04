@@ -1,4 +1,3 @@
-import JWT from '../utils/jwt.js';
 import {
   SearchCitizens, SearchPublicMessage, SearchPrivateMessage, SearchAnnouncements,
 } from '../models/searchStrategy.js';

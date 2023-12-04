@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESN Directory</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/node_modules/izitoast/dist/css/iziToast.min.css"> 
+    <script src="/node_modules/izitoast/dist/js/iziToast.min.js"></script>
+    <%- include('partials/bootstrapPlugin') %>
+    <style>
+        .nav-link.active {
+            font-weight: bold;
+        }
+
+        .user-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-card:hover {
+            cursor: pointer;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status.online {
+            color: white;
+            background-color: #4CAF50;
+        }
+
+        .status.offline{
+            color: white;
+            background-color: #f44336;
+        }
+
+        .navbar-toggler {
+            outline: 2px solid rgb(178, 212, 216);
+            outline-offset: -2px;
+        }
+        
+        .navbar-nav .dropdown-menu a {
+            cursor: pointer;
+        }
+        .search{
+            width: max-content;
+        }
+        .search-margin{
+            margin-top: 1.5rem;
+        }
+        .search-margin-expand{
+            margin-top: 4.5rem;
+            animation-name: expand-search;
+            animation-duration: .5s;
+        }
+        .search-margin-fold{
+            margin-top: 1.5rem;
+            animation-name: fold-search;
+            animation-duration: .5s;
+        }
+
+        @keyframes expand-search {
+            0% {margin-top: 1.5rem;}
+            100% {margin-top: 4.5rem;}
+        }
+
+        @keyframes fold-search {
+            0% {margin-top: 4.5rem;}
+            100% {margin-top: 1.5rem;}
+        }
+
+        #map {
+            border: 2px solid #007bff;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .center-button {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .shelter-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none; 
+            display: inline-block;
+        }
+
+        .shelter-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+
+    <!-- Location display-->
+    <div id="userLocationDisplay" style="text-align: center; margin-top: 80px">
+        <strong>Your Location:</strong> <span id="userLatitude"></span>, <span id="userLongitude"></span>
+    </div>
+
+    <!-- map area -->
+    <div id="map" style="height: 600px; width: 100%"></div>
+    <!-- offer shelter button-->
+    <div class="center-button">
+        <a href="/addShelter" class="shelter-button">Add Shelter</a>
+    </div>
+
+</body> 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0qtJZZIfYUhKekvB5e37oD2Ri5n4AgqI" async defer></script>
+<script type="module" src="js/createElement.js"></script>
+<script type="module" src="js/notification.js"></script>
+<script type="module" src="js/status.js"></script>
+<script type="module" src="js/createElement.js"></script>
+<script type="module" src="js/esndirectory.js"></script>
+<script type="module" src="js/logout.js"></script>
+<script type="module" src="js/search.js"></script>
+<script type="module" src="js/shelter.js"></script>
+</html>

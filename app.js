@@ -8,13 +8,22 @@ import swaggerUi from 'swagger-ui-express';
 import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import fileUpload from 'express-fileupload';
 import indexRouter from './src/routes/indexRouter.js';
 import userRouter from './src/routes/userRouter.js';
 import messageRouter from './src/routes/messageRouter.js';
+import mailAlertRouter from './src/routes/mailAlertRouter.js';
 import adminRouter from './src/routes/adminRouter.js';
+import profileRouter from './src/routes/profileRouter.js';
+import fileRouter from './src/routes/fileRouter.js';
 import searchRouter from './src/routes/searchRouter.js';
+import appointmentRouter from './src/routes/appointmentRouter.js';
+import marketRouter from './src/routes/marketRouter.js';
+import requestRouter from './src/routes/requestRouter.js';
 import SocketServer from './src/services/socket.js';
+import emergencyEventRouter from './src/routes/emergencyEventRouter.js';
 import PrivateSocketServer from './src/services/privateSocket.js';
+import shelterRouter from './src/routes/shelterRouter.js';
 
 global.isTest = false;
 global.testUser = null;
@@ -30,7 +39,7 @@ const io = new Server(server);
 const socketServer = new SocketServer(io);
 app.set('socketServer', socketServer);
 app.set('privateSocketServer', PrivateSocketServer);
-
+app.use(fileUpload());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/node_modules', express.static(`${__dirname}/node_modules/`));
@@ -38,7 +47,7 @@ app.use(express.static('src/public'));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
-
+app.set('public', path.join(__dirname, 'src/public'));
 const options = {
   definition: {
     openapi: '3.1.0',
@@ -91,6 +100,19 @@ app.use('/users/', userRouter);
 app.use('/messages/', messageRouter);
 app.use('/admin/', adminRouter);
 app.use('/search/', searchRouter);
+app.use('/shelters/', shelterRouter);
+app.use('/appointments/', appointmentRouter);
+app.use('/patientAppointment/', appointmentRouter);
+app.use('/doctorAppointment/', appointmentRouter);
+// app.use('/medicines/', marketRouter);
+app.use('/market/', marketRouter);
+app.use('/requests/', requestRouter);
+app.use('/emergency/events/', emergencyEventRouter);
+app.use('/mail/', mailAlertRouter);
+app.use('/profile/', profileRouter, () => {
+  console.error('auth error or under test');
+});
+app.use('/files/', fileRouter);
 app.use(
   '/docs',
   swaggerUi.serve,
