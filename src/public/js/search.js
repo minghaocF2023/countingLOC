@@ -68,24 +68,49 @@ const showInvalidSearchTypeAlert = () => {
 
 const compareByUsername = (a, b) => a.username.localeCompare(b.username);
 
-const updatePublic = (searchContext, data) => {
-  const resultsContainer = $('#chat-container');
-  // If no results found
+const handleNoResultsOrFirstPage = (data, resultsContainer, currentPageNum) => {
+  // Check if no results are found
   if (data.length === 0) {
-    // Clear the results container
+    // Clear the results container if it's the first page
     if (currentPageNum === 1) {
       resultsContainer.empty();
     }
     // Display an alert to the user
     showNoResultFoundAlert();
-    return;
+    return true; // Return true to indicate no results were found
   }
-  // If it's the first page, empty the container
+
+  // If it's the first page, empty the container and append the "More Results" button
   if (currentPageNum === 1) {
     resultsContainer.empty();
-    const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style = "margin: 0 auto; display: block;">More Results</button>');
+    const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style="margin: 0 auto; display: block;">More Results</button>');
     resultsContainer.append(moreResultsButton);
   }
+
+  return false; // Return false to indicate there are results and it's not the first page
+};
+
+const updatePublic = (searchContext, data) => {
+  const resultsContainer = $('#chat-container');
+  if (handleNoResultsOrFirstPage(data, resultsContainer, currentPageNum)) {
+    return; // Exit the function if no results are found
+  }
+  // // If no results found
+  // if (data.length === 0) {
+  //   // Clear the results container
+  //   if (currentPageNum === 1) {
+  //     resultsContainer.empty();
+  //   }
+  //   // Display an alert to the user
+  //   showNoResultFoundAlert();
+  //   return;
+  // }
+  // // If it's the first page, empty the container
+  // if (currentPageNum === 1) {
+  //   resultsContainer.empty();
+  //   const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style = "margin: 0 auto; display: block;">More Results</button>');
+  //   resultsContainer.append(moreResultsButton);
+  // }
   data.forEach((result) => {
     const resultHTML = createChatMessage(
       result.senderName,
@@ -123,22 +148,25 @@ const updateUser = (searchContext, data) => {
 
 const updateAnnouncement = (searchContext, data) => {
   const resultsContainer = $('#chat-container');
-  // If no results found
-  if (data.length === 0) {
-    // Clear the results container
-    if (currentPageNum === 1) {
-      resultsContainer.empty();
-    }
-    // Display an alert to the user
-    showNoResultFoundAlert();
-    return;
+  if (handleNoResultsOrFirstPage(data, resultsContainer, currentPageNum)) {
+    return; // Exit the function if no results are found
   }
-  // If it's the first page, empty the container
-  if (currentPageNum === 1) {
-    resultsContainer.empty();
-    const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style = "margin: 0 auto; display: block;">More Results</button>');
-    resultsContainer.append(moreResultsButton);
-  }
+  // // If no results found
+  // if (data.length === 0) {
+  //   // Clear the results container
+  //   if (currentPageNum === 1) {
+  //     resultsContainer.empty();
+  //   }
+  //   // Display an alert to the user
+  //   showNoResultFoundAlert();
+  //   return;
+  // }
+  // // If it's the first page, empty the container
+  // if (currentPageNum === 1) {
+  //   resultsContainer.empty();
+  //   const moreResultsButton = $('<button type="button" class="btn btn-primary" id="more-results" style = "margin: 0 auto; display: block;">More Results</button>');
+  //   resultsContainer.append(moreResultsButton);
+  // }
   data.forEach((result) => {
     const resultHTML = createAnnouncementMessage(
       result.senderName,
